@@ -1,0 +1,47 @@
+{
+  "name": "boxfox-store",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.92.7",
+    "@react-three/fiber": "^8.15.12",
+    "@upstash/redis": "^1.37.0",
+    "bcryptjs": "^3.0.3",
+    "browser-image-compression": "^2.0.2",
+    "cloudinary": "^2.9.0",
+    "crypto": "^1.0.1",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.3.1",
+    "framer-motion": "^12.34.2",
+    "gsap": "^3.14.2",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^0.268.0",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.1",
+    "next": "^16.1.6",
+    "nodemailer": "^8.0.4",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-easy-crop": "^5.5.6",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "three": "^0.160.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4"
+  }
+}

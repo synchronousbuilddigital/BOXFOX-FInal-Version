@@ -1,0 +1,220 @@
+[
+  {
+    "_id": "69a982769667c8758f2a7f2d",
+    "email": "admin@boxfox.com",
+    "__v": 28,
+    "name": "Admin",
+    "password": "$2b$10$Cc4XxHjsGKkY4WyDCjozoez9TZxJi8wY95oIN1PqfNAeveBI1oexq",
+    "phone": "1234567890",
+    "role": "admin",
+    "aiGenerationCount": 4,
+    "aiPatterns": [
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_0a3835cf-9d32-4e60-adca-33fb284ceb6d_0.png?token=exp=1772862732~hmac=9fd3b475c4f364aae1d3273bc4eb47e0f00f2e0a9279621ad0db46e13dc5285d&size=stable",
+        "prompt": "red color box with name on white \"Shaswat\"",
+        "createdAt": "2026-03-07T04:52:17.097Z",
+        "_id": "69abaf0119b6a076af0a917f"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_c5f9b75a-c2a6-4c56-b0cf-4f53ab488ab4_0.jpeg?token=exp=1772862771~hmac=90e66b9cc9865bce79d2af00cffc96d5ebb8a9e933b452fce8d80cb6959bb32a&size=stable",
+        "prompt": "red color with font color white",
+        "createdAt": "2026-03-07T04:52:52.915Z",
+        "_id": "69abaf2419b6a076af0a918a"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_cadca08e-5f27-45e8-8500-0cd27d2accae_0.jpeg?token=exp=1772862798~hmac=278e07cc9251b19836756b13fd55a32226ed00474ec1866dab85d5f162116653&size=stable",
+        "prompt": "pattenr of sqaure",
+        "createdAt": "2026-03-07T04:53:21.063Z",
+        "_id": "69abaf4119b6a076af0a9199"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_9d04bbc4-1f8b-474c-a8a1-c6e21db4864c_0.jpeg?token=exp=1773476018~hmac=d9654c2cd3bf4c44e33cac204b4af7c3f738a542bf3a5e17393e3cef9f5c839b&size=stable",
+        "prompt": "make a box full of stars\n",
+        "createdAt": "2026-03-14T07:13:40.457Z",
+        "_id": "69b50aa4f23ff1e7f803455b"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_3c19b0f9-0635-4a5e-87e0-41e8d46ebb9b_0.jpeg?token=exp=1773582240~hmac=15476c464dc3d8baf398bd737ad832c28742818e7170a5ab75dced19824e698f&size=stable",
+        "prompt": "make a box with lots of balloon \n",
+        "createdAt": "2026-03-15T12:44:01.705Z",
+        "_id": "69b6a99153fc5444328f2381"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_5fb14fc1-f1bc-4915-8af0-d395776e289a_0.png?token=exp=1773659424~hmac=c455c18e47651dd786555483696ee0683e40bbe9ec930705720022cfaf662e70&size=stable",
+        "prompt": "make a box with full of balloons",
+        "createdAt": "2026-03-16T10:10:28.710Z",
+        "_id": "69b7d714d8642e9bf09776da"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_ea00dda5-13bd-4e75-a2bc-d87d1b4ebd36_0.png?token=exp=1773739455~hmac=de558236b962eacb5fa9c313a5a6b38c522a05b19de61ea5170aa470189f474c&size=stable",
+        "prompt": "make a box full of balloons\n",
+        "createdAt": "2026-03-17T08:24:17.882Z",
+        "_id": "69b90fb131bda7636a1ebf35"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_0e428df8-ae13-4660-89cc-98c1713aab7e_0.jpeg?token=exp=1773745049~hmac=ebd643e0700d05c7a2dbb8abb5f7b4f445a82f7baf6e4b2318da8f968d05bdab&size=stable",
+        "prompt": "balloons box\n",
+        "createdAt": "2026-03-17T09:57:30.401Z",
+        "_id": "69b9258aabd354999c18b5f2"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_ae49c13b-ec83-4957-bd7e-5f1d30d33c59_0.jpeg?token=exp=1773818912~hmac=7839b41557d24ef3d32a85bd0e7bd71bb2b62828eaf359299fd91c25866aeb85&size=stable",
+        "prompt": "make a box with red flowers on it ",
+        "createdAt": "2026-03-18T06:28:36.587Z",
+        "_id": "69ba4614bdc97c1e4bddf3bd"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_5c878f6d-36d1-4691-96d6-5fc3ad4bf1e5_0.jpeg?token=exp=1773820587~hmac=5f39aaa91a008ab9016bc9226398a6e471f1902393f5d6cf8d2a90f0c89e068e&size=stable",
+        "prompt": "make a box with red colour flowers",
+        "createdAt": "2026-03-18T06:56:29.943Z",
+        "_id": "69ba4c9d748c9f5b93510ced"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_55c0fb75-364a-4480-9e94-bf2444b872b5_0.jpeg?token=exp=1773825273~hmac=a48ce0d4c551626dd4b33109ecfc31fc2ffaef8c163bc65a5b23495f0bd30d28&size=stable",
+        "prompt": "need flower based background for wedding",
+        "createdAt": "2026-03-18T08:14:34.422Z",
+        "_id": "69ba5eea571e41bb0ed8c680"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_9649c050-7c00-4e4f-8218-fdcca92cc5da_0.png?token=exp=1773828512~hmac=a417fc3eaa9ee607434f74b45bb0f40373c18bc3e78cf51c0f0e73f57a72453a&size=stable",
+        "prompt": "classy bold eyewear",
+        "createdAt": "2026-03-18T09:08:35.854Z",
+        "_id": "69ba6b93b241b829e37af88b"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_50bde5b6-ad52-4855-a056-882facbb52cc_0.jpeg?token=exp=1773828540~hmac=eedc613bbace950b3eec0a76232966c5702a452b78433c19d6142e5b62152b59&size=stable",
+        "prompt": "classy bold eyewear",
+        "createdAt": "2026-03-18T09:09:03.220Z",
+        "_id": "69ba6bafb241b829e37af8c2"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_eb31bf3e-2030-4c77-9a01-d5a513d9bd4f_0.jpeg?token=exp=1773900944~hmac=c7dbffe1424e734c66248fd7d064fb0b01ad6dd9641e666b0002f746fcfdbddc&size=stable",
+        "prompt": "clean ui with blakccolor on white spots\n",
+        "createdAt": "2026-03-19T05:15:46.982Z",
+        "_id": "69bb8682fa8cfcb68f687ddd"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_1b3c4a63-cf86-4abd-8162-04bb2e314e4a_0.jpeg?token=exp=1773910002~hmac=f811d0c2cbfa2d9ceb4982bfa5ca449348d3295fb9650b434565a58ec2df6c66&size=stable",
+        "prompt": "make a box with red flowers ",
+        "createdAt": "2026-03-19T07:46:43.842Z",
+        "_id": "69bba9e385a860df052adc99"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_049d3fee-ea8d-44c1-93b6-d5083bb9dca0_0.png?token=exp=1773913365~hmac=c89a131e35c8a1d09c34f69167d6bd87abdf240a3df767f0a513dcb538008544&size=stable",
+        "prompt": "white dots and proper blue and black color",
+        "createdAt": "2026-03-19T08:42:46.946Z",
+        "_id": "69bbb7064e97d28aa3f2cea7"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_cf3df77a-f7f5-4b2b-a37d-0d3405803a78_0.jpeg?token=exp=1773993635~hmac=fc4c716e027778470b3ea7db739d9f0c8eb3e9b42b4155cb738513122de22cc6&size=stable",
+        "prompt": "Give me a brownie box for 6 brownies with partitions. i wish to place brwnie cups in it. the boox needs to have a window as well\n",
+        "createdAt": "2026-03-20T07:00:38.797Z",
+        "_id": "69bcf096ed441f044bdaf375"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_8a11cbc7-1301-4b21-b052-81d67cf97c29_0.jpeg?token=exp=1774000678~hmac=8ff880dd54f67d0fa36cfa306303e04a7eb205e45667bac47108b28e8fa99ca5&size=stable",
+        "prompt": "red and blue color",
+        "createdAt": "2026-03-20T08:58:00.038Z",
+        "_id": "69bd0c18bfc9465fe395ddd9"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_09e2d8c1-21ad-4f63-a7ea-c4265882e4a8_0.jpeg?token=exp=1774001183~hmac=8f8c3c539726f5192ec878d543059c0744fa55e66126418dcc299d42332ab777&size=stable",
+        "prompt": "blue and red color flowers",
+        "createdAt": "2026-03-20T09:06:21.926Z",
+        "_id": "69bd0e0dbfc9465fe395de62"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_cb8081c8-ca50-490a-b854-12133772d3b5_0.jpeg?token=exp=1774001224~hmac=31d0c12fc1ab6ea9f88360dcbe0a032f13cc72ecab4901cc2fb762eed1e5ce0a&size=stable",
+        "prompt": "blakc and white dots\n",
+        "createdAt": "2026-03-20T09:07:04.477Z",
+        "_id": "69bd0e38bfc9465fe395deb5"
+      }
+    ],
+    "lastLogin": "2026-03-20T11:44:26.085Z",
+    "shippingAddress": {
+      "country": "India"
+    },
+    "updatedAt": "2026-03-20T11:44:26.138Z",
+    "wishlist": [
+      "69aeaca4af3356698c52101e"
+    ],
+    "lastAiGenerationDate": "2026-03-20T09:06:57.692Z"
+  },
+  {
+    "_id": "69afbdb1e1cfd201afe81e3b",
+    "name": "Devam",
+    "email": "devam.srivastavads@gmail.com",
+    "password": "$2b$10$RicIYWVq1CX3i.c9yPX0R.jgRsvGGywNOjuHIcDx8qYZ99Wvsko3m",
+    "role": "user",
+    "phone": "9161391566",
+    "businessName": "Synchronous",
+    "shippingAddress": {
+      "country": "India"
+    },
+    "wishlist": [],
+    "aiGenerationCount": 0,
+    "lastLogin": "2026-03-10T06:44:12.136Z",
+    "aiPatterns": [],
+    "createdAt": "2026-03-10T06:44:01.489Z",
+    "updatedAt": "2026-03-10T06:44:12.137Z",
+    "__v": 0
+  },
+  {
+    "_id": "69afc6798b701f5edb23cd5c",
+    "name": "Harshit",
+    "email": "harshitrana405@gmail.com",
+    "password": "$2b$10$iXsK3.WCurO1QgSDAeTtD.ex9Lm1bkVPC772LqOxWy/EL12fTQ2Zi",
+    "role": "user",
+    "phone": "8860156283",
+    "businessName": "Edit",
+    "shippingAddress": {
+      "country": "India"
+    },
+    "wishlist": [],
+    "aiGenerationCount": 0,
+    "lastLogin": "2026-03-10T07:21:29.159Z",
+    "aiPatterns": [],
+    "createdAt": "2026-03-10T07:21:29.162Z",
+    "updatedAt": "2026-03-10T07:21:29.162Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b52d53a29cfa0ebd4a878a",
+    "name": "NIKHIL  VERMA",
+    "email": "Nikhil6395verma@gmail.com",
+    "password": "$2b$10$I8FJfzTcbWbtoaTcSPS0ae.ugV.TunuM2nyW4nR3njkR92PJpl4CG",
+    "role": "user",
+    "phone": "7906932944",
+    "businessName": "GIFT GALLERY ",
+    "shippingAddress": {
+      "country": "India"
+    },
+    "wishlist": [],
+    "aiGenerationCount": 3,
+    "lastLogin": "2026-03-14T09:41:39.617Z",
+    "aiPatterns": [
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_8bc8f26c-8d9f-4139-a895-d2cd0b134749_0.jpeg?token=exp=1773485245~hmac=63e7a903a94b4be08fc4d66c8309348796901216d6c76e12e556dec002b1ad89&size=stable",
+        "prompt": "\nfuturistic 3D packaging box on a clean white studio background, box smoothly changing size, color and material dynamically, UI parameters floating around (size, color, material), modern Apple-style product animation, minimal interface design, sleek motion graphics, premium packaging visualization, soft studio lighting, ultra clean design, cinematic product animation",
+        "createdAt": "2026-03-14T09:47:28.837Z",
+        "_id": "69b52eb010169163c75079f2"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_ebfa24bb-6dd4-4225-8d6e-cd5bc08ee63e_0.png?token=exp=1773485347~hmac=45359135595410429f1814f3bb76cfc1d82a23ad14be0970727b222e1a00ac95&size=stable",
+        "prompt": "\nfuturistic 3D packaging box on a clean white studio background, box smoothly changing size, color and material dynamically, UI parameters floating around (size, color, material), modern Apple-style product animation, minimal interface design, sleek motion graphics, premium packaging visualization, soft studio lighting, ultra clean design, cinematic product animation",
+        "createdAt": "2026-03-14T09:49:08.021Z",
+        "_id": "69b52f1410169163c75079fd"
+      },
+      {
+        "url": "https://cdn-magnific.freepik.com/result_FLUX_DEV_1d87d59f-2b11-4e31-bdcc-7be5762f915c_0.png?token=exp=1773485392~hmac=ee0e471dbbf892eded275addded6942ace9c97a9d3c802096318670c532b774e&size=stable",
+        "prompt": "\nfuturistic 3D packaging box on a clean white studio background, box smoothly changing size, color and material dynamically, UI parameters floating around (size, color, material), modern Apple-style product animation, minimal interface design, sleek motion graphics, premium packaging visualization, soft studio lighting, ultra clean design, cinematic product animation",
+        "createdAt": "2026-03-14T09:49:53.850Z",
+        "_id": "69b52f4110169163c7507a0c"
+      }
+    ],
+    "createdAt": "2026-03-14T09:41:39.620Z",
+    "updatedAt": "2026-03-14T09:49:53.851Z",
+    "__v": 3,
+    "lastAiGenerationDate": "2026-03-14T09:49:49.632Z"
+  }
+]

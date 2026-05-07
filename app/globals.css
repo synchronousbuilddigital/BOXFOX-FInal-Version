@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Modern Premium Palette */
+  --color-accent: #0ea5a4;
+  --color-accent-light: #e0f2f1;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+:root {
+  /* Glassmorphism Variables */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+  /* Transitions */
+  --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-white text-gray-950 antialiased;
+    font-family: var(--font-sans);
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight text-gray-950;
+    font-family: var(--font-display);
+    margin-bottom: 0.5em;
+  }
+
+  p {
+    @apply leading-relaxed text-gray-600;
+    margin-bottom: 1rem;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-gray-950 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-gray-950 border border-gray-200 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:bg-gray-50 hover:border-gray-300 hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-950 transition-all duration-200 outline-none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-gray-950 via-gray-800 to-gray-600;
+  }
+
+  .bg-mesh {
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(at 0% 0%, hsla(180, 100%, 95%, 1) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(200, 100%, 95%, 1) 0, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(180, 100%, 98%, 1) 0, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(220, 100%, 98%, 1) 0, transparent 50%);
+  }
+
+  .noise-overlay {
+    position: relative;
+  }
+
+  .noise-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+  }
+
+  .bg-ai-glow {
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  }
+
+  .glass-dark {
+    @apply bg-gray-950/80 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
