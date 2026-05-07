@@ -14,15 +14,18 @@ const MemoProductCard = React.memo(ProductCard, (prev, next) => {
 export default function ProductSection({ searchQuery = "", category = "All", priceRange = "all", sortBy = "default" }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
   const [page, setPage] = useState(1);
 
   // Reset to page 1 whenever filters/search/sort change
   useEffect(() => {
     setPage(1);
+    setImagesLoadedCount(0); // Reset count when page/filters change
   }, [searchQuery, category, priceRange, sortBy]);
 
   useEffect(() => {
     setLoading(true);
+    setImagesLoadedCount(0);
     let url = `/api/products`;
     const params = new URLSearchParams();
     params.append('all', 'true');
@@ -82,6 +85,20 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
     return { filteredProducts: filtered, totalPages: pages, pageProducts: paginated };
   }, [products, priceRange, sortBy, page]);
 
+  // Handle image load tracking
+  const handleImageLoad = useCallback(() => {
+    setImagesLoadedCount(prev => prev + 1);
+  }, []);
+
+  // Determine if we are "visually ready" (e.g. at least half of the page's images are loaded)
+  const isVisuallyReady = useMemo(() => {
+    if (loading) return false;
+    if (pageProducts.length === 0) return true;
+    // Wait for at least 60% of images on the current page to load
+    const threshold = Math.min(pageProducts.length, 6); 
+    return imagesLoadedCount >= threshold;
+  }, [loading, pageProducts.length, imagesLoadedCount]);
+
   // Memoize pagination page numbers to prevent recalculation
   const pageNumbers = useMemo(() => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -97,6 +114,7 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
   // Debounced scroll to prevent janky animations
   const goToPage = useCallback((p) => {
     setPage(p);
+    setImagesLoadedCount(0); // Reset for new page
     // Defer scroll to next frame to avoid layout thrashing
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "auto" });
@@ -104,14 +122,28 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
   }, []);
 
   // Show loading state after all hooks
-  if (loading) {
+  if (!isVisuallyReady) {
     return (
       <section className="py-12 px-6 lg:px-12 bg-white">
         <div className="max-w-[1600px] mx-auto">
+          {/* Hidden container to trigger image loading in background */}
+          <div className="hidden">
+            {pageProducts.map((product, index) => (
+              <img 
+                key={`preload-${product._id || product.id || index}`}
+                src={product.img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
+                onLoad={handleImageLoad}
+                onError={handleImageLoad} // Count as loaded even if error
+              />
+            ))}
+          </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(j => (
               <div key={j} className="animate-pulse aspect-square bg-gray-50 rounded-[2rem]" />
             ))}
+          </div>
+          <div className="flex justify-center mt-12">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300 animate-pulse">Syncing catalog assets...</p>
           </div>
         </div>
       </section>
@@ -143,14 +175,19 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
               )}
             </div>
 
-            {/* Product Grid - Removed heavy Framer Motion animations for better performance */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0">
+            {/* Product Grid - Smooth fade-in once ready */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0"
+            >
               {pageProducts.map((product, index) => (
                 <div key={product._id || product.id || `product-${index}`} className="h-full">
                   <MemoProductCard product={product} />
                 </div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Pagination Bar */}
             {totalPages > 1 && (
