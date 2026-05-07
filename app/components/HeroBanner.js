@@ -9,31 +9,31 @@ const banners = [
   {
     id: 1,
     type: "image",
-    image: "/luxury5.jpg.jpeg",
+    image: "https://res.cloudinary.com/dklavcjrl/image/upload/v1778148608/hero_banners/luxury5.jpg",
     alt: "Premium Traditional Packaging - Red Luxury Style",
   },
   {
     id: 2,
     type: "image",
-    image: "/luxury6.jpg.jpeg",
+    image: "https://res.cloudinary.com/dklavcjrl/image/upload/v1778148610/hero_banners/luxury6.jpg",
     alt: "Bespoke Jewelry Packaging - Elegant Black",
   },
   {
     id: 3,
     type: "image",
-    image: "/luxury7.jpeg",
+    image: "https://res.cloudinary.com/dklavcjrl/image/upload/v1778148611/hero_banners/luxury7.jpg",
     alt: "Artisan Chocolate Packaging - White Gold Accent",
   },
   {
     id: 4,
     type: "video",
-    src: "/hero_video_2.mp4",
+    src: "https://res.cloudinary.com/dklavcjrl/video/upload/v1778148613/hero_banners/hero_video_2.mp4",
     alt: "Boxfox Premium Production Video",
   },
   {
     id: 5,
     type: "video",
-    src: "/banner/hero_video.mp4",
+    src: "https://res.cloudinary.com/dklavcjrl/video/upload/v1778148615/hero_banners/hero_video.mp4",
     alt: "Boxfox Premium Hero Video",
   }
 ];

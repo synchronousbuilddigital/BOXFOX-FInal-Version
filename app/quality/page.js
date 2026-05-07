@@ -115,7 +115,7 @@ export default function QualityPage() {
           >
             <div className="aspect-[4/5] bg-gray-900 rounded-[2.5rem] sm:rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border-4 sm:border-8 border-white group">
               <img
-                src="/boxfox_hero_branded.png"
+                src="https://res.cloudinary.com/dklavcjrl/image/upload/v1778148738/quality/quality_hero.jpg"
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3s] ease-out"
                 alt="BoxFox Premium Packaging"
               />
@@ -153,9 +153,9 @@ export default function QualityPage() {
               playsInline
               className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
             >
-              <source src="/quality.mp4" type="video/mp4" />
+              <source src="https://res.cloudinary.com/dklavcjrl/video/upload/v1778148742/quality/quality_video.mp4" type="video/mp4" />
               <img
-                src="/packaging_manufacturing_precision.png"
+                src="https://res.cloudinary.com/dklavcjrl/image/upload/v1778148744/quality/manufacturing_precision.jpg"
                 alt="High-tech manufacturing floor fallback"
               />
             </video>
@@ -283,7 +283,7 @@ export default function QualityPage() {
             <div className="relative mt-12 lg:mt-0">
               <div className="aspect-square bg-gray-100 rounded-[2.5rem] sm:rounded-[4rem] overflow-hidden shadow-2xl skew-x-1">
                 <img
-                  src="/boxfox_collection_branded.png"
+                  src="https://res.cloudinary.com/dklavcjrl/image/upload/v1778148745/quality/collection_branded.jpg"
                   className="w-full h-full object-cover"
                   alt="BoxFox Luxury Packaging Collection"
                 />
