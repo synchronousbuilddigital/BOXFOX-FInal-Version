@@ -52,6 +52,15 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/collection',
+        destination: '/shop',
+        permanent: true,
+      },
+    ];
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '25mb',
