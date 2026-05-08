@@ -73,7 +73,7 @@ export default function AIChatBot() {
         animate={{ scale: 1, opacity: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-[80px] right-4 sm:bottom-[124px] sm:right-6 z-[9998] flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gray-950 text-white shadow-2xl hover:bg-emerald-600 transition-all duration-300"
+        className="fixed bottom-[100px] right-4 sm:bottom-[124px] sm:right-6 z-[9998] flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gray-950 text-white shadow-2xl hover:bg-emerald-600 transition-all duration-300"
         style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.2)" }}
       >
         {isOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <MessageSquare size={20} className="sm:w-6 sm:h-6" />}

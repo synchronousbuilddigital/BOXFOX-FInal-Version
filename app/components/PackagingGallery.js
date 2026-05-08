@@ -16,16 +16,16 @@ const images = [
 
 export default function PackagingGallery() {
     return (
-        <section className="py-6 sm:py-8 bg-white overflow-hidden w-full relative">
+        <section className="py-2 sm:py-3 bg-white overflow-hidden w-full relative">
             <motion.div
                 animate={{ x: ["0%", "-50%"] }}
                 transition={{ duration: 40, ease: "linear", repeat: Infinity }}
-                className="flex w-max gap-4 sm:gap-6 pb-6 pt-4 px-4 sm:px-6 lg:px-12"
+                className="flex w-max gap-3 sm:gap-4 pb-2 pt-2 px-4 sm:px-6 lg:px-12"
             >
                 {[...images, ...images].map((src, i) => (
                     <div
                         key={i}
-                        className="w-[160px] sm:w-[200px] md:w-[240px] h-[200px] sm:h-[240px] md:h-[300px] shrink-0 relative rounded-[1rem] sm:rounded-[1.5rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-md group"
+                        className="w-[120px] sm:w-[140px] md:w-[160px] h-[80px] sm:h-[100px] md:h-[120px] shrink-0 relative rounded-[0.75rem] sm:rounded-[1rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-sm group"
                     >
 
                         <Image

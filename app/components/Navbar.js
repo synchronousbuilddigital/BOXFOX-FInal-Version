@@ -94,7 +94,7 @@ export default function Navbar() {
         </AnimatePresence>
 
         {/* Floating pill wrapper */}
-        <div className={`mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
+        <div className={`relative mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled
           ? "w-[96%] sm:w-[94%] xl:max-w-[1300px] mt-2 mb-2 bg-white/95 backdrop-blur-md border border-gray-200/50 shadow-2xl rounded-[2rem] py-1 px-4 lg:px-10"
           : "w-full bg-white border-b border-gray-100 py-0 px-4 sm:px-8 lg:px-14 shadow-none"
           }`}>
@@ -110,7 +110,7 @@ export default function Navbar() {
             </Link>
 
             {/* ── Nav Links — centered (desktop only) ── */}
-            <div className="hidden lg:flex items-center gap-0 xl:gap-0.5 absolute left-1/2 -translate-x-1/2 w-max max-w-[50%] xl:max-w-none px-2">
+            <div className="hidden lg:flex flex-1 items-center justify-center gap-0 xl:gap-0.5 px-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
                 const isAI = link.isAI;

@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Box, Layers, Zap, PenTool, ShieldCheck, Heart, LayoutGrid, Package, Star, Circle, Square, ShoppingBag, Gift } from "lucide-react";
+import Link from "next/link";
 
 const categories = [
   {
@@ -222,15 +223,14 @@ export default function CategorySection() {
         {/* The Index Grid/List */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 lg:gap-8">
           {categories.map((cat, idx) => (
-            <motion.a
-              key={cat.id}
-              href={`/shop?category=${encodeURIComponent(cat.name)}`}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group relative w-full rounded-[1.5rem] sm:rounded-[2rem] bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-500 flex flex-col overflow-hidden"
-            >
+            <Link key={cat.id} href={`/shop?category=${encodeURIComponent(cat.name)}`} passHref>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative w-full h-full rounded-[1.5rem] sm:rounded-[2rem] bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-500 flex flex-col overflow-hidden cursor-pointer"
+              >
               {/* Image Container - Fixed uniform height and edge-to-edge */}
               <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 flex items-center justify-center">
                 <img
@@ -276,7 +276,8 @@ export default function CategorySection() {
                   </div>
                 </div>
               </div>
-            </motion.a>
+            </motion.div>
+            </Link>
           ))}
         </div>
       </div>

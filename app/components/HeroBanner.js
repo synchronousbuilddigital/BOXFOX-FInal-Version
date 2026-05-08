@@ -99,7 +99,7 @@ export default function HeroBanner() {
   return (
 
     <section
-      className="relative w-full bg-[#111] overflow-hidden pt-[65px]"
+      className="relative w-full bg-[#111] overflow-hidden pt-[110px]"
       suppressHydrationWarning
     >
 
