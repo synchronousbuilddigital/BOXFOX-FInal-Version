@@ -101,7 +101,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
     return (
       <Link
         href={`/products/${routeId}`}
-        className="group relative block aspect-4/5 overflow-hidden rounded-4xl bg-white shadow-sm transition-all hover:shadow-2xl hover:-translate-y-2"
+        className="group relative block aspect-4/5 overflow-hidden rounded-4xl bg-white shadow-sm transition-all hover:shadow-2xl hover:-translate-y-2 p-4"
         aria-label={name}
       >
         <Image
@@ -110,7 +110,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
           width={400}
           height={500}
           unoptimized={true}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
+          className={`w-full h-full object-contain transition-all duration-700 group-hover:scale-103 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
           priority={priority}
@@ -122,7 +122,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             width={400}
             height={500}
             unoptimized={true}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 absolute inset-0 opacity-0 group-hover:opacity-100"
+            className="w-full h-full object-contain transition-all duration-700 group-hover:scale-103 absolute inset-0 opacity-0 group-hover:opacity-100 p-4"
             priority={priority}
           />
         )}
@@ -141,14 +141,14 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
 
   return (
     <Link href={`/products/${routeId}`} className="group flex flex-col h-full relative">
-      <div className="relative mb-4 sm:mb-5 aspect-4/5 overflow-hidden rounded-2xl sm:rounded-4xl bg-gray-50 border border-gray-950/8 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-emerald-500/10 group-hover:border-gray-950/20">
+      <div className="relative mb-4 sm:mb-5 aspect-4/5 overflow-hidden rounded-2xl sm:rounded-4xl bg-gray-50 border border-gray-950/8 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-emerald-500/10 group-hover:border-gray-950/20 p-2 sm:p-5">
         <Image
           src={img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
           alt={name || 'Product image'}
           width={500}
           height={500}
           unoptimized={true}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
+          className={`w-full h-full object-contain transition-all duration-700 group-hover:scale-103 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
           priority={priority}
         />
         {hoverImage && (
@@ -158,7 +158,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             width={500}
             height={500}
             unoptimized={true}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 absolute inset-0 opacity-0 group-hover:opacity-100"
+            className="w-full h-full object-contain transition-all duration-700 group-hover:scale-103 absolute inset-0 opacity-0 group-hover:opacity-100 p-2 sm:p-5"
             priority={priority}
           />
         )}

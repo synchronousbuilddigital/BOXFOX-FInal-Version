@@ -137,12 +137,12 @@ function ShopPageInner() {
                 <header className="px-4 sm:px-6 lg:px-12 mb-0.5 sm:mb-2 max-w-[1600px] mx-auto border-b border-gray-100 pb-2 sm:pb-3">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-12">
                         <div className="max-w-2xl text-center lg:text-left">
-                            <motion.h1
+                                <motion.h1
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="text-4xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-gray-950 tracking-tighter uppercase leading-[0.85] sm:leading-[0.8]"
                             >
-                                The<br /><span className="text-emerald-500">Shop.</span>
+                                The <span className="text-emerald-500">Shop.</span>
                             </motion.h1>
                             <p className="text-[10px] sm:text-xl text-gray-400 font-medium mt-1 sm:mt-2 leading-relaxed px-4 sm:px-0 max-w-xl">
                                 Discover <span className="text-emerald-600 font-black">{totalProducts}+ precision-crafted</span> packaging solutions. From sustainable food boxes to premium gift packaging, engineered for freshness, durability, and brand excellence.
