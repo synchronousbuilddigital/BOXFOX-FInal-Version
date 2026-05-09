@@ -139,7 +139,7 @@ export default function ProductPage() {
     return (
         <div className="min-h-screen bg-white">
 
-            <main className="pt-32 pb-8 px-4 md:px-8">
+            <main className="pt-20 lg:pt-24 pb-8 px-4 md:px-8">
                 <div className="max-w-[1400px] mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                         {/* Left: Product Media */}

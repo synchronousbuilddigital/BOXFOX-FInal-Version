@@ -79,7 +79,7 @@ export default function GiftsPage() {
     <div className="min-h-screen bg-white selection:bg-emerald-500 selection:text-white">
 
       {/* Hero Section */}
-      <section className="pt-44 pb-24 px-6 lg:px-14 bg-gray-50/50">
+      <section className="pt-24 lg:pt-32 pb-24 px-6 lg:px-14 bg-gray-50/50">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

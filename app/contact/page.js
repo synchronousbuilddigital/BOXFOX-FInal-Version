@@ -75,7 +75,7 @@ export default function ContactPage() {
         <div className="min-h-screen bg-white text-gray-950 font-sans selection:bg-emerald-500 selection:text-white">
             <Navbar />
 
-            <main className="pt-24 lg:pt-32">
+            <main className="pt-20 lg:pt-24">
                 {/* Hero Header */}
                 <section className="px-6 lg:px-12 py-20 bg-gray-50/50">
                     <div className="max-w-[1400px] mx-auto text-center">

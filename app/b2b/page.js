@@ -142,7 +142,7 @@ export default function B2BPage() {
 
     return (
         <div className="min-h-screen bg-white selection:bg-emerald-500 selection:text-white">
-            <main className="pt-24 sm:pt-32 pb-16 sm:pb-24">
+            <main className="pt-20 sm:pt-24 pb-16 sm:pb-24">
                 {/* Hero */}
                 <section className="px-6 lg:px-12 mb-16 sm:mb-24 md:mb-32">
                     <div className="max-w-[1700px] mx-auto">

@@ -62,7 +62,7 @@ export default function CartPage() {
     return (
         <div className="min-h-screen bg-white">
 
-            <main className="pt-32 pb-24 px-6 lg:px-12 max-w-[1600px] mx-auto">
+            <main className="pt-20 lg:pt-24 pb-24 px-6 lg:px-12 max-w-[1600px] mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div>
                         <Link href="/shop" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-950 transition-colors mb-4">

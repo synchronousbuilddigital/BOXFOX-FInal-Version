@@ -78,7 +78,7 @@ export default function QualityPage() {
   return (
     <main className="bg-white min-h-screen">
       {/* Hero Section - The Science of Structure */}
-      <section className="relative pt-32 pb-16 lg:pt-56 lg:pb-40 overflow-hidden">
+      <section className="relative pt-20 pb-12 lg:pt-24 lg:pb-24 overflow-hidden">
         <div className="absolute top-0 right-0 w-2/3 h-full bg-emerald-50/40 -skew-x-12 translate-x-1/3 -z-10" />
         <div className="absolute top-1/2 left-0 w-64 h-64 bg-emerald-500/5 blur-[120px] rounded-full -z-10" />
 

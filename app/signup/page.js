@@ -120,7 +120,7 @@ function SignUpContent() {
         <div className="min-h-screen bg-[#FAFAFA] text-gray-950 selection:bg-emerald-500 selection:text-white overflow-hidden font-sans">
             <Navbar />
 
-            <main className="relative min-h-screen flex items-center justify-center pt-32 pb-16 px-4">
+            <main className="relative min-h-screen flex items-center justify-center pt-20 pb-16 px-4">
                 {/* Minimalist Background Decor */}
                 <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.05]"
                     style={{

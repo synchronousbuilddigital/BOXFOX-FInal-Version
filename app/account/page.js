@@ -544,7 +544,7 @@ function AccountManagementContent() {
                 )}
             </AnimatePresence>
 
-            <main className="max-w-7xl mx-auto px-6 lg:px-16 pt-24 sm:pt-32 pb-20">
+            <main className="max-w-7xl mx-auto px-6 lg:px-16 pt-20 lg:pt-24 pb-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 sm:mb-24 relative z-10">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">

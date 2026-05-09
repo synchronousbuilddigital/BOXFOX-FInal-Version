@@ -133,7 +133,7 @@ function ShopPageInner() {
 
     return (
         <div className="min-h-screen bg-white">
-            <main className="pt-[110px] sm:pt-[120px] pb-12 sm:pb-16">
+            <main className="pt-[78px] sm:pt-[82px] pb-12 sm:pb-16">
                 <header className="px-4 sm:px-6 lg:px-12 mb-0.5 sm:mb-2 max-w-[1600px] mx-auto border-b border-gray-100 pb-2 sm:pb-3">
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 sm:gap-12">
                         <div className="max-w-2xl text-center lg:text-left">
