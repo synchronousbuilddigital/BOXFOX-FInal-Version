@@ -19,9 +19,9 @@ export async function GET() {
             // Map and sort them according to the saved order
             products = bestSellerIds
                 .map(id => foundProducts.find(p => p._id.toString() === id.toString()))
-                .filter(Boolean); 
-        } 
-        
+                .filter(Boolean);
+        }
+
         // If no best sellers or search failed, get fallback
         if (products.length === 0) {
             products = await Product.find({ type: { $in: ["simple", "variable"] }, parent_id: 0 }).limit(10).lean();
