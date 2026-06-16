@@ -48,6 +48,11 @@ export async function GET(req, { params }) {
             return NextResponse.json({ error: "Product not found", reason: "inactive", id }, { status: 404 });
         }
 
+        if (product.isApproved === false && !isAdmin) {
+            console.warn(`❌ Product not approved for ID: ${id}`);
+            return NextResponse.json({ error: "Product is pending approval", reason: "unapproved", id }, { status: 404 });
+        }
+
         const result = {
             id: product.wpId,
             _id: product._id,
@@ -56,15 +61,20 @@ export async function GET(req, { params }) {
             name: product.name,
             price: (product.minPrice && !isNaN(product.minPrice)) ? Number(product.minPrice) : (product.price && !isNaN(product.price) ? Number(product.price) : 0),
             priceAt1: product.priceAt1 || null,
+            priceAt10: product.priceAt10 || null,
+            priceAt50: product.priceAt50 || null,
             priceAt100: product.priceAt100 || null,
             priceAt500: product.priceAt500 || null,
+            priceAt1000: product.priceAt1000 || null,
+            triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
+            stock_quantity: product.stock_quantity,
             badge: product.badge,
             regular_price: product.regular_price,
             sale_price: product.sale_price,
             description: product.description,
             short_description: product.short_description,
             images: ((Array.isArray(product.images) && product.images.length > 0) ? product.images : (product.img ? [product.img] : [])).map(getOptimizedImageUrl),
-            img: getOptimizedImageUrl((Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.img) || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"),
+            img: getOptimizedImageUrl((Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.img) || "/BOXFOX-1.png"),
             category: (product.categories && product.categories.length > 0) ? (product.categories[product.categories.length - 1] || "Packaging") : "Packaging",
             stock_status: product.stock_status,
             type: product.type,

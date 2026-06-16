@@ -75,6 +75,7 @@ export default function AdminLayout({ children }) {
         { label: 'Orders', icon: <ShoppingBag size={20} />, href: '/admin/orders', roles: ['admin', 'staff_fulfillment'] },
         { label: 'Customers', icon: <Users size={20} />, href: '/admin/customers', roles: ['admin'] },
         { label: 'Partners', icon: <Briefcase size={20} />, href: '/admin/vendors', roles: ['admin'] },
+        { label: 'Withdrawals', icon: <Activity size={20} />, href: '/admin/withdrawals', roles: ['admin'] },
         { label: 'Support Chat', icon: <MessageSquare size={20} />, href: '/admin/chat', roles: ['admin'] },
         { label: 'Staff Roles', icon: <Shield size={20} />, href: '/admin/staff', roles: ['admin'] },
         { label: 'Analytics', icon: <BarChart3 size={20} />, href: '/admin/analytics', roles: ['admin'] },

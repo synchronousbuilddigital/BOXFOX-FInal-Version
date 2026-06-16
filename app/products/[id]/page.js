@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     ShoppingCart,
     CheckCircle2,
@@ -14,11 +14,17 @@ import {
     RefreshCw,
     Eye,
     EyeOff,
-    BadgeCheck
+    BadgeCheck,
+    X,
+    Building2,
+    Phone,
+    Mail,
+    Loader2
 } from 'lucide-react';
 import Navbar from '@/app/components/Navbar';
 import { useCart } from '@/app/context/CartContext';
 import { useToast } from '@/app/context/ToastContext';
+import { useAuth } from '@/app/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { calculateBoxPrice, MARKUP_TYPES } from '@/lib/boxfoxPricing';
@@ -30,6 +36,7 @@ export default function ProductPage() {
     const router = useRouter();
     const { addToCart } = useCart();
     const { showToast } = useToast();
+    const { user } = useAuth() || {};
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -39,6 +46,17 @@ export default function ProductPage() {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [wishlistBusy, setWishlistBusy] = useState(false);
     const [labConfigs, setLabConfigs] = useState(null);
+
+    // B2B Inquiry form modal state
+    const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
+    const [inquiryForm, setInquiryForm] = useState({
+        companyName: '',
+        contactEmail: '',
+        phoneNumber: '',
+        requirements: ''
+    });
+    const [submittingInquiry, setSubmittingInquiry] = useState(false);
+    const [inquirySuccess, setInquirySuccess] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -58,6 +76,17 @@ export default function ProductPage() {
             .then(data => setLabConfigs(data))
             .catch(() => setLabConfigs(null));
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            setInquiryForm({
+                companyName: user.businessName || '',
+                contactEmail: user.email || '',
+                phoneNumber: user.phone || '',
+                requirements: `Inquiry for bulk order of ${product?.name || 'Product'} (Quantity: ${quantity}).`
+            });
+        }
+    }, [user, product, quantity]);
 
     useEffect(() => {
         if (!product?._id && !product?.id) return;
@@ -85,11 +114,60 @@ export default function ProductPage() {
         };
     }, [product?._id, product?.id]);
 
-    if (loading || !product) {
+    const handleInquirySubmit = async (e) => {
+        e.preventDefault();
+        setSubmittingInquiry(true);
+        try {
+            const res = await fetch('/api/b2b/inquiry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...inquiryForm,
+                    category: product.category || 'Packaging',
+                    quantity: String(quantity),
+                    spec: `${product.dimensions?.length || 0}x${product.dimensions?.width || 0}x${product.dimensions?.height || 0} ${product.dimensions?.unit || 'inch'}`,
+                    requirements: `${inquiryForm.requirements}\nProduct Name: ${product.name}\nSKU: ${product.sku || 'N/A'}`
+                })
+            });
+            if (res.ok) {
+                setInquirySuccess(true);
+                showToast('Custom quote request submitted successfully!');
+                setTimeout(() => {
+                    setIsInquiryModalOpen(false);
+                    setInquirySuccess(false);
+                }, 2000);
+            } else {
+                showToast('Failed to submit quote request.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Connection error.', 'error');
+        } finally {
+            setSubmittingInquiry(false);
+        }
+    };
+
+    if (loading) {
         return (
             <div className="min-h-screen bg-white">
                 <Navbar />
                 <div className="pt-32 px-6 flex justify-center italic text-gray-400">Loading Product...</div>
+            </div>
+        );
+    }
+
+    if (!product || product.error) {
+        return (
+            <div className="min-h-screen bg-white">
+                <Navbar />
+                <div className="pt-32 px-6 flex flex-col items-center justify-center italic text-gray-500">
+                    <Box size={48} className="mb-4 text-gray-300" />
+                    <h2 className="text-2xl font-black uppercase text-gray-900 mb-2">Product Not Available</h2>
+                    <p>{product?.error || "This product could not be found or is no longer available."}</p>
+                    <Link href="/shop" className="mt-6 px-6 py-3 bg-emerald-500 text-white rounded-xl font-black uppercase text-xs tracking-widest hover:bg-emerald-600 transition-all">
+                        Return to Shop
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -114,9 +192,18 @@ export default function ProductPage() {
         s.unit === unit
     );
 
-    // If admin has supplied explicit tier prices (1,50,100), use the dynamic power-decay curve
-    const tierUnitPrice = (product.priceAt1 && product.priceAt100) 
-        ? calculateDynamicPrice(parseInt(quantity) || 10, product.priceAt1, product.priceAt50, product.priceAt100)
+    // If admin has supplied explicit tier prices, use the dynamic power-decay curve
+    const hasExplicitTiers = product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000;
+    const tierUnitPrice = hasExplicitTiers
+        ? calculateDynamicPrice(
+              parseInt(quantity) || 10,
+              product.priceAt1,
+              product.priceAt10,
+              product.priceAt50,
+              product.priceAt100,
+              product.priceAt500,
+              product.priceAt1000
+          )
         : null;
 
     const pricingResult = tierUnitPrice
@@ -133,8 +220,11 @@ export default function ProductPage() {
               dieCutting: true
           }, labConfigs);
 
-    const unitPrice = pricingResult.finalPerUnit.toFixed(2);
-    const totalPrice = pricingResult.finalTotal.toLocaleString('en-IN');
+    const triggerValue = product.triggerValue !== undefined ? product.triggerValue : 500;
+    const isLargeOrder = quantity >= triggerValue;
+
+    const unitPrice = isLargeOrder ? "Contact Us" : pricingResult.finalPerUnit.toFixed(2);
+    const totalPrice = isLargeOrder ? "Contact Us" : pricingResult.finalTotal.toLocaleString('en-IN');
 
     return (
         <div className="min-h-screen bg-white">
@@ -233,7 +323,7 @@ export default function ProductPage() {
                                 <div className="flex justify-between items-end">
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{quantity >= 50 ? 'Est. Unit Price' : 'Pricing Starts At'}</p>
-                                        <p className="text-4xl font-black text-gray-950 tracking-tighter">₹{unitPrice}</p>
+                                        <p className="text-4xl font-black text-gray-950 tracking-tighter">{isLargeOrder ? "" : "₹"}{unitPrice}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dimensions</p>
@@ -258,27 +348,35 @@ export default function ProductPage() {
                                 </div>
 
                                     <div className="space-y-4">
-                                        {(product.priceAt1 && product.priceAt100) && (
+                                        {hasExplicitTiers && (
                                             <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-2xl p-4 mb-2">
                                                 <div className="flex items-center justify-between mb-3">
                                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Volume Savings</p>
-                                                    <span className="text-[8px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Better as you buy more</span>
+                                                    <span className="text-[8px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Tiered discounts active</span>
                                                 </div>
                                                 <div className="grid grid-cols-3 gap-2">
-                                                    <div className="text-center p-2 rounded-xl bg-gray-50 border border-gray-100">
-                                                        <p className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">1 Unit</p>
-                                                        <p className="text-sm font-black text-gray-950 tracking-tighter">₹{product.priceAt1}</p>
-                                                    </div>
-                                                    <div className="text-center p-2 rounded-xl bg-emerald-50 border border-emerald-100">
-                                                        <p className="text-[8px] font-black text-emerald-600 uppercase tracking-tighter">50 Units</p>
-                                                        <p className="text-sm font-black text-emerald-600 tracking-tighter">
-                                                            ₹{product.priceAt50 || Math.round(calculateDynamicPrice(50, product.priceAt1, product.priceAt50, product.priceAt100))}
-                                                        </p>
-                                                    </div>
-                                                    <div className="text-center p-2 rounded-xl bg-emerald-600 border border-emerald-600 shadow-lg shadow-emerald-500/20">
-                                                        <p className="text-[8px] font-black text-emerald-50 uppercase tracking-tighter">100 Units</p>
-                                                        <p className="text-sm font-black text-white tracking-tighter">₹{product.priceAt100}</p>
-                                                    </div>
+                                                    {[
+                                                        { qty: 1, val: product.priceAt1 },
+                                                        { qty: 10, val: product.priceAt10 },
+                                                        { qty: 50, val: product.priceAt50 },
+                                                        { qty: 100, val: product.priceAt100 },
+                                                        { qty: 500, val: product.priceAt500 },
+                                                        { qty: 1000, val: product.priceAt1000 }
+                                                    ].filter(t => t.val > 0).map((tier, index, arr) => {
+                                                        const p1 = product.priceAt1 || 0;
+                                                        const unitVal = (p1 > 0 && tier.val > p1 * 1.5) ? tier.val / tier.qty : tier.val;
+                                                        return (
+                                                        <div key={tier.qty} className={`text-center p-2 rounded-xl border ${
+                                                            index === arr.length - 1 
+                                                                ? "bg-emerald-650 border-emerald-650 text-white shadow-lg shadow-emerald-500/20" 
+                                                                : index === arr.length - 2 
+                                                                    ? "bg-emerald-50 border-emerald-100 text-emerald-700" 
+                                                                    : "bg-gray-50 border-gray-100"
+                                                        }`}>
+                                                            <p className={`text-[8px] font-black uppercase tracking-tighter ${index === arr.length - 1 ? "text-emerald-100" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-400"}`}>{tier.qty} {tier.qty === 1 ? "Unit" : "Units"}</p>
+                                                            <p className={`text-sm font-black tracking-tighter ${index === arr.length - 1 ? "text-white" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-950"}`}>₹{Number(unitVal).toFixed(2)}/u</p>
+                                                        </div>
+                                                    )})}
                                                 </div>
                                             </div>
                                         )}
@@ -312,12 +410,21 @@ export default function ProductPage() {
                                                 </div>
                                             </div>
 
-                                            <button
-                                                onClick={() => addToCart(product, quantity)}
-                                                className="w-full py-5 bg-gray-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-gray-200 group"
-                                            >
-                                                <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" /> Add to Basket
-                                            </button>
+                                            {isLargeOrder ? (
+                                                <button
+                                                    onClick={() => setIsInquiryModalOpen(true)}
+                                                    className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-emerald-650 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/20 group"
+                                                >
+                                                    <Sparkles size={18} className="group-hover:scale-110 transition-transform" /> Request Custom Quote
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => addToCart(product, quantity)}
+                                                    className="w-full py-5 bg-gray-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-gray-200 group"
+                                                >
+                                                    <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" /> Add to Basket
+                                                </button>
+                                            )}
 
                                         </div>
                                     </div>
@@ -345,6 +452,111 @@ export default function ProductPage() {
                 </div>
             </main>
 
+            {/* B2B INQUIRY FORM MODAL */}
+            <AnimatePresence>
+                {isInquiryModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-md overflow-y-auto">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-xl bg-white border border-gray-200 rounded-[3rem] p-8 lg:p-12 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+                        >
+                            <button
+                                onClick={() => setIsInquiryModalOpen(false)}
+                                className="absolute top-8 right-8 p-3 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-xl transition-all"
+                            >
+                                <X size={18} className="text-gray-600" />
+                            </button>
+
+                            <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="text-emerald-500" size={16} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 italic">B2B Procurement Protocol</span>
+                            </div>
+                            <h3 className="text-2xl font-black uppercase italic text-gray-950 mb-8 border-b border-gray-100 pb-4">
+                                Request Custom Quote
+                            </h3>
+
+                            {inquirySuccess ? (
+                                <div className="py-12 text-center space-y-4">
+                                    <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/20">
+                                        <CheckCircle2 size={32} />
+                                    </div>
+                                    <h4 className="text-lg font-black uppercase">Transmission Active</h4>
+                                    <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold italic">"Our engineering team is analyzing your specifications."</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleInquirySubmit} className="space-y-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    <div>
+                                        <label className="block mb-2 ml-1">Company Name</label>
+                                        <div className="relative">
+                                            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={16} />
+                                            <input
+                                                required
+                                                type="text"
+                                                value={inquiryForm.companyName}
+                                                onChange={e => setInquiryForm({ ...inquiryForm, companyName: e.target.value })}
+                                                placeholder="Acme Corp"
+                                                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-emerald-500 text-xs font-bold text-gray-955 uppercase"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block mb-2 ml-1">Contact Email</label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={16} />
+                                            <input
+                                                required
+                                                type="email"
+                                                value={inquiryForm.contactEmail}
+                                                onChange={e => setInquiryForm({ ...inquiryForm, contactEmail: e.target.value })}
+                                                placeholder="name@company.com"
+                                                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-emerald-500 text-xs font-bold text-gray-955 normal-case"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block mb-2 ml-1">Phone Number</label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={16} />
+                                            <input
+                                                required
+                                                type="tel"
+                                                value={inquiryForm.phoneNumber}
+                                                onChange={e => setInquiryForm({ ...inquiryForm, phoneNumber: e.target.value })}
+                                                placeholder="+91 XXXXX XXXXX"
+                                                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-emerald-500 text-xs font-bold text-gray-955"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block mb-2 ml-1">Specs & Requirements</label>
+                                        <textarea
+                                            value={inquiryForm.requirements}
+                                            onChange={e => setInquiryForm({ ...inquiryForm, requirements: e.target.value })}
+                                            rows={3}
+                                            className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:border-emerald-500 text-xs font-bold text-gray-955 uppercase font-sans tracking-normal resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <button
+                                            type="submit"
+                                            disabled={submittingInquiry}
+                                            className="w-full py-5 bg-gray-950 text-white rounded-2xl hover:bg-emerald-600 transition-all font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+                                        >
+                                            {submittingInquiry ? <Loader2 className="animate-spin" size={16} /> : <>Initialize Quote Protocol <ArrowRight size={14} /></>}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

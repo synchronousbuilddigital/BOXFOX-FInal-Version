@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Gift, ArrowRight, CheckCircle2, Star, Zap, Shield, Heart, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import ProductSection from "../components/ProductSection";
 
 const gifts = [
   {
@@ -113,10 +114,8 @@ export default function GiftsPage() {
       </section>
 
       {/* Alternating Content Sections */}
-      <div className="bg-white">
-        {gifts.map((gift, idx) => (
-          <GiftSection key={gift.id} gift={gift} index={idx} />
-        ))}
+      <div className="bg-white max-w-[1600px] mx-auto pb-24">
+         <ProductSection targetPage="gift" gridCols={3} />
       </div>
 
       <section className="py-32 px-6 lg:px-14 bg-gray-50 border-t border-gray-100" id="quote">

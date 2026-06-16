@@ -178,7 +178,7 @@ export default function BestSellersAdmin() {
                                     <div key={product._id} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isAdded ? 'bg-gray-50 border-gray-100 opacity-60' : 'bg-white border-gray-100 hover:border-emerald-200 hover:shadow-md'}`}>
                                         <div className="flex items-center gap-4">
                                             <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
-                                                <img src={product.img || product.images?.[0] || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"} alt={product.name} className="w-full h-full object-cover" />
+                                                <img src={product.img || product.images?.[0] || "/BOXFOX-1.png"} alt={product.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="min-w-0">
                                                 <h3 className="text-sm font-black text-gray-950 truncate tracking-tight">{product.name}</h3>
@@ -248,7 +248,7 @@ export default function BestSellersAdmin() {
                                             </div>
 
                                             <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
-                                                <img src={item.img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"} alt={item.name} className="w-full h-full object-cover" />
+                                                <img src={item.img || "/BOXFOX-1.png"} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
 
                                             <div className="min-w-0 flex-1">

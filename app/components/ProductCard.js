@@ -105,7 +105,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
         aria-label={name}
       >
         <Image
-          src={img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
+          src={img || "/BOXFOX-1.png"}
           alt={name}
           width={400}
           height={500}
@@ -143,7 +143,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
     <Link href={`/products/${routeId}`} className="group flex flex-col h-full relative">
       <div className="relative mb-4 sm:mb-5 aspect-4/5 overflow-hidden rounded-2xl sm:rounded-4xl bg-gray-50 border border-gray-950/8 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-emerald-500/10 group-hover:border-gray-950/20 p-2 sm:p-5">
         <Image
-          src={img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
+          src={img || "/BOXFOX-1.png"}
           alt={name || 'Product image'}
           width={500}
           height={500}
@@ -260,10 +260,18 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
           <div className="flex flex-col justify-center min-w-0">
             <span className="text-sm sm:text-xl font-black text-gray-950 tracking-tighter leading-none">
               {(() => {
-                // Try tiered pricing first (New Logic: 1, 50, 100)
-                if (product.priceAt1 || product.priceAt50 || product.priceAt100) {
+                // Try tiered pricing first (New Logic: 1, 10, 50, 100, 500, 1000)
+                if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000) {
                   const qty = product.minOrderQuantity || 10;
-                  const computed = calculateDynamicPrice(qty, product.priceAt1, product.priceAt50, product.priceAt100);
+                  const computed = calculateDynamicPrice(
+                    qty,
+                    product.priceAt1,
+                    product.priceAt10,
+                    product.priceAt50,
+                    product.priceAt100,
+                    product.priceAt500,
+                    product.priceAt1000
+                  );
                   if (computed && computed > 0) return `₹${Math.round(computed).toLocaleString('en-IN')}`;
                 }
                 // Try minPrice

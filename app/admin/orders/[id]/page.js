@@ -276,6 +276,23 @@ export default function OrderDetails() {
                             <p className="text-sm font-black text-blue-900">Standard Freight (3-5 Days)</p>
                         </div>
                     </div>
+
+                    {order.billingDetails?.isB2b && (
+                        <div className="bg-emerald-50/50 p-8 rounded-[2.5rem] border border-emerald-100 shadow-sm space-y-8">
+                            <h3 className="text-sm font-black text-emerald-950 uppercase tracking-widest border-b border-emerald-100 pb-4 flex items-center gap-2"><FileText size={16} className="text-emerald-500" /> B2B Billing</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Company Name</p>
+                                    <p className="text-sm font-black text-emerald-950">{order.billingDetails.companyName}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">GSTIN</p>
+                                    <p className="text-sm font-black text-emerald-950 bg-white px-4 py-2 rounded-xl inline-block border border-emerald-100 select-all">{order.billingDetails.gstNumber}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                             <h3 className="text-sm font-black text-gray-950 uppercase tracking-widest flex items-center gap-2">

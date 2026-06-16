@@ -4,7 +4,7 @@ const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 if (dns.setDefaultResultOrder) dns.setDefaultResultOrder('ipv4first');
 
-const MONGODB_URI = "mongodb+srv://boxfox:boxfox@cluster0.7oansfw.mongodb.net/";
+const MONGODB_URI = "mongodb://boxfox:boxfox@ac-59fu0fz-shard-00-00.7oansfw.mongodb.net:27017,ac-59fu0fz-shard-00-01.7oansfw.mongodb.net:27017,ac-59fu0fz-shard-00-02.7oansfw.mongodb.net:27017/?ssl=true&replicaSet=atlas-vg6wst-shard-0&authSource=admin&appName=Cluster0";
 
 async function checkUsers() {
     try {

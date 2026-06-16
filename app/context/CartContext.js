@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from './ToastContext';
-import { calculateBoxPrice, unitPriceFromThreePoints } from '@/lib/boxfoxPricing';
+import { calculateBoxPrice, unitPriceFromSixPoints } from '@/lib/boxfoxPricing';
 import { BOX_SPECIFICATIONS } from '@/lib/box-specifications';
 
 const CartContext = createContext();
@@ -44,11 +44,14 @@ export function CartProvider({ children }) {
         }
 
         // 2. Explicit Tiered Pricing (For standard Shop products)
-        if (product.priceAt1 || product.priceAt50 || product.priceAt100) {
-            const unitPrice = unitPriceFromThreePoints({
+        if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000) {
+            const unitPrice = unitPriceFromSixPoints({
                 priceAt1: product.priceAt1,
+                priceAt10: product.priceAt10,
                 priceAt50: product.priceAt50,
-                priceAt100: product.priceAt100
+                priceAt100: product.priceAt100,
+                priceAt500: product.priceAt500,
+                priceAt1000: product.priceAt1000
             }, quantity);
             
             return {

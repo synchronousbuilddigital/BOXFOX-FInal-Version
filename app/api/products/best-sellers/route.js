@@ -14,7 +14,7 @@ export async function GET() {
         if (settings && Array.isArray(settings.value) && settings.value.length > 0) {
             // Find products matching these IDs using their _id
             const bestSellerIds = settings.value.map(item => item._id).filter(Boolean);
-            const foundProducts = await Product.find({ _id: { $in: bestSellerIds } }).lean();
+            const foundProducts = await Product.find({ _id: { $in: bestSellerIds }, isActive: { $ne: false } }).lean();
 
             // Map and sort them according to the saved order
             products = bestSellerIds
@@ -24,7 +24,7 @@ export async function GET() {
 
         // If no best sellers or search failed, get fallback
         if (products.length === 0) {
-            products = await Product.find({ type: { $in: ["simple", "variable"] }, parent_id: 0 }).limit(10).lean();
+            products = await Product.find({ type: { $in: ["simple", "variable"] }, parent_id: 0, isActive: { $ne: false } }).limit(10).lean();
         }
 
         // Format similarly to what the frontend expects
@@ -40,7 +40,7 @@ export async function GET() {
                 minPrice: p.minPrice,
                 maxPrice: p.maxPrice,
                 badge: p.badge || (p.isFeatured ? "Featured" : null),
-                img: p.images && p.images[0] ? p.images[0] : "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg",
+                img: p.images && p.images[0] ? p.images[0] : "/BOXFOX-1.png",
                 images: p.images,
                 hasVariants: p.type === "variable",
                 outOfStock: p.stock_status === "outofstock",

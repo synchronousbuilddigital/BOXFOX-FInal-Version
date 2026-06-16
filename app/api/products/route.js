@@ -46,7 +46,7 @@ function toStoreProduct(product, source = 'core') {
   }
 
   const optimizedImages = (Array.isArray(product.images) ? product.images : []).map(getOptimizedImageUrl);
-  const primaryImg = (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.img) || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg";
+  const primaryImg = (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.img) || "/BOXFOX-1.png";
 
   return {
     _id: product._id,
@@ -59,9 +59,13 @@ function toStoreProduct(product, source = 'core') {
     minPrice: product.minPrice || null,
     maxPrice: product.maxPrice || null,
     priceAt1: product.priceAt1 || null,
+    priceAt10: product.priceAt10 || null,
     priceAt50: product.priceAt50 || null,
     priceAt100: product.priceAt100 || null,
     priceAt500: product.priceAt500 || null,
+    priceAt1000: product.priceAt1000 || null,
+    triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
+    stock_quantity: product.stock_quantity,
     originalPrice: product.regular_price || null,
     discount: product.sale_price ? "Sale" : null,
     status: product.stock_status || 'instock',
@@ -83,6 +87,7 @@ function toStoreProduct(product, source = 'core') {
     dielineImg: product.dielineImg || null,
     dielineFormat: product.dielineFormat || null,
     isActive: product.isActive !== false,
+    pageVisibility: product.pageVisibility || 'shop',
     allowWishlist: true,
   };
 }
@@ -99,6 +104,7 @@ export async function GET(req) {
     const category = searchParams.get("category");
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 20;
+    const targetPage = searchParams.get("targetPage") || null;
     const skip = (page - 1) * limit;
 
     // Fetch query
@@ -108,8 +114,15 @@ export async function GET(req) {
       query = {
         type: { $in: ["simple", "variable"] },
         parent_id: { $eq: 0 }, // Only top level for public
-        isActive: { $ne: false }
+        isActive: { $ne: false },
+        isApproved: { $ne: false } // Exclude products explicitly pending/rejected by admin (isApproved = false)
       };
+
+      if (targetPage === 'gift') {
+        query.pageVisibility = { $in: ['gift', 'both'] };
+      } else if (targetPage === 'shop') {
+        query.pageVisibility = { $in: ['shop', 'both', null] };
+      }
     }
 
     if (searchTerm) {
@@ -126,7 +139,7 @@ export async function GET(req) {
     // Build a unique cache key based on search parameters
     // We only cache public requests (non-admin) to keep the DB load low for users
     const all = searchParams.get("all") === "true";
-    const cacheKey = `products:${isAdmin ? 'admin' : 'public'}:${all ? 'all' : 'sections'}:${category || 'all'}:${searchTerm}:${page}:${limit}`;
+    const cacheKey = `products:${isAdmin ? 'admin' : 'public'}:${all ? 'all' : 'sections'}:${category || 'all'}:${searchTerm}:${page}:${limit}:${targetPage || 'none'}`;
 
     const fetchProducts = async () => {
       // High Performance Fetch: Use projections to return only required fields for the UI
@@ -135,12 +148,12 @@ export async function GET(req) {
         ? {} // Return ALL fields for complete product data on shop page
         : (isAdmin ? {} : {
           _id: 1, wpId: 1, name: 1, sku: 1, price: 1, minPrice: 1, maxPrice: 1,
-          priceAt1: 1, priceAt50: 1, priceAt100: 1, priceAt500: 1, regular_price: 1, sale_price: 1,
+          priceAt1: 1, priceAt10: 1, priceAt50: 1, priceAt100: 1, priceAt500: 1, priceAt1000: 1, triggerValue: 1, regular_price: 1, sale_price: 1,
           images: 1, img: 1, type: 1, stock_status: 1, stock_quantity: 1,
           dimensions: 1, pacdoraId: 1, badge: 1, isFeatured: 1, categories: 1, category: 1,
           minOrderQuantity: 1, brand: 1, description: 1, short_description: 1,
           tags: 1, specifications: 1, dielineImg: 1, patternImg: 1, dielineFormat: 1, patternFormat: 1,
-          isActive: 1, parent_id: 1
+          isActive: 1, parent_id: 1, pageVisibility: 1
         });
 
       let cursor = Product.find(query, projection).sort({ createdAt: -1 });
@@ -225,7 +238,7 @@ export async function POST(req) {
 
     const processedImages = typeof data.images === 'string'
       ? data.images.split(',').map(s => s.trim()).filter(Boolean)
-      : (Array.isArray(data.images) ? data.images : [data.img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"]);
+      : (Array.isArray(data.images) ? data.images : [data.img || "/BOXFOX-1.png"]);
 
     // SKU Auto-Generation Logic (Ensures Uniqueness)
     const generateSKU = async (category) => {
@@ -298,7 +311,8 @@ export async function POST(req) {
         description: data.description,
         short_description: data.short_description,
         pacdoraId: data.pacdoraId,
-        isActive: data.isActive !== undefined ? data.isActive : true
+        isActive: data.isActive !== undefined ? data.isActive : true,
+        pageVisibility: data.pageVisibility || 'shop'
       }, { returnDocument: 'after' });
       await invalidateProductCache();
 
@@ -335,7 +349,8 @@ export async function POST(req) {
       description: data.description,
       short_description: data.short_description,
       pacdoraId: data.pacdoraId,
-      isActive: data.isActive !== undefined ? data.isActive : true
+      isActive: data.isActive !== undefined ? data.isActive : true,
+      pageVisibility: data.pageVisibility || 'shop'
     });
     await invalidateProductCache();
 

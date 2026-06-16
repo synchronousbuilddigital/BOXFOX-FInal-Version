@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "delete-vendors": "node scripts/maintenance/delete_vendors.js"
   },
   "dependencies": {
     "@react-three/drei": "^9.92.7",

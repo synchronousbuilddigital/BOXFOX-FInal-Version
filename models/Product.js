@@ -37,9 +37,12 @@ const productSchema = new mongoose.Schema({
     },
     // Optional explicit tiered prices provided by admin
     priceAt1: { type: Number },
+    priceAt10: { type: Number },
     priceAt50: { type: Number },
     priceAt100: { type: Number },
     priceAt500: { type: Number },
+    priceAt1000: { type: Number },
+    triggerValue: { type: Number, default: 500 },
     attributes: [{
         name: String,
         options: [String]
@@ -56,7 +59,12 @@ const productSchema = new mongoose.Schema({
 
     pacdoraId: String,
 
+    vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved' },
+    isApproved: { type: Boolean, default: true },
+
     isActive: { type: Boolean, default: true },
+    pageVisibility: { type: String, enum: ['shop', 'gift', 'both'], default: 'shop' },
     lastSynced: { type: Date, default: Date.now }
 }, {
     timestamps: true

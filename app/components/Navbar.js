@@ -175,12 +175,37 @@ export default function Navbar() {
 
                 {user && (
                   <div className="absolute right-0 top-full mt-2.5 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[200]">
-                    <Link href="/account" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
-                      My Dashboard
-                    </Link>
-                    <Link href="/account?tab=wishlist" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
-                      My Wishlist
-                    </Link>
+                    {user.role === 'admin' ? (
+                      <>
+                        <Link href="/admin" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          Admin Dashboard
+                        </Link>
+                        <Link href="/admin/vendor-products" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          Vendor Products
+                        </Link>
+                      </>
+                    ) : user.role === 'vendor' ? (
+                      <>
+                        <Link href="/vendor" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          Allocated Projects
+                        </Link>
+                        <Link href="/vendor/products" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          Manage Products
+                        </Link>
+                        <Link href="/vendor/wallet" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          Wallet & Earnings
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/account" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          My Dashboard
+                        </Link>
+                        <Link href="/account?tab=wishlist" className="block px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-emerald-600 hover:bg-gray-50 transition-colors rounded-xl mx-1">
+                          My Wishlist
+                        </Link>
+                      </>
+                    )}
                     <div className="h-px bg-gray-100 mx-4 my-1" />
                     <button
                       onClick={logout}

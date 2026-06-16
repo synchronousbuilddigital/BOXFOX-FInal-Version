@@ -30,12 +30,12 @@ const ProductRow = React.memo(({ product, onEdit, onDelete, onDuplicate, onRegen
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
                     <img
-                        src={product.img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
+                        src={product.img || "/BOXFOX-1.png"}
                         alt=""
                         className="w-full h-full object-cover"
                         loading="lazy"
                         onError={(e) => {
-                            e.target.src = "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg";
+                            e.target.src = "/BOXFOX-1.png";
                             e.target.onerror = null; // Prevent infinite loops
                         }}
                     />
@@ -186,7 +186,8 @@ export default function ProductsManager() {
         unit: 'inch',
         pacdoraId: '',
         isActive: true,
-        isFeatured: false
+        isFeatured: false,
+        pageVisibility: 'shop'
     });
 
     const fetchProducts = (preservePage = false) => {
@@ -440,7 +441,8 @@ export default function ProductsManager() {
                         priceAt1: '',
                         priceAt50: '',
                         priceAt100: '',
-                        isActive: true
+                        isActive: true,
+                        pageVisibility: 'shop'
                     });
                 }, 1500);
             }
@@ -670,7 +672,8 @@ export default function ProductsManager() {
             unit: product.dimensions?.unit || 'inch',
             pacdoraId: product.pacdoraId || '',
             isActive: product.isActive !== false,
-            isFeatured: product.isFeatured || false
+            isFeatured: product.isFeatured || false,
+            pageVisibility: product.pageVisibility || 'shop'
             ,
             priceAt1: product.priceAt1 || '',
             priceAt50: product.priceAt50 || '',
@@ -723,6 +726,7 @@ export default function ProductsManager() {
             pacdoraId: product.pacdoraId || '',
             isActive: product.isActive !== false,
             isFeatured: false,
+            pageVisibility: product.pageVisibility || 'shop',
             priceAt1: product.priceAt1 || '',
             priceAt50: product.priceAt50 || '',
             priceAt100: product.priceAt100 || ''
@@ -926,44 +930,45 @@ export default function ProductsManager() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-4xl font-black text-gray-950 tracking-tighter flex items-center gap-4">
-                        Product Inventory
-                        <span className="text-sm bg-gray-100 px-4 py-2 rounded-2xl text-gray-400 font-black">
+                    <h1 className="text-5xl font-black text-gray-950 tracking-tighter leading-none mb-2 flex items-center gap-4">
+                        Inventory
+                        <span className="text-xl bg-gray-950 px-4 py-1.5 rounded-xl text-white font-black shadow-lg shadow-gray-900/20">
                             {totalFiltered}
                         </span>
                     </h1>
-                    <p className="text-gray-400 font-medium tracking-tight">Manage your real-time packaging catalog synced with the backend.</p>
+                    <p className="text-gray-400 font-medium text-lg">Manage your real-time packaging catalog synced with the backend.</p>
                 </div>
                 <div className="flex gap-3">
                     <button
                         onClick={() => fetchProducts()}
-                        className="p-4 bg-gray-100 text-gray-400 rounded-2xl hover:text-gray-950 transition-all active:rotate-180"
+                        className="p-4 bg-white border border-gray-100 text-gray-400 rounded-2xl hover:text-emerald-500 hover:border-emerald-200 hover:bg-emerald-50 transition-all shadow-sm active:scale-95"
+                        title="Refresh Data"
                     >
                         <RefreshCw size={20} />
                     </button>
                     <button
                         onClick={() => handleDownloadAll()}
-                        className="p-4 bg-white border border-gray-200 text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all flex items-center gap-2"
+                        className="px-6 py-4 bg-white border border-gray-100 text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition-all flex items-center gap-2 shadow-sm"
                         title="Download All Products (Excel)"
                     >
                         <Download size={16} /> All Excel
                     </button>
-                    <label className="p-4 bg-white border border-gray-200 text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2 cursor-pointer">
+                    <label className="px-6 py-4 bg-white border border-gray-100 text-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center gap-2 cursor-pointer shadow-sm">
                         <Plus size={16} /> Import Prices
                         <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportExcel} />
                     </label>
                     <button
                         onClick={handleRegenerateAllSkus}
-                        className="p-4 bg-white border border-gray-200 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-red-500 hover:text-red-600 hover:bg-red-50 transition-all flex items-center gap-2"
+                        className="px-6 py-4 bg-white border border-gray-100 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-red-500 hover:text-red-600 hover:bg-red-50 transition-all flex items-center gap-2 shadow-sm"
                         title="DANGER: Regenerate All SKUs"
                     >
                         <RefreshCw size={16} /> Clean All SKUs
                     </button>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-8 py-4 bg-gray-950 text-white rounded-2xl font-black text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-gray-200"
+                        className="flex items-center gap-2 px-8 py-4 bg-emerald-500 text-white rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-emerald-500/20 hover:bg-emerald-600"
                     >
                         <Plus size={20} />
                         ADD NEW PRODUCT
@@ -973,15 +978,15 @@ export default function ProductsManager() {
 
             {/* Filters & Search */}
             <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 flex items-center gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-3 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/10 transition-all">
-                    <Search size={18} className="text-gray-400" />
-                    <input type="text" placeholder="Search by name or category..." className="bg-transparent outline-none w-full text-sm font-medium" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                <div className="flex-1 flex items-center gap-3 bg-white border border-gray-100 rounded-[1.5rem] px-6 py-4 shadow-sm hover:shadow-md focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500/50 transition-all">
+                    <Search size={20} className="text-gray-400" />
+                    <input type="text" placeholder="Search by name, SKU, or tags..." className="bg-transparent outline-none w-full text-sm font-bold text-gray-950 placeholder-gray-400" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
                 </div>
                 <div className="relative">
                     <select
                         value={selectedCategory}
                         onChange={e => setSelectedCategory(e.target.value)}
-                        className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-500 hover:text-gray-950 transition-all appearance-none outline-none pr-10 cursor-pointer"
+                        className="flex items-center gap-2 px-6 py-4 h-full bg-white border border-gray-100 rounded-[1.5rem] text-sm font-black text-gray-600 uppercase tracking-widest hover:text-gray-950 hover:shadow-md hover:border-gray-200 transition-all appearance-none outline-none pr-12 cursor-pointer shadow-sm"
                     >
                         <option value="All">All Categories</option>
                         <option value="Pending SKU">Pending SKU</option>
@@ -1003,25 +1008,25 @@ export default function ProductsManager() {
                         <option value="Popcorn">Popcorn</option>
                         <option value="Carry Bag">Carry Bag</option>
                     </select>
-                    <Filter size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <Filter size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
                 <div className="relative">
                     <select
                         value={sortBy}
                         onChange={e => setSortBy(e.target.value)}
-                        className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-500 hover:text-gray-950 transition-all appearance-none outline-none pr-10 cursor-pointer"
+                        className="flex items-center gap-2 px-6 py-4 h-full bg-white border border-gray-100 rounded-[1.5rem] text-sm font-black text-gray-600 uppercase tracking-widest hover:text-gray-950 hover:shadow-md hover:border-gray-200 transition-all appearance-none outline-none pr-12 cursor-pointer shadow-sm"
                     >
                         <option value="newest">Sort by Newest</option>
                         <option value="name">Sort by Name</option>
                         <option value="status">Sort by Status (Active first)</option>
                     </select>
-                    <Filter size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <Filter size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
             </div>
 
             {/* Products Table */}
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden">
+                <div className="overflow-x-auto p-4">
                     {loading ? (
                         <div className="p-20 text-center animate-pulse space-y-4">
                             <div className="w-12 h-12 bg-gray-100 rounded-full mx-auto" />
@@ -1038,16 +1043,16 @@ export default function ProductsManager() {
                             </div>
                         </div>
                     ) : (
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse border-spacing-y-2">
                             <thead>
-                                <tr className="bg-gray-50/50">
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Product</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">SKU</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Category</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Price Range</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Size</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Status</th>
-                                    <th className="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap text-right">Actions</th>
+                                <tr>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">Product</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">SKU</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">Category</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">Price Range</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">Size</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap border-b border-gray-100">Status</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap text-right border-b border-gray-100">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -1216,7 +1221,7 @@ export default function ProductsManager() {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-2 gap-6 bg-gray-50 p-6 rounded-4xl border border-gray-100">
+                                            <div className="grid grid-cols-3 gap-6 bg-gray-50 p-6 rounded-4xl border border-gray-100">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-sm font-black text-gray-950 uppercase tracking-tighter">Active Status</p>
@@ -1242,6 +1247,20 @@ export default function ProductsManager() {
                                                     >
                                                         <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-sm ${formData.isFeatured ? 'right-0.5' : 'left-0.5'}`} />
                                                     </button>
+                                                </div>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="w-full">
+                                                        <p className="text-sm font-black text-gray-950 uppercase tracking-tighter mb-1">Page Visibility</p>
+                                                        <select
+                                                            value={formData.pageVisibility}
+                                                            onChange={e => setFormData({ ...formData, pageVisibility: e.target.value })}
+                                                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 outline-none"
+                                                        >
+                                                            <option value="shop">Shop Page</option>
+                                                            <option value="gift">Gift Page</option>
+                                                            <option value="both">Both</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
 

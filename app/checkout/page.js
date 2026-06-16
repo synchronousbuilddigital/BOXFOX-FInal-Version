@@ -42,6 +42,11 @@ export default function CheckoutPage() {
             country: 'India',
             addressNickname: '',
             gstin: ''
+        },
+        billingDetails: {
+            isB2b: false,
+            companyName: '',
+            gstNumber: ''
         }
     });
 
@@ -203,6 +208,19 @@ export default function CheckoutPage() {
             setStep(2);
             return;
         }
+        if (formData.billingDetails?.isB2b) {
+            if (!formData.billingDetails.companyName || !formData.billingDetails.gstNumber) {
+                showToast("Please provide Company Name and GST Number for B2B Invoice.", "error");
+                setStep(2);
+                return;
+            }
+            const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            if (!gstRegex.test(formData.billingDetails.gstNumber.toUpperCase())) {
+                showToast("Invalid GSTIN format. Must be 15 characters (e.g. 07AAAAA0000A1Z5)", "error");
+                setStep(2);
+                return;
+            }
+        }
         if (!paymentFormData.transactionId || !paymentFormData.senderName) {
             showToast("Please provide authorized payment details", "error");
             return;
@@ -248,7 +266,8 @@ export default function CheckoutPage() {
                         country: formData.shippingAddress.country,
                         addressNickname: formData.shippingAddress.addressNickname,
                         gstin: formData.shippingAddress.gstin
-                    }
+                    },
+                    billingDetails: formData.billingDetails
                 })
             });
             const data = await res.json();
@@ -594,23 +613,43 @@ export default function CheckoutPage() {
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            <div className="space-y-4 group">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 italic">Address Nickname</label>
-                                                <input
-                                                    name="shippingAddress.addressNickname" value={formData.shippingAddress.addressNickname || ''} onChange={handleFormChange}
-                                                    placeholder="HOME / OFFICE / WAREHOUSE"
-                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                        <div className="space-y-4 group">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 italic">Address Nickname</label>
+                                            <input
+                                                name="shippingAddress.addressNickname" value={formData.shippingAddress.addressNickname || ''} onChange={handleFormChange}
+                                                placeholder="HOME / OFFICE / WAREHOUSE"
+                                                className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                            />
+                                        </div>
+
+                                        <div className="p-6 bg-emerald-50/50 border border-emerald-100 rounded-[2rem] space-y-6">
+                                            <label className="flex items-center gap-3 cursor-pointer group">
+                                                <div className={`w-6 h-6 rounded border flex items-center justify-center transition-colors ${formData.billingDetails?.isB2b ? 'bg-emerald-500 border-emerald-500' : 'bg-white border-gray-300'}`}>
+                                                    {formData.billingDetails?.isB2b && <CheckCircle2 size={16} className="text-white" />}
+                                                </div>
+                                                <span className="text-[11px] font-black uppercase tracking-widest text-gray-950">Claim GST (B2B Invoice)</span>
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={formData.billingDetails?.isB2b || false} 
+                                                    onChange={(e) => setFormData(prev => ({...prev, billingDetails: {...prev.billingDetails, isB2b: e.target.checked}}))} 
+                                                    className="hidden" 
                                                 />
-                                            </div>
-                                            <div className="space-y-4 group">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 italic">Business ID (GSTIN - Optional)</label>
-                                                <input
-                                                    name="shippingAddress.gstin" value={formData.shippingAddress.gstin || ''} onChange={handleFormChange}
-                                                    placeholder="00AAAAA0000A1Z0"
-                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
-                                                />
-                                            </div>
+                                            </label>
+
+                                            <AnimatePresence>
+                                                {formData.billingDetails?.isB2b && (
+                                                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-hidden pt-4">
+                                                        <div className="space-y-4 group">
+                                                            <label className="text-[10px] font-black uppercase tracking-widest text-emerald-700 ml-4 italic">Company Name <span className="text-red-500">*</span></label>
+                                                            <input name="billingDetails.companyName" value={formData.billingDetails?.companyName || ''} onChange={handleFormChange} placeholder="Company Pvt Ltd" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
+                                                        </div>
+                                                        <div className="space-y-4 group">
+                                                            <label className="text-[10px] font-black uppercase tracking-widest text-emerald-700 ml-4 italic">GST Number <span className="text-red-500">*</span></label>
+                                                            <input name="billingDetails.gstNumber" value={formData.billingDetails?.gstNumber || ''} onChange={handleFormChange} placeholder="00AAAAA0000A1Z0" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
+                                                        </div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                     </div>
 

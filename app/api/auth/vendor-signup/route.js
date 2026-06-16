@@ -17,16 +17,34 @@ export async function POST(req) {
 
         await dbConnect();
 
-        const { name, email, password, phone, businessName, vendorCategory } = await req.json();
+        const {
+            name, email, password, phone, businessName, vendorCategory, vendorSpecialties,
+            vendorAddressLine1, vendorAddressLine2, vendorAddressLine3, vendorAddressLine4,
+            vendorCity, vendorState, vendorPostalCode, vendorCountry, vendorTelephone, vendorFax,
+            vendorContactOwnerName, vendorDesignation, vendorLegalEntity, vendorYearsInBusiness, vendorNoOfEmployees,
+            vendorAssociatedWithEmployee, vendorEmployeeDetails,
+            vendorBankName, vendorBankAccountNo, vendorBankBranch, vendorIfscCode, vendorPaymentTerms,
+            vendorCoveredUnderMSMED, vendorMsmedRegNo,
+            vendorPan, vendorTdsCategory, vendorGstCentral, vendorGstLocal,
+            vendorServiceTaxRegNo, vendorCentralExciseNo, vendorAuthorisedDealer,
+            vendorDocAddressProof, vendorDocExciseReg, vendorDocPan, vendorDocVatReg,
+            vendorDocServiceTax, vendorDocProofLegalEntity, vendorDocCancelledCheque, vendorDocOthers
+        } = await req.json();
 
-        if (!name || !email || !password || !phone || !businessName || !vendorCategory) {
-            return NextResponse.json({ error: 'Please provide all required fields' }, { status: 400 });
+        if (
+            !name || !email || !password || !phone || !businessName || !vendorCategory ||
+            !vendorSpecialties || !Array.isArray(vendorSpecialties) || vendorSpecialties.length === 0 ||
+            !vendorAddressLine1 || !vendorCity || !vendorState || !vendorPostalCode ||
+            !vendorContactOwnerName || !vendorDesignation || !vendorLegalEntity ||
+            !vendorBankName || !vendorBankAccountNo || !vendorIfscCode || !vendorPan
+        ) {
+            return NextResponse.json({ error: 'Please provide all required fields (Address, Contact info, Bank details, PAN, Category, and Specialties are mandatory)' }, { status: 400 });
         }
 
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email: { $regex: new RegExp(`^${email.trim()}$`, 'i') } });
 
         if (userExists) {
-            return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+            return NextResponse.json({ error: 'A user or vendor with this email already exists' }, { status: 400 });
         }
 
         const salt = await bcryptjs.genSalt(10);
@@ -40,7 +58,47 @@ export async function POST(req) {
             businessName,
             role: 'vendor',
             vendorStatus: 'pending',
-            vendorCategory
+            vendorCategory,
+            vendorSpecialties,
+            vendorAddressLine1,
+            vendorAddressLine2,
+            vendorAddressLine3,
+            vendorAddressLine4,
+            vendorCity,
+            vendorState,
+            vendorPostalCode,
+            vendorCountry: vendorCountry || 'India',
+            vendorTelephone,
+            vendorFax,
+            vendorContactOwnerName,
+            vendorDesignation,
+            vendorLegalEntity,
+            vendorYearsInBusiness: Number(vendorYearsInBusiness) || 0,
+            vendorNoOfEmployees: Number(vendorNoOfEmployees) || 0,
+            vendorAssociatedWithEmployee: vendorAssociatedWithEmployee || 'No',
+            vendorEmployeeDetails,
+            vendorBankName,
+            vendorBankAccountNo,
+            vendorBankBranch,
+            vendorIfscCode,
+            vendorPaymentTerms,
+            vendorCoveredUnderMSMED: vendorCoveredUnderMSMED || 'No',
+            vendorMsmedRegNo,
+            vendorPan,
+            vendorTdsCategory,
+            vendorGstCentral,
+            vendorGstLocal,
+            vendorServiceTaxRegNo,
+            vendorCentralExciseNo,
+            vendorAuthorisedDealer,
+            vendorDocAddressProof,
+            vendorDocExciseReg,
+            vendorDocPan,
+            vendorDocVatReg,
+            vendorDocServiceTax,
+            vendorDocProofLegalEntity,
+            vendorDocCancelledCheque,
+            vendorDocOthers
         });
 
         return NextResponse.json({

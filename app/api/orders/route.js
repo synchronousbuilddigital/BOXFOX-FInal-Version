@@ -4,6 +4,8 @@ import Order from '@/models/Order';
 import Coupon from '@/models/Coupon';
 import Product from '@/models/Product';
 import UserImage from '@/models/UserImage';
+import User from '@/models/User';
+import WalletTransaction from '@/models/WalletTransaction';
 import jwt from 'jsonwebtoken';
 import { finalizeImagesInObject } from '@/lib/image-finalizer';
 import { 
@@ -151,6 +153,7 @@ export async function POST(req) {
         const newOrder = await Order.create({
             ...orderData,
             paymentDetails: orderData.paymentDetails,
+            billingDetails: orderData.billingDetails,
             couponCode: normalizedCouponCode || undefined,
             shipping,
             total,
@@ -198,6 +201,7 @@ export async function POST(req) {
             totalAmount: newOrder.total || 0,
             discount: newOrder.discount || 0,
             shippingAddress: buildShippingAddress(newOrder.shipping),
+            billingDetails: newOrder.billingDetails,
             status: newOrder.status,
             items: newOrder.items || [],
         };
@@ -261,6 +265,45 @@ export async function PATCH(req) {
             if (paid !== undefined) order.paid = paid;
 
             await order.save();
+
+            // Handle Vendor Wallet Credit if paid or Delivered
+            if ((paid === true && !currentOrder.paid) || (status === 'Delivered' && currentOrder.status !== 'Delivered') || (currentOrder.paid || currentOrder.status === 'Delivered')) {
+                const existingTx = await WalletTransaction.findOne({ referenceId: order.orderId, type: 'credit' });
+                if (!existingTx) {
+                    for (const item of order.items) {
+                        const isVObjectId = /^[0-9a-fA-F]{24}$/.test(item.productId);
+                        const isNumeric = item.productId && !isNaN(Number(item.productId));
+                        if (item.productId && (isVObjectId || isNumeric)) {
+                            const productQuery = isVObjectId 
+                                ? { $or: [{ _id: item.productId }, { wpId: isNumeric ? Number(item.productId) : undefined }] }
+                                : { wpId: Number(item.productId) };
+                            
+                            const product = await Product.findOne(productQuery);
+                            if (product && product.vendorId) {
+                                const vendor = await User.findById(product.vendorId);
+                                if (vendor) {
+                                    const commissionRate = vendor.commissionRate || 0;
+                                    const itemTotal = parseFloat(item.price) * (item.quantity || 1);
+                                    const vendorCut = itemTotal * (1 - (commissionRate / 100));
+                                    
+                                    await WalletTransaction.create({
+                                        vendorId: vendor._id,
+                                        type: 'credit',
+                                        amount: vendorCut,
+                                        status: 'completed',
+                                        description: `Sale from Order ${order.orderId} - ${item.name}`,
+                                        referenceId: order.orderId
+                                    });
+                                    
+                                    vendor.walletBalance = (vendor.walletBalance || 0) + vendorCut;
+                                    vendor.totalEarned = (vendor.totalEarned || 0) + vendorCut;
+                                    await vendor.save();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Trigger status update email if it changed
             if (status && status !== prevStatus && order.customer?.email) {

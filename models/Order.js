@@ -14,6 +14,11 @@ const OrderSchema = new mongoose.Schema({
         state: String,
         pincode: String
     },
+    billingDetails: {
+        isB2b: { type: Boolean, default: false },
+        companyName: String,
+        gstNumber: String
+    },
     items: [
         {
             productId: mongoose.Schema.Types.Mixed, // Used for String (Custom IDs) and Numbers (WP IDs)

@@ -30,8 +30,43 @@ export async function GET(req) {
         if (!vendor) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const quotes = await Quotation.find({ assignedVendor: vendor._id }).sort({ createdAt: -1 });
-        return NextResponse.json({ success: true, quotes });
+        
+        // Resolve customer shipping addresses and mask contact details to ensure customer-vendor anonymity
+        const sanitizedQuotes = await Promise.all(quotes.map(async (q) => {
+            const quoteObj = q.toObject();
+            
+            if (quoteObj.user) {
+                quoteObj.user.email = "Confidential (Via BoxFox)";
+                quoteObj.user.phone = "Confidential (Via BoxFox)";
+                quoteObj.user.whatsapp = "Confidential (Via BoxFox)";
+            }
+            
+            let shippingAddress = null;
+            if (quoteObj.userId) {
+                const clientUser = await User.findById(quoteObj.userId).select('shippingAddress');
+                if (clientUser && clientUser.shippingAddress && clientUser.shippingAddress.street) {
+                    shippingAddress = clientUser.shippingAddress;
+                }
+            }
+            
+            if (!shippingAddress) {
+                shippingAddress = {
+                    street: "BoxFox Central Distribution Hub",
+                    apartment: "Sector 18",
+                    city: "Gurugram",
+                    state: "Haryana",
+                    zipCode: "122015",
+                    country: "India"
+                };
+            }
+            
+            quoteObj.shippingAddress = shippingAddress;
+            return quoteObj;
+        }));
+
+        return NextResponse.json({ success: true, quotes: sanitizedQuotes });
     } catch (error) {
+        console.error('Vendor quotes GET error:', error);
         return NextResponse.json({ error: 'Failed to fetch quotes' }, { status: 500 });
     }
 }

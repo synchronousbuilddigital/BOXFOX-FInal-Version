@@ -11,7 +11,7 @@ const MemoProductCard = React.memo(ProductCard, (prev, next) => {
   return prev.product === next.product;
 });
 
-export default function ProductSection({ searchQuery = "", category = "All", priceRange = "all", sortBy = "default" }) {
+export default function ProductSection({ searchQuery = "", category = "All", priceRange = "all", sortBy = "default", targetPage = "shop", gridCols }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
@@ -31,6 +31,7 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
     params.append('all', 'true');
     if (searchQuery) params.append('search', searchQuery);
     if (category && category !== "All") params.append('category', category);
+    if (targetPage) params.append('targetPage', targetPage);
 
     // Efficient server-side fetching
     fetch(url + (params.toString() ? `?${params.toString()}` : ''))
@@ -131,13 +132,19 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
             {pageProducts.map((product, index) => (
               <img 
                 key={`preload-${product._id || product.id || index}`}
-                src={product.img || "https://boxfox.in/wp-content/uploads/2022/11/Mailer_Box_Mockup_1-copy-scaled.jpg"}
-                onLoad={handleImageLoad}
-                onError={handleImageLoad} // Count as loaded even if error
+                src={product.img || "/BOXFOX-1.png"}
+                onLoad={(e) => {
+                  e.currentTarget.onload = null;
+                  handleImageLoad();
+                }}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  handleImageLoad();
+                }}
               />
             ))}
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+          <div className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-5'} gap-8`}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(j => (
               <div key={j} className="animate-pulse aspect-square bg-gray-50 rounded-[2rem]" />
             ))}
@@ -180,7 +187,7 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0"
+              className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-5'} gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0`}
             >
               {pageProducts.map((product, index) => (
                 <div key={product._id || product.id || `product-${index}`} className="h-full">

@@ -60,15 +60,17 @@ export default function B2BInquiriesAdmin() {
     return (
         <div className="p-6 md:p-10 space-y-10">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-8 lg:p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20">
                 <div>
-                    <h1 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
-                        B2B <span className="text-gray-400">Wholesale Dashboard</span>
+                    <h1 className="text-3xl lg:text-5xl font-black uppercase tracking-tighter flex items-center gap-4 text-gray-950 leading-none">
+                        B2B <span className="text-gray-400 font-bold">Wholesale Dashboard</span>
                     </h1>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-1 italic">Enterprise Requirement Feed</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-500 mt-4 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50" /> Enterprise Requirement Feed
+                    </p>
                 </div>
                 <div className="flex gap-4">
-                    <Link href="/admin" className="px-6 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-950 transition-all">
+                    <Link href="/admin" className="px-8 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-gray-950 hover:bg-gray-100 hover:shadow-sm transition-all duration-300">
                         Main Admin
                     </Link>
                 </div>
@@ -76,41 +78,46 @@ export default function B2BInquiriesAdmin() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* List View */}
-                <div className="lg:col-span-4 space-y-4">
-                    <div className="flex items-center justify-between mb-2 px-4">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Inquiry Pipeline</h2>
-                        <span className="bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full">{inquiries.length} TOTAL</span>
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="flex items-center justify-between px-4">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Inquiry Pipeline</h2>
+                        <span className="bg-gray-950 text-white text-[10px] font-black px-4 py-1.5 rounded-xl uppercase tracking-[0.2em] shadow-md">{inquiries.length} TOTAL</span>
                     </div>
 
                     {loading ? (
-                        <div className="p-20 flex justify-center bg-white rounded-[2rem] border border-gray-100"><Loader2 className="animate-spin text-emerald-500" /></div>
+                        <div className="p-32 flex flex-col items-center gap-6 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/10">
+                            <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center animate-pulse">
+                                <Loader2 className="animate-spin text-emerald-500" size={32} />
+                            </div>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Loading Pipeline...</p>
+                        </div>
                     ) : (
-                        <div className="space-y-3 max-h-[calc(100vh-280px)] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2 custom-scrollbar">
                             {inquiries.map((inquiry) => (
                                 <motion.div
                                     key={inquiry._id}
                                     onClick={() => setSelectedInquiry(inquiry)}
                                     layoutId={inquiry._id}
-                                    className={`p-6 rounded-[2rem] border transition-all cursor-pointer group ${selectedInquiry?._id === inquiry._id
-                                        ? 'bg-white border-emerald-500 shadow-xl ring-4 ring-emerald-500/5'
-                                        : 'bg-white/70 border-gray-100 hover:border-emerald-500/30'
+                                    className={`p-6 rounded-[2.5rem] border transition-all duration-300 cursor-pointer group hover:-translate-y-1 ${selectedInquiry?._id === inquiry._id
+                                        ? 'bg-white border-emerald-500 shadow-2xl shadow-emerald-500/10 ring-4 ring-emerald-500/10'
+                                        : 'bg-white border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 hover:border-emerald-200'
                                         }`}
                                 >
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-emerald-50 group-hover:text-emerald-500 transition-colors">
-                                            <Building2 size={20} />
+                                    <div className="flex justify-between items-start mb-5">
+                                        <div className="w-12 h-12 rounded-[1.2rem] bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-emerald-50 group-hover:text-emerald-500 group-hover:border-emerald-100 transition-colors shadow-inner">
+                                            <Building2 size={24} />
                                         </div>
-                                        <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${inquiry.status === 'pending' ? 'bg-amber-100 text-amber-600' :
-                                            inquiry.status === 'reviewed' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'
+                                        <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-lg shadow-sm border ${inquiry.status === 'pending' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                            inquiry.status === 'reviewed' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
                                             }`}>
                                             {inquiry.status}
                                         </span>
                                     </div>
-                                    <h3 className="font-black text-gray-950 uppercase tracking-tight truncate mb-1">{inquiry.companyName}</h3>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 truncate">{inquiry.contactEmail}</p>
-                                    <div className="flex items-center justify-between text-[10px] font-bold text-gray-400">
+                                    <h3 className="text-xl font-black text-gray-950 uppercase tracking-tighter truncate mb-2">{inquiry.companyName}</h3>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6 truncate">{inquiry.contactEmail}</p>
+                                    <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">
                                         <span>{new Date(inquiry.createdAt).toLocaleDateString()}</span>
-                                        <span className="text-emerald-600 font-black">QTY: {inquiry.quantity}</span>
+                                        <span className="text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg">QTY: {inquiry.quantity}</span>
                                     </div>
                                 </motion.div>
                             ))}
@@ -127,25 +134,25 @@ export default function B2BInquiriesAdmin() {
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.98 }}
-                                className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[600px] flex flex-col"
+                                className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/20 overflow-hidden min-h-[600px] flex flex-col"
                             >
                                 {/* Detail Header */}
-                                <div className="p-8 border-b border-gray-50 bg-gray-50/30 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                <div className="p-8 lg:p-10 border-b border-gray-50 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div className="flex items-center gap-6">
-                                        <div className="w-14 h-14 bg-gray-950 rounded-[1.2rem] flex items-center justify-center text-white text-xl font-black shadow-lg shadow-gray-950/20">
+                                        <div className="w-16 h-16 bg-gray-950 rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-gray-950/20 border border-gray-800">
                                             {selectedInquiry.companyName.charAt(0)}
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl font-black uppercase tracking-tighter text-gray-950">{selectedInquiry.companyName}</h2>
-                                            <p className="flex items-center gap-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">
-                                                <Clock size={10} /> Received {new Date(selectedInquiry.createdAt).toLocaleString()}
+                                            <h2 className="text-3xl font-black uppercase tracking-tighter text-gray-950">{selectedInquiry.companyName}</h2>
+                                            <p className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-1">
+                                                <Clock size={12} className="text-emerald-500" /> Received {new Date(selectedInquiry.createdAt).toLocaleString()}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <button onClick={() => updateStatus(selectedInquiry._id, 'reviewed')} className="px-5 py-2.5 bg-white border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-50 hover:text-blue-600 transition-all">Review</button>
-                                        <button onClick={() => updateStatus(selectedInquiry._id, 'completed')} className="px-5 py-2.5 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">Complete</button>
-                                        <button onClick={() => deleteInquiry(selectedInquiry._id)} className="p-2.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all ml-2"><Trash2 size={20} /></button>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => updateStatus(selectedInquiry._id, 'reviewed')} className="px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 shadow-sm transition-all duration-300">Review</button>
+                                        <button onClick={() => updateStatus(selectedInquiry._id, 'completed')} className="px-6 py-4 bg-emerald-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 hover:scale-[1.02] shadow-lg shadow-emerald-500/30 transition-all duration-300">Complete</button>
+                                        <button onClick={() => deleteInquiry(selectedInquiry._id)} className="p-4 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:bg-red-50 hover:border-red-200 hover:shadow-md rounded-2xl transition-all duration-300 ml-2"><Trash2 size={20} /></button>
                                     </div>
                                 </div>
 
@@ -248,12 +255,12 @@ export default function B2BInquiriesAdmin() {
                                 </div>
                             </motion.div>
                         ) : (
-                            <div className="bg-white rounded-[2.5rem] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-20 min-h-[600px] shadow-sm">
-                                <div className="w-20 h-20 bg-gray-50 rounded-[1.5rem] flex items-center justify-center text-gray-200 mb-6">
-                                    <Inbox size={32} />
+                            <div className="bg-white rounded-[3rem] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-20 min-h-[600px] shadow-xl shadow-gray-200/10">
+                                <div className="w-24 h-24 bg-gray-50 rounded-[2rem] border border-gray-100 flex items-center justify-center text-gray-300 mb-8 shadow-inner">
+                                    <Inbox size={40} />
                                 </div>
-                                <h2 className="text-xl font-black uppercase tracking-tighter text-gray-400">Select Inquiry</h2>
-                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2 max-w-[200px]">Choose a wholesale lead to view detailed manufacturing specifications.</p>
+                                <h2 className="text-3xl font-black uppercase tracking-tighter text-gray-400">Select Inquiry</h2>
+                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-3 max-w-[250px] leading-relaxed">Choose a wholesale lead to view detailed manufacturing specifications.</p>
                             </div>
                         )}
                     </AnimatePresence>
