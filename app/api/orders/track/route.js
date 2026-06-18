@@ -41,7 +41,9 @@ export async function GET(req) {
             createdAt: order.createdAt,
             total: order.total,
             items: order.items.map(it => ({ name: it.name, quantity: it.quantity })),
-            shipping: order.shipping
+            shipping: order.shipping,
+            deliveryPartner: order.deliveryPartner || "",
+            trackingId: order.trackingId || ""
         });
 
     } catch (e) {

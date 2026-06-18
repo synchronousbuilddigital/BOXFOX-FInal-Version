@@ -180,6 +180,23 @@ export default function TrackOrderPage() {
                                                 </p>
                                             </div>
                                         </div>
+
+                                        {order.trackingId && (
+                                            <div className="flex gap-4 p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
+                                                <div className="w-10 h-10 rounded-xl bg-white border border-indigo-200/50 flex items-center justify-center text-indigo-500 shrink-0 shadow-xs">
+                                                    <Truck size={18} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Logistics Courier</p>
+                                                    <p className="text-sm font-black text-indigo-950 uppercase mt-1 leading-none">
+                                                        {order.deliveryPartner || 'Standard Courier'}
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-gray-500 mt-2 select-all">
+                                                        Tracking ID: <span className="font-black text-gray-800">{order.trackingId}</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="bg-gray-50 rounded-[2rem] p-6 space-y-4">

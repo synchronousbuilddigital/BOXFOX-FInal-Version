@@ -616,6 +616,12 @@ export default function VendorProductsDashboard() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-3 text-gray-500 text-[10px] font-black uppercase tracking-wider">
+                                        <DollarSign size={14} className="text-emerald-500" />
+                                        <span>
+                                            Net Payout (est): <span className="text-emerald-600 font-bold">₹{((product.minPrice || product.price || 0) * (1 - (user?.commissionRate || 0) / 100)).toFixed(2)}</span> <span className="text-[9px] text-gray-400 font-medium">({user?.commissionRate || 0}% platform cut)</span>
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-gray-500 text-[10px] font-black uppercase tracking-wider">
                                         <Package size={14} className="text-emerald-500" />
                                         <span>
                                             Stock Level: <span className={`font-bold ${product.stock_quantity > 0 ? "text-emerald-600" : "text-red-500"}`}>{product.stock_quantity !== undefined ? product.stock_quantity : 0} Units</span>
@@ -775,6 +781,30 @@ export default function VendorProductsDashboard() {
                                                         className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955"
                                                     />
                                                 </div>
+                                            </div>
+
+                                            {/* Commission Calculator Breakdown */}
+                                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                                                <div className="flex justify-between items-center">
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Payout Breakdown</p>
+                                                        <p className="text-[8px] text-gray-500 normal-case mt-0.5 leading-normal">
+                                                            Platform fee deduction rate of <strong className="text-emerald-700 font-black">{user?.commissionRate || 0}%</strong> will be applied.
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right shrink-0">
+                                                        <p className="text-[8px] text-gray-400 font-bold uppercase">Estimated Net Payout</p>
+                                                        <p className="text-base font-black text-emerald-700 mt-0.5">
+                                                            ₹{(parseFloat(formData.minPrice || 0) * (1 - (user?.commissionRate || 0) / 100)).toFixed(2)} <span className="text-[8px] text-gray-400 font-medium">/ unit</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {user?.commissionRate > 20 && (
+                                                    <div className="mt-3 text-[9px] text-amber-700 font-bold bg-amber-50 border border-amber-200/50 p-2.5 rounded-xl flex items-center gap-1.5 normal-case">
+                                                        <AlertTriangle size={14} className="text-amber-600 shrink-0" />
+                                                        <span>Warning: A high platform commission rate of {user.commissionRate}% is applied to your account. Your estimated payout will be significantly reduced.</span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">

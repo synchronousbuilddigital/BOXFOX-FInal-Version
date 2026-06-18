@@ -37,20 +37,22 @@ export async function PATCH(req) {
         await dbConnect();
         if (!await verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const { vendorId, vendorStatus, vendorCategory, vendorSpecialties } = await req.json();
+        const { vendorId, vendorStatus, vendorCategory, vendorSpecialties, commissionRate, vendorPaymentTerms } = await req.json();
         const vendor = await User.findById(vendorId);
 
         if (!vendor || vendor.role !== 'vendor') return NextResponse.json({ error: 'Vendor not found' }, { status: 404 });
 
         if (vendorStatus) vendor.vendorStatus = vendorStatus;
         if (vendorCategory !== undefined) vendor.vendorCategory = vendorCategory;
+        if (commissionRate !== undefined) vendor.commissionRate = Number(commissionRate) || 0;
+        if (vendorPaymentTerms !== undefined) vendor.vendorPaymentTerms = vendorPaymentTerms;
         
         if (vendorSpecialties !== undefined) {
             if (!Array.isArray(vendorSpecialties)) {
                 return NextResponse.json({ error: 'vendorSpecialties must be an array' }, { status: 400 });
             }
-            if (vendorSpecialties.length > 2) {
-                return NextResponse.json({ error: 'A vendor can have a maximum of 2 specialties' }, { status: 400 });
+            if (vendorSpecialties.length > 6) {
+                return NextResponse.json({ error: 'A vendor can have a maximum of 6 specialties' }, { status: 400 });
             }
             vendor.vendorSpecialties = vendorSpecialties;
         }

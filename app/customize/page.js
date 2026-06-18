@@ -68,10 +68,7 @@ function CustomizeLabContent() {
   const [guestGenerationsLeft, setGuestGenerationsLeft] = useState(5);
   const isGuest = !user;
 
-  // Removed forced login redirect to allow guest design experience
-  // Guests can design but will be prompted to login to save or access premium features
 
-  // Default Product ID for the Standalone Lab
   const DEFAULT_PRODUCT_ID = "1771670990303";
 
   const [product, setProduct] = useState(null);
@@ -112,7 +109,7 @@ function CustomizeLabContent() {
           setLabConfig(data);
           const cats = data.hierarchies.map(h => h.category);
           setCategories(cats);
-          
+
           // Only force if current category is not valid and not "All"
           if (selectedCategory !== "All" && !cats.includes(selectedCategory)) {
             setSelectedCategory(cats[0] || "Food");
@@ -146,9 +143,9 @@ function CustomizeLabContent() {
       const hierarchy = labConfig.hierarchies.find(h => h.category === selectedCategory);
       subs = hierarchy ? hierarchy.subCategories : [];
     }
-    
+
     setSubCategories(subs);
-    
+
     // If current sub-category is not in new list and not "All", reset it
     if (selectedSubCategory !== "All" && !subs.includes(selectedSubCategory)) {
       setSelectedSubCategory("All");

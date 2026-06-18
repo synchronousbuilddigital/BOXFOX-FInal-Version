@@ -23,12 +23,20 @@ export default function AdminVendorsPage() {
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [selectedSpecialties, setSelectedSpecialties] = useState([]);
     const [drawerTab, setDrawerTab] = useState("profile"); // profile, documents, specialties, products
+    
+    // Config states
+    const [commissionInput, setCommissionInput] = useState(0);
+    const [paymentTermsInput, setPaymentTermsInput] = useState("");
 
     useEffect(() => {
         if (selectedVendor) {
             setSelectedSpecialties(selectedVendor.vendorSpecialties || []);
+            setCommissionInput(selectedVendor.commissionRate || 0);
+            setPaymentTermsInput(selectedVendor.vendorPaymentTerms || "");
         } else {
             setSelectedSpecialties([]);
+            setCommissionInput(0);
+            setPaymentTermsInput("");
         }
     }, [selectedVendor]);
 
@@ -583,6 +591,62 @@ export default function AdminVendorsPage() {
                                             </div>
                                         </div>
 
+                                        {/* Platform Configuration (Commission & Payout) */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5 border-b border-gray-200 pb-1.5">
+                                                <DollarSign size={12} /> Platform Settings & Fees
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-xl border border-gray-200 text-xs font-bold">
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Fixed Commission Rate (%)</label>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            max="100"
+                                                            value={commissionInput}
+                                                            onChange={(e) => setCommissionInput(Number(e.target.value))}
+                                                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none text-xs text-gray-900 font-bold focus:border-emerald-500 focus:bg-white"
+                                                            placeholder="e.g. 10"
+                                                        />
+                                                        {commissionInput > 25 && (
+                                                            <div className="mt-2 text-[10px] text-amber-600 font-bold bg-amber-50 border border-amber-200/50 p-2.5 rounded-lg flex items-center gap-1.5 normal-case">
+                                                                <AlertCircle size={14} className="shrink-0" />
+                                                                <span>Warning: Setting a high commission rate (&gt;25%) may significantly reduce vendor payouts and discourage product uploads.</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Vendor Payment Terms</label>
+                                                        <input
+                                                            type="text"
+                                                            value={paymentTermsInput}
+                                                            onChange={(e) => setPaymentTermsInput(e.target.value)}
+                                                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg outline-none text-xs text-gray-900 font-bold focus:border-emerald-500 focus:bg-white"
+                                                            placeholder="e.g. Net 45 Days"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => updateVendor(selectedVendor._id, { commissionRate: Number(commissionInput), vendorPaymentTerms: paymentTermsInput })}
+                                                        className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+                                                    >
+                                                        Save Configuration
+                                                    </button>
+                                                </div>
+                                                <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex flex-col justify-between">
+                                                    <p className="text-[10px] text-emerald-800 font-black uppercase tracking-widest mb-2">Live Rate Info</p>
+                                                    <p className="text-[9px] text-gray-500 normal-case leading-relaxed">
+                                                        Setting a fixed commission rate applies a flat deduction percentage to all standard retail products sold by this vendor. The default is 0%.
+                                                    </p>
+                                                    <div className="mt-4 pt-2 border-t border-emerald-150 flex justify-between items-center text-[10px] font-black uppercase text-emerald-700">
+                                                        <span>Active Commission:</span>
+                                                        <span>{selectedVendor.commissionRate || 0}%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {/* Tax info section */}
                                         <div className="space-y-3">
                                             <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5 border-b border-gray-200 pb-1.5">
@@ -677,7 +741,7 @@ export default function AdminVendorsPage() {
                                     <div className="space-y-6">
                                         <div className="bg-white p-6 rounded-xl border border-gray-200 space-y-4">
                                             <div>
-                                                <h4 className="text-sm font-black text-gray-950 uppercase tracking-tight">Assigned Specialties (Max 2)</h4>
+                                                <h4 className="text-sm font-black text-gray-950 uppercase tracking-tight">Assigned Specialties (Max 6)</h4>
                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
                                                     Grant permissions for this vendor to supply under specific product lines:
                                                 </p>
@@ -697,8 +761,8 @@ export default function AdminVendorsPage() {
                                                                 if (isSelected) {
                                                                     setSelectedSpecialties(prev => prev.filter(c => c !== cat));
                                                                 } else {
-                                                                    if (selectedSpecialties.length >= 2) {
-                                                                        alert("A partner can only be assigned a maximum of 2 specialties.");
+                                                                    if (selectedSpecialties.length >= 6) {
+                                                                        alert("A partner can only be assigned a maximum of 6 specialties.");
                                                                         return;
                                                                     }
                                                                     setSelectedSpecialties(prev => [...prev, cat]);

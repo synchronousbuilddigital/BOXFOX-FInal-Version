@@ -41,6 +41,10 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Please provide all required fields (Address, Contact info, Bank details, PAN, Category, and Specialties are mandatory)' }, { status: 400 });
         }
 
+        if (vendorSpecialties.length > 6) {
+            return NextResponse.json({ error: 'A vendor can select a maximum of 6 specialties' }, { status: 400 });
+        }
+
         const userExists = await User.findOne({ email: { $regex: new RegExp(`^${email.trim()}$`, 'i') } });
 
         if (userExists) {

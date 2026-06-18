@@ -71,8 +71,8 @@ export default function VendorRegistration() {
             if (!formData.vendorCategory) errors.vendorCategory = "Category Type is required";
             if (!formData.vendorSpecialties || formData.vendorSpecialties.length === 0) {
                 errors.vendorSpecialties = "At least one Specialization Category is required";
-            } else if (formData.vendorSpecialties.length > 2) {
-                errors.vendorSpecialties = "You can select up to 2 Specialization Categories";
+            } else if (formData.vendorSpecialties.length > 6) {
+                errors.vendorSpecialties = "You can select up to 6 Specialization Categories";
             }
             if (!formData.vendorAddressLine1) errors.vendorAddressLine1 = "Address Line 1 is required";
             if (!formData.vendorCity) errors.vendorCity = "City Name is required";
@@ -322,8 +322,8 @@ export default function VendorRegistration() {
 
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Your Specialization Categories (Select up to 2) *</label>
-                                            <p className="text-[9px] text-gray-450 font-bold uppercase tracking-wider ml-1">Choose up to 2 box types you manufacture or supply</p>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block mb-1">Your Specialization Categories (Select up to 6) *</label>
+                                            <p className="text-[9px] text-gray-450 font-bold uppercase tracking-wider ml-1">Choose up to 6 box types you manufacture or supply</p>
                                         </div>
                                         <div className="flex flex-wrap gap-2.5">
                                             {specialtyOptions.map((cat) => {
@@ -340,8 +340,8 @@ export default function VendorRegistration() {
                                                                     vendorSpecialties: current.filter(c => c !== cat)
                                                                 });
                                                             } else {
-                                                                if (current.length >= 2) {
-                                                                    alert("You can select a maximum of 2 Specialization Categories.");
+                                                                if (current.length >= 6) {
+                                                                    alert("You can select a maximum of 6 Specialization Categories.");
                                                                     return;
                                                                 }
                                                                 setFormData({

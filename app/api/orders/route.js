@@ -99,7 +99,31 @@ export async function GET(req) {
             const query = isValidObjectId ? { $or: [{ orderId: id }, { _id: id }] } : { orderId: id };
             const order = await Order.findOne(query);
             if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-            return NextResponse.json(order);
+            
+            // Enrich items with vendor details for UI commission display
+            const orderObj = order.toObject();
+            if (orderObj.items && Array.isArray(orderObj.items)) {
+                for (const item of orderObj.items) {
+                    const isVObjectId = /^[0-9a-fA-F]{24}$/.test(item.productId);
+                    const isNumeric = item.productId && !isNaN(Number(item.productId));
+                    if (item.productId && (isVObjectId || isNumeric)) {
+                        const productQuery = isVObjectId 
+                            ? { $or: [{ _id: item.productId }, { wpId: isNumeric ? Number(item.productId) : undefined }] }
+                            : { wpId: Number(item.productId) };
+                        
+                        const product = await Product.findOne(productQuery).populate('vendorId', 'businessName name commissionRate');
+                        if (product && product.vendorId) {
+                            item.vendor = {
+                                _id: product.vendorId._id,
+                                businessName: product.vendorId.businessName,
+                                name: product.vendorId.name,
+                                commissionRate: product.vendorId.commissionRate || 0
+                            };
+                        }
+                    }
+                }
+            }
+            return NextResponse.json(orderObj);
         }
 
         const orders = await Order.find().sort({ createdAt: -1 });
@@ -248,7 +272,7 @@ export async function POST(req) {
 export async function PATCH(req) {
     try {
         await dbConnect();
-        const { id, status, labNotes, paymentDetails, paid } = await req.json();
+        const { id, status, labNotes, paymentDetails, paid, deliveryPartner, trackingId } = await req.json();
 
         const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
         const query = isValidObjectId ? { $or: [{ orderId: id }, { _id: id }] } : { orderId: id };
@@ -263,6 +287,8 @@ export async function PATCH(req) {
             if (labNotes !== undefined) order.labNotes = labNotes;
             if (paymentDetails !== undefined) order.paymentDetails = paymentDetails;
             if (paid !== undefined) order.paid = paid;
+            if (deliveryPartner !== undefined) order.deliveryPartner = deliveryPartner;
+            if (trackingId !== undefined) order.trackingId = trackingId;
 
             await order.save();
 
@@ -285,13 +311,14 @@ export async function PATCH(req) {
                                     const commissionRate = vendor.commissionRate || 0;
                                     const itemTotal = parseFloat(item.price) * (item.quantity || 1);
                                     const vendorCut = itemTotal * (1 - (commissionRate / 100));
+                                    const commissionDeducted = itemTotal - vendorCut;
                                     
                                     await WalletTransaction.create({
                                         vendorId: vendor._id,
                                         type: 'credit',
                                         amount: vendorCut,
                                         status: 'completed',
-                                        description: `Sale from Order ${order.orderId} - ${item.name}`,
+                                        description: `Sale from Order ${order.orderId} - ${item.name} (Gross: ₹${itemTotal.toLocaleString('en-IN')}, Commission Deducted: ₹${commissionDeducted.toLocaleString('en-IN')} @ ${commissionRate}%)`,
                                         referenceId: order.orderId
                                     });
                                     

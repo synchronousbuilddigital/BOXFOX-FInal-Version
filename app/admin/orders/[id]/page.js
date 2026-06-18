@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
     ArrowLeft, Package, Truck, CheckCircle2, Clock, User, Mail, Phone,
     MapPin, CreditCard, ExternalLink, Box, Printer, Layers, Download,
-    Eye, Maximize2, Ruler, Type, Palette, ZoomIn, RotateCw, Scissors, QrCode, FileText, ShieldAlert, Image as ImageIcon
+    Eye, Maximize2, Ruler, Type, Palette, ZoomIn, RotateCw, Scissors, QrCode, FileText, ShieldAlert, X, Image as ImageIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BoxFacePreview, MiniBox3D, useFaceSnapshot } from "@/app/components/BoxPreview3D";
@@ -21,12 +21,21 @@ export default function OrderDetails() {
     const [downloadingFace, setDownloadingFace] = useState(null);
     const { generate } = useFaceSnapshot();
 
+    const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
+    const [dispatchPartner, setDispatchPartner] = useState("");
+    const [dispatchTrackingId, setDispatchTrackingId] = useState("");
+
     useEffect(() => {
         fetch(`/api/orders?id=${id}`)
             .then(res => res.json())
             .then(data => {
                 if (data.error) { setOrder(null); }
-                else { setOrder(data); setNotes(data.labNotes || ""); }
+                else { 
+                    setOrder(data); 
+                    setNotes(data.labNotes || ""); 
+                    setDispatchPartner(data.deliveryPartner || "");
+                    setDispatchTrackingId(data.trackingId || "");
+                }
                 setLoading(false);
             })
             .catch(err => { console.error(err); setOrder(null); setLoading(false); });
@@ -37,6 +46,43 @@ export default function OrderDetails() {
             await fetch("/api/orders", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: order._id, status }) });
             setOrder({ ...order, status });
         } catch (e) { console.error(e); }
+    };
+
+    const handleStatusChange = (status) => {
+        if (status === "Shipped") {
+            setIsDispatchModalOpen(true);
+        } else {
+            updateStatus(status);
+        }
+    };
+
+    const confirmDispatch = async () => {
+        if (!dispatchPartner.trim() || !dispatchTrackingId.trim()) {
+            alert("Please enter both Delivery Partner and Tracking ID to dispatch the order.");
+            return;
+        }
+        try {
+            const res = await fetch("/api/orders", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: order._id,
+                    status: "Shipped",
+                    deliveryPartner: dispatchPartner,
+                    trackingId: dispatchTrackingId
+                })
+            });
+            if (res.ok) {
+                const updated = await res.json();
+                setOrder({ ...order, status: "Shipped", deliveryPartner: dispatchPartner, trackingId: dispatchTrackingId });
+                setIsDispatchModalOpen(false);
+            } else {
+                alert("Failed to update dispatch details.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error updating dispatch details.");
+        }
     };
 
     const updateNotes = async () => {
@@ -131,10 +177,18 @@ export default function OrderDetails() {
                     </div>
                 </div>
                 <div className="flex gap-3">
+                    {['Pending', 'Processing'].includes(order.status) && (
+                        <button 
+                            onClick={() => setIsDispatchModalOpen(true)}
+                            className="flex items-center gap-2 px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/10"
+                        >
+                            <Truck size={18} /> Dispatch Order
+                        </button>
+                    )}
                     <button onClick={() => window.print()} className="flex items-center gap-2 px-6 py-4 bg-white border border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all">
                         <Printer size={18} /> Print Order
                     </button>
-                    <select value={order.status} onChange={e => updateStatus(e.target.value)} className="bg-gray-950 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest outline-none cursor-pointer hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
+                    <select value={order.status} onChange={e => handleStatusChange(e.target.value)} className="bg-gray-950 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest outline-none cursor-pointer hover:bg-gray-800 transition-all shadow-xl shadow-gray-200">
                         <option value="Pending">Pending</option>
                         <option value="Processing">Processing</option>
                         <option value="Shipped">Shipped</option>
@@ -191,6 +245,19 @@ export default function OrderDetails() {
                                                         <div>
                                                             <p className="text-sm font-black text-gray-950">{item.name}</p>
                                                             {item.variant && <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">{item.variant}</p>}
+                                                            {item.vendor && (
+                                                                <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                                                                    <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100">
+                                                                        Partner: {item.vendor.businessName || item.vendor.name}
+                                                                    </span>
+                                                                    <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded border border-gray-200">
+                                                                        Commission: {item.vendor.commissionRate}%
+                                                                    </span>
+                                                                    <span className="text-gray-400">
+                                                                        (Cut: ₹{((parseFloat(item.price || 0) * (item.quantity || 1)) * (item.vendor.commissionRate / 100)).toFixed(2)} • Net: ₹{((parseFloat(item.price || 0) * (item.quantity || 1)) * (1 - item.vendor.commissionRate / 100)).toFixed(2)})
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </td>
@@ -274,6 +341,48 @@ export default function OrderDetails() {
                         <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
                             <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1 flex items-center gap-2"><Truck size={12} /> Shipping Method</p>
                             <p className="text-sm font-black text-blue-900">Standard Freight (3-5 Days)</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-8">
+                        <h3 className="text-sm font-black text-gray-950 uppercase tracking-widest border-b border-gray-100 pb-4 flex items-center gap-2"><Truck size={16} className="text-gray-400" /> Logistics & Dispatch</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Delivery Partner</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Delhivery, BlueDart"
+                                    defaultValue={order.deliveryPartner || ""}
+                                    onBlur={async (e) => {
+                                        const val = e.target.value;
+                                        await fetch("/api/orders", {
+                                            method: "PATCH",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ id: order._id, deliveryPartner: val })
+                                        });
+                                        setOrder({ ...order, deliveryPartner: val });
+                                    }}
+                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-205 rounded-xl outline-none text-xs text-gray-950 font-bold focus:border-emerald-500 focus:bg-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Tracking ID</label>
+                                <input
+                                    type="text"
+                                    placeholder="Enter Tracking ID"
+                                    defaultValue={order.trackingId || ""}
+                                    onBlur={async (e) => {
+                                        const val = e.target.value;
+                                        await fetch("/api/orders", {
+                                            method: "PATCH",
+                                            headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ id: order._id, trackingId: val })
+                                        });
+                                        setOrder({ ...order, trackingId: val });
+                                    }}
+                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-205 rounded-xl outline-none text-xs text-gray-950 font-bold focus:border-emerald-500 focus:bg-white"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -412,6 +521,97 @@ export default function OrderDetails() {
                     </div>
                 </div>
             </div>
+            {/* Unified Dispatch Order Modal */}
+            <AnimatePresence>
+                {isDispatchModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-md overflow-y-auto">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="w-full max-w-md bg-white border border-gray-200 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl relative text-gray-950"
+                        >
+                            <button 
+                                onClick={() => setIsDispatchModalOpen(false)}
+                                className="absolute top-6 right-6 p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-xl transition-all"
+                            >
+                                <X size={16} className="text-gray-600" />
+                            </button>
+
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs">
+                                    <Truck size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase tracking-tight text-gray-950">Dispatch Shipment</h3>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Order Reference: {order.orderId}</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-5 text-xs font-bold uppercase tracking-wider text-gray-700">
+                                <div>
+                                    <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-2">Delivery Partner *</label>
+                                    <select
+                                        value={dispatchPartner}
+                                        onChange={(e) => setDispatchPartner(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-250 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold"
+                                    >
+                                        <option value="">Select Courier Partner</option>
+                                        <option value="Delhivery">Delhivery</option>
+                                        <option value="Blue Dart">Blue Dart</option>
+                                        <option value="DTDC">DTDC</option>
+                                        <option value="FedEx">FedEx</option>
+                                        <option value="DHL">DHL</option>
+                                        <option value="Standard Freight">Standard Freight</option>
+                                    </select>
+                                    <input
+                                        type="text"
+                                        placeholder="Or type custom partner..."
+                                        value={dispatchPartner}
+                                        onChange={(e) => setDispatchPartner(e.target.value)}
+                                        className="w-full mt-2 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[9px] text-gray-400 uppercase font-black tracking-wider mb-2">Tracking ID *</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. TRK123456789"
+                                        value={dispatchTrackingId}
+                                        onChange={(e) => setDispatchTrackingId(e.target.value)}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold"
+                                    />
+                                </div>
+
+                                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-start gap-2.5">
+                                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                                    <p className="text-[9px] text-gray-500 normal-case leading-relaxed font-semibold">
+                                        Confirming dispatch will automatically update the order status to <strong>Shipped</strong> and email the customer their tracking code.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3 pt-4 border-t border-gray-100 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsDispatchModalOpen(false)}
+                                        className="flex-1 py-3 bg-gray-50 border border-gray-200 text-gray-600 hover:text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={confirmDispatch}
+                                        className="flex-1 py-3 bg-emerald-500 text-white hover:bg-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md shadow-emerald-500/20"
+                                    >
+                                        Confirm Dispatch
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -46,6 +46,8 @@ const OrderSchema = new mongoose.Schema({
         submittedAt: Date
     },
     labNotes: { type: String, default: "" },
+    deliveryPartner: { type: String, default: "" },
+    trackingId: { type: String, default: "" },
     createdAt: { type: Date, default: Date.now }
 }, {
     timestamps: true
