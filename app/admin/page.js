@@ -193,59 +193,104 @@ export default function Dashboard() {
                             View All
                         </button>
                     </div>
-                    <div className="overflow-x-auto p-4">
-                        <table className="w-full text-left border-collapse border-spacing-y-2">
-                            <thead>
-                                <tr>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Order ID</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Customer</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Product</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Amount</th>
-                                    <th className="px-6 py-4 border-b border-gray-100"></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-transparent">
-                                {data.recentOrders.length === 0 ? (
+                    <div className="p-4">
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="w-full text-left border-collapse border-spacing-y-2">
+                                <thead>
                                     <tr>
-                                        <td colSpan="6" className="px-8 py-20 text-center text-gray-400 font-medium">No recent orders found</td>
+                                        <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Order ID</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Customer</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Product</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Status</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none border-b border-gray-100">Amount</th>
+                                        <th className="px-6 py-4 border-b border-gray-100"></th>
                                     </tr>
-                                ) : (
-                                    data.recentOrders.map((order) => (
-                                        <tr
-                                            key={order.id}
-                                            className="group cursor-pointer hover:bg-gray-50/80 transition-all duration-300 rounded-2xl relative"
-                                            onClick={() => window.location.href = `/admin/orders/${order.id}`}
-                                        >
-                                            <td className="px-6 py-5 rounded-l-2xl">
-                                                <span className="text-sm font-black text-gray-950 bg-gray-100 px-3 py-1.5 rounded-lg whitespace-nowrap group-hover:bg-white group-hover:shadow-sm transition-all">{order.id}</span>
-                                            </td>
-                                            <td className="px-6 py-5 whitespace-nowrap">
-                                                <p className="text-sm font-black text-gray-950">{order.customer}</p>
-                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{order.time}</p>
-                                            </td>
-                                            <td className="px-6 py-5 text-sm font-bold text-gray-500 whitespace-nowrap">{order.product}</td>
-                                            <td className="px-6 py-5 whitespace-nowrap">
-                                                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border ${order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                    order.status === 'Processing' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                                        order.status === 'Shipped' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                                                            'bg-gray-50 text-gray-600 border-gray-200'
-                                                    }`}>
-                                                    <span className={`w-1.5 h-1.5 rounded-full ${order.status === 'Delivered' ? 'bg-emerald-500' : order.status === 'Processing' ? 'bg-blue-500' : order.status === 'Shipped' ? 'bg-orange-500' : 'bg-gray-400'}`}></span>
-                                                    {order.status}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-5 text-base font-black text-emerald-600 whitespace-nowrap">{order.amount}</td>
-                                            <td className="px-6 py-5 whitespace-nowrap rounded-r-2xl text-right">
-                                                <div className="inline-flex w-10 h-10 bg-white border border-gray-100 rounded-xl items-center justify-center text-gray-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                                                    <ArrowUpRight size={18} />
-                                                </div>
-                                            </td>
+                                </thead>
+                                <tbody className="divide-y divide-transparent">
+                                    {data.recentOrders.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-8 py-20 text-center text-gray-400 font-medium">No recent orders found</td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        data.recentOrders.map((order) => (
+                                            <tr
+                                                key={order.id}
+                                                className="group cursor-pointer hover:bg-gray-50/80 transition-all duration-300 rounded-2xl relative"
+                                                onClick={() => window.location.href = `/admin/orders/${order.id}`}
+                                            >
+                                                <td className="px-6 py-5 rounded-l-2xl">
+                                                    <span className="text-sm font-black text-gray-950 bg-gray-100 px-3 py-1.5 rounded-lg whitespace-nowrap group-hover:bg-white group-hover:shadow-sm transition-all">{order.id}</span>
+                                                </td>
+                                                <td className="px-6 py-5 whitespace-nowrap">
+                                                    <p className="text-sm font-black text-gray-950">{order.customer}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{order.time}</p>
+                                                </td>
+                                                <td className="px-6 py-5 text-sm font-bold text-gray-500 whitespace-nowrap">{order.product}</td>
+                                                <td className="px-6 py-5 whitespace-nowrap">
+                                                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border ${order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                        order.status === 'Processing' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                            order.status === 'Shipped' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                                                'bg-gray-50 text-gray-600 border-gray-200'
+                                                        }`}>
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${order.status === 'Delivered' ? 'bg-emerald-500' : order.status === 'Processing' ? 'bg-blue-500' : order.status === 'Shipped' ? 'bg-orange-500' : 'bg-gray-400'}`}></span>
+                                                        {order.status}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-5 text-base font-black text-emerald-600 whitespace-nowrap">{order.amount}</td>
+                                                <td className="px-6 py-5 whitespace-nowrap rounded-r-2xl text-right">
+                                                    <div className="inline-flex w-10 h-10 bg-white border border-gray-100 rounded-xl items-center justify-center text-gray-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                                                        <ArrowUpRight size={18} />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="md:hidden space-y-4">
+                            {data.recentOrders.length === 0 ? (
+                                <div className="px-8 py-20 text-center text-gray-400 font-medium">No recent orders found</div>
+                            ) : (
+                                data.recentOrders.map((order) => (
+                                    <div 
+                                        key={order.id}
+                                        onClick={() => window.location.href = `/admin/orders/${order.id}`}
+                                        className="group cursor-pointer bg-white border border-gray-100 rounded-2xl p-5 hover:bg-gray-50 hover:border-gray-200 transition-all shadow-sm"
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <span className="text-xs font-black text-gray-950 bg-gray-100 px-2.5 py-1 rounded-md">{order.id}</span>
+                                                <h3 className="text-base font-black text-gray-950 mt-2">{order.customer}</h3>
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{order.time}</p>
+                                            </div>
+                                            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm border ${order.status === 'Delivered' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                order.status === 'Processing' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                order.status === 'Shipped' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                                'bg-gray-50 text-gray-600 border-gray-200'
+                                            }`}>
+                                                <span className={`w-1 h-1 rounded-full ${order.status === 'Delivered' ? 'bg-emerald-500' : order.status === 'Processing' ? 'bg-blue-500' : order.status === 'Shipped' ? 'bg-orange-500' : 'bg-gray-400'}`}></span>
+                                                {order.status}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="pt-4 border-t border-gray-50 flex justify-between items-end">
+                                            <div className="flex-1 pr-4">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Product</p>
+                                                <p className="text-sm font-bold text-gray-600 line-clamp-1">{order.product}</p>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Amount</p>
+                                                <p className="text-base font-black text-emerald-600">{order.amount}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

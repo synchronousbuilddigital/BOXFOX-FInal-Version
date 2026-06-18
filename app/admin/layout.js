@@ -30,11 +30,17 @@ import PortalAIAssistant from '@/app/components/PortalAIAssistant';
 
 export default function AdminLayout({ children }) {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
     const router = useRouter();
     const isLoginPage = pathname === '/admin/login';
+
+    useEffect(() => {
+        // Close mobile sidebar on route change
+        setMobileSidebarOpen(false);
+    }, [pathname]);
 
     useEffect(() => {
         if (isLoginPage) return;
@@ -108,15 +114,25 @@ export default function AdminLayout({ children }) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex admin-panel">
+        <div className="min-h-screen bg-gray-50 flex admin-panel overflow-x-hidden">
+            {/* Mobile Sidebar Overlay */}
+            {isMobileSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+                    onClick={() => setMobileSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 bg-gray-950 text-white transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}
+                className={`fixed inset-y-0 left-0 z-50 bg-gray-950 text-white transition-all duration-300 ease-in-out
+                ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 
+                ${isSidebarOpen ? 'md:w-64' : 'md:w-20'} w-64`}
             >
                 <div className="flex flex-col h-full">
-                    <div className="p-6 flex items-center justify-between">
+                    <div className="p-4 md:p-6 flex items-center justify-between">
                         <AnimatePresence mode="wait">
-                            {isSidebarOpen && (
+                            {(isSidebarOpen || isMobileSidebarOpen) && (
                                 <motion.div
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -124,27 +140,35 @@ export default function AdminLayout({ children }) {
                                     className="flex items-center gap-2"
                                 >
                                     <Image src="/BOXFOX-1.png" alt="Logo" width={120} height={36} className="h-6 w-auto object-contain" />
-                                    <span className="text-xs font-black tracking-widest text-emerald-500">ADMIN</span>
+                                    <span className="text-xs font-black tracking-widest text-emerald-500 hidden sm:inline">ADMIN</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                        {/* Desktop Toggle */}
                         <button
                             onClick={() => setSidebarOpen(!isSidebarOpen)}
-                            className="p-1.5 bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
+                            className="hidden md:flex p-1.5 bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
                         >
                             {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
                         </button>
+                        {/* Mobile Close Button */}
+                        <button
+                            onClick={() => setMobileSidebarOpen(false)}
+                            className="md:hidden p-1.5 bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors ml-auto"
+                        >
+                            <X size={18} />
+                        </button>
                     </div>
 
-                    <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto pr-2">
+                    <nav className="flex-1 px-3 md:px-4 py-4 md:py-6 space-y-1.5 overflow-y-auto pr-2 custom-scrollbar">
                         {menuItems.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all group ${pathname === item.href ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:bg-gray-900 hover:text-white'}`}
+                                className={`flex items-center gap-4 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all group ${pathname === item.href ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-400 hover:bg-gray-900 hover:text-white'}`}
                             >
                                 <div className="shrink-0">{item.icon}</div>
-                                {isSidebarOpen && <span className="text-sm font-bold">{item.label}</span>}
+                                {(isSidebarOpen || isMobileSidebarOpen) && <span className="text-sm font-bold whitespace-nowrap">{item.label}</span>}
                             </Link>
                         ))}
                     </nav>
@@ -155,18 +179,27 @@ export default function AdminLayout({ children }) {
                             className="flex items-center gap-4 w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all font-bold text-sm"
                         >
                             <LogOut size={20} />
-                            {isSidebarOpen && <span>Logout</span>}
+                            {(isSidebarOpen || isMobileSidebarOpen) && <span>Logout</span>}
                         </button>
                     </nav>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'} ml-0`}>
                 {/* Header */}
-                <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 w-96">
-                        <Search size={16} className="text-gray-400" />
+                <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between gap-4">
+                    {/* Mobile Hamburger */}
+                    <button 
+                        className="md:hidden p-2 -ml-2 text-gray-600 hover:text-gray-900 bg-transparent hover:bg-gray-100 rounded-lg transition-colors"
+                        onClick={() => setMobileSidebarOpen(true)}
+                    >
+                        <Menu size={24} />
+                    </button>
+
+                    {/* Desktop Search */}
+                    <div className="hidden sm:flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 w-full max-w-md">
+                        <Search size={16} className="text-gray-400 shrink-0" />
                         <input
                             type="text"
                             placeholder="Search orders, products..."
@@ -174,24 +207,30 @@ export default function AdminLayout({ children }) {
                         />
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        <button className="relative p-2 text-gray-400 hover:text-gray-950 transition-colors">
-                            <Bell size={20} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white"></span>
+                    <div className="flex items-center gap-3 md:gap-6 ml-auto">
+                        {/* Mobile Search Icon */}
+                        <button className="sm:hidden p-2 text-gray-600 hover:text-gray-900 bg-gray-50 rounded-full border border-gray-200 transition-colors">
+                            <Search size={18} />
                         </button>
-                        <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-black text-gray-950 truncate max-w-30">{user?.name || 'Admin User'}</p>
+
+                        <button className="relative p-2 text-gray-400 hover:text-gray-950 transition-colors bg-gray-50 rounded-full border border-gray-200 sm:border-none sm:bg-transparent">
+                            <Bell size={18} className="sm:w-5 sm:h-5" />
+                            <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white"></span>
+                        </button>
+
+                        <div className="flex items-center gap-3 pl-3 md:pl-6 border-l border-gray-200">
+                            <div className="text-right hidden md:block">
+                                <p className="text-sm font-black text-gray-950 truncate max-w-[120px] lg:max-w-xs">{user?.name || 'Admin User'}</p>
                                 <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{user?.role === 'admin' ? 'Super Admin' : 'Admin'}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-xl bg-gray-950 text-white flex items-center justify-center font-black uppercase">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gray-950 text-white flex items-center justify-center font-black uppercase shadow-md">
                                 {user?.name?.charAt(0) || 'A'}
                             </div>
                         </div>
                     </div>
                 </header>
 
-                <div className="p-8">
+                <div className="p-4 md:p-8 flex-1 overflow-x-hidden">
                     {children}
                 </div>
             </main>
