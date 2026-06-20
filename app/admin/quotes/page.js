@@ -107,13 +107,13 @@ export default function AdminQuotesPage() {
                 {chatOpen && selectedQuote && (
                     <motion.div 
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-200 bg-gray-900/40 backdrop-blur-md flex items-center justify-center p-6"
+                        className="fixed inset-0 z-200 bg-gray-900/40 backdrop-blur-md flex items-center justify-center p-4 md:p-6"
                     >
                         <motion.div 
                             initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="bg-white border border-gray-100 w-full max-w-2xl h-[80vh] rounded-[3rem] overflow-hidden flex flex-col shadow-2xl shadow-gray-900/20"
+                            className="bg-white border border-gray-100 w-full max-w-2xl h-[90vh] md:h-[80vh] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col shadow-2xl shadow-gray-900/20"
                         >
-                            <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                            <div className="p-6 md:p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
                                 <div>
                                     <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em]">Direct Communication Session</p>
                                     <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-950">Chat with {selectedQuote.user.name}</h3>
@@ -123,10 +123,10 @@ export default function AdminQuotesPage() {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar bg-white">
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar bg-white">
                                 {selectedQuote.messages?.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[80%] p-6 rounded-[2rem] ${msg.sender === 'admin' ? 'bg-emerald-500 text-white rounded-tr-none shadow-md shadow-emerald-500/20' : 'bg-gray-50 text-gray-700 rounded-tl-none border border-gray-100 shadow-sm'}`}>
+                                        <div className={`max-w-[85%] md:max-w-[80%] p-5 md:p-6 rounded-2xl md:rounded-[2rem] ${msg.sender === 'admin' ? 'bg-emerald-500 text-white rounded-tr-none shadow-md shadow-emerald-500/20' : 'bg-gray-50 text-gray-700 rounded-tl-none border border-gray-100 shadow-sm'}`}>
                                             <p className="text-sm font-bold leading-relaxed">{msg.text}</p>
                                             <p className={`text-[8px] font-black uppercase tracking-[0.2em] mt-2 ${msg.sender === 'admin' ? 'text-emerald-100' : 'text-gray-400'}`}>{msg.sender} • {new Date(msg.createdAt).toLocaleTimeString()}</p>
                                         </div>
@@ -140,16 +140,16 @@ export default function AdminQuotesPage() {
                                 )}
                             </div>
 
-                            <div className="p-8 border-t border-gray-50 flex gap-4 bg-white">
+                            <div className="p-4 md:p-8 border-t border-gray-50 flex gap-3 md:gap-4 bg-white">
                                 <input 
                                     type="text" 
                                     placeholder="Type your message..."
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                                    className="flex-1 bg-gray-50 border border-gray-100 rounded-[1.5rem] px-6 py-4 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:bg-white text-sm font-bold text-gray-950 transition-all shadow-inner"
+                                    className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl md:rounded-[1.5rem] px-4 md:px-6 py-3 md:py-4 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:bg-white text-sm font-bold text-gray-950 transition-all shadow-inner"
                                 />
-                                <button onClick={sendMessage} className="px-8 bg-emerald-500 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 hover:-translate-y-0.5 shadow-lg shadow-emerald-500/30 transition-all">
+                                <button onClick={sendMessage} className="px-6 md:px-8 bg-emerald-500 text-white rounded-2xl md:rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 hover:-translate-y-0.5 shadow-lg shadow-emerald-500/30 transition-all shrink-0">
                                     Send
                                 </button>
                             </div>
@@ -158,36 +158,42 @@ export default function AdminQuotesPage() {
                 )}
             </AnimatePresence>
 
-            <div className="max-w-[1600px] mx-auto px-6 py-12 lg:py-20">
-                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 bg-white p-8 lg:p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20">
+            <div className="max-w-[1600px] mx-auto px-4 md:px-6 py-6 lg:py-20">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6 lg:mb-12 bg-white p-6 md:p-8 lg:p-10 rounded-3xl lg:rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20">
                     <div>
                         <p className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50" /> Quotation Desk
                         </p>
-                        <h1 className="text-4xl lg:text-5xl text-gray-950 font-black uppercase tracking-tighter leading-none">Gifting Quotes</h1>
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl text-gray-950 font-black uppercase tracking-tighter leading-none">Gifting Quotes</h1>
                     </div>
                     <button onClick={loadData} className="px-8 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-gray-950 hover:bg-gray-100 hover:shadow-sm transition-all flex items-center gap-3">
                         <RefreshCw className={refreshing ? 'animate-spin' : ''} size={16} /> Refresh Feed
                     </button>
                 </div>
 
-                <div className="grid gap-8">
+                <div className="grid gap-6 md:gap-8">
                     {quotes.map((quote) => (
-                        <div key={quote._id} className="bg-white border border-gray-100 rounded-[3rem] p-8 lg:p-12 hover:border-emerald-200 hover:shadow-2xl hover:shadow-gray-200/40 transition-all duration-300 relative overflow-hidden group">
-                            <div className="grid lg:grid-cols-3 gap-12 relative z-10">
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-14 h-14 rounded-[1.2rem] bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-950 text-xl font-black shadow-inner">
+                        <div key={quote._id} className="bg-white border border-gray-100 rounded-3xl lg:rounded-[3rem] p-6 lg:p-12 hover:border-emerald-200 hover:shadow-2xl hover:shadow-gray-200/40 transition-all duration-300 relative overflow-hidden group">
+                            <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 relative z-10">
+                                <div className="space-y-6 min-w-0">
+                                    <div className="flex items-center gap-4 w-full">
+                                        <div className="w-14 h-14 rounded-[1.2rem] bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-950 text-xl font-black shadow-inner shrink-0">
                                             {quote.user?.name ? quote.user.name.charAt(0) : 'U'}
                                         </div>
-                                        <div>
-                                            <p className="text-lg font-black uppercase tracking-tight text-gray-950">{quote.user?.name}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">{quote.user?.company || 'Personal'}</p>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-lg font-black uppercase tracking-tight text-gray-950 break-all">{quote.user?.name}</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] truncate">{quote.user?.company || 'Personal'}</p>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 bg-gray-50 w-fit px-3 py-1.5 rounded-lg border border-gray-100"><Mail size={12} className="text-emerald-500" /> {quote.user?.email}</p>
-                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] flex items-center gap-2 bg-gray-50 w-fit px-3 py-1.5 rounded-lg border border-gray-100"><Phone size={12} className="text-emerald-500" /> {quote.user?.phone}</p>
+                                    <div className="space-y-2 w-full flex flex-col">
+                                        <div className="inline-flex items-center gap-2 bg-gray-50 max-w-full px-3 py-1.5 rounded-lg border border-gray-100">
+                                            <Mail size={12} className="text-emerald-500 shrink-0" />
+                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] truncate">{quote.user?.email}</span>
+                                        </div>
+                                        <div className="inline-flex items-center gap-2 bg-gray-50 max-w-full px-3 py-1.5 rounded-lg border border-gray-100">
+                                            <Phone size={12} className="text-emerald-500 shrink-0" />
+                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] truncate">{quote.user?.phone}</span>
+                                        </div>
                                     </div>
                                     <div className={`inline-flex items-center px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${statusClass(getAdminQuoteStatus(quote.status, quote.assignedVendor))}`}>
                                         {getAdminQuoteStatus(quote.status, quote.assignedVendor)}
@@ -208,26 +214,26 @@ export default function AdminQuotesPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-6 lg:border-l lg:border-gray-100 lg:pl-12">
+                                <div className="space-y-6 border-t lg:border-t-0 pt-8 lg:pt-0 lg:border-l lg:border-gray-100 lg:pl-12 min-w-0">
                                     <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] flex items-center gap-2"><Package size={14} /> Requested Items</h4>
                                     <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                                         {quote.items.map((item, i) => (
                                             <div key={i} className="bg-gray-50 p-5 rounded-2xl border border-gray-100 shadow-sm group-hover:bg-white group-hover:border-emerald-100 transition-colors">
-                                                <p className="text-sm font-black uppercase text-gray-950 tracking-tight leading-tight">{item.productName}</p>
+                                                <p className="text-sm font-black uppercase text-gray-950 tracking-tight leading-tight break-words">{item.productName}</p>
                                                 <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mt-2 bg-emerald-50 px-2 py-1 rounded-md w-fit">QTY: {item.quantity}</p>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="space-y-8 lg:border-l lg:border-gray-100 lg:pl-12 flex flex-col justify-between">
+                                <div className="space-y-8 border-t lg:border-t-0 pt-8 lg:pt-0 lg:border-l lg:border-gray-100 lg:pl-12 flex flex-col justify-between min-w-0">
                                     <div className="space-y-4">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block">Assign Manufacturing Partner</label>
                                             {quote.assignedVendor && typeof quote.assignedVendor === 'object' && (
-                                                <div className="mb-4 p-5 bg-gray-50 rounded-[1.5rem] border border-gray-100 shadow-inner">
-                                                    <p className="text-sm font-black text-gray-950">{quote.assignedVendor.name} <span className="text-[10px] text-gray-500 bg-white px-2 py-0.5 rounded-md border border-gray-100 ml-2">({quote.assignedVendor.vendorCategory || 'Vendor'})</span></p>
-                                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-tight flex items-center gap-2 mt-3"><Mail size={12} className="text-emerald-500"/> {quote.assignedVendor.email}</p>
-                                                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-tight flex items-center gap-2 mt-1"><Phone size={12} className="text-emerald-500"/> {quote.assignedVendor.phone}</p>
+                                                <div className="mb-4 p-5 bg-gray-50 rounded-2xl md:rounded-[1.5rem] border border-gray-100 shadow-inner max-w-full overflow-hidden">
+                                                    <p className="text-sm font-black text-gray-950 flex flex-wrap gap-2 items-center">{quote.assignedVendor.name} <span className="text-[10px] text-gray-500 bg-white px-2 py-0.5 rounded-md border border-gray-100">({quote.assignedVendor.vendorCategory || 'Vendor'})</span></p>
+                                                            <div className="flex items-center gap-2 mt-3 max-w-full"><Mail size={12} className="text-emerald-500 shrink-0"/> <span className="text-[10px] font-black text-gray-500 uppercase tracking-tight truncate">{quote.assignedVendor.email}</span></div>
+                                                            <div className="flex items-center gap-2 mt-1 max-w-full"><Phone size={12} className="text-emerald-500 shrink-0"/> <span className="text-[10px] font-black text-gray-500 uppercase tracking-tight truncate">{quote.assignedVendor.phone}</span></div>
                                                             <div className="mt-4">
                                                                 <button onClick={() => openWhatsApp(quote.assignedVendor?.phone, `Hello ${quote.assignedVendor?.name || ''}, a new gift request (Ref: ${quote._id.slice(-6)}) has been assigned to you. Please respond to confirm.`)} className="w-full py-3 bg-white border border-gray-200 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 hover:shadow-sm transition-all flex items-center justify-center gap-2">
                                                                     <Phone size={12} /> Contact Vendor
@@ -236,7 +242,7 @@ export default function AdminQuotesPage() {
                                                 </div>
                                             )}
                                             <select 
-                                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 appearance-none shadow-inner cursor-pointer"
+                                            className="w-full px-4 md:px-6 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl text-xs font-black outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 appearance-none shadow-inner cursor-pointer"
                                             value={quote.assignedVendor || ""}
                                             onChange={(e) => updateQuote(quote._id, { assignedVendor: e.target.value, status: 'allotted' })}
                                         >
@@ -250,7 +256,7 @@ export default function AdminQuotesPage() {
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block">Workflow Status</label>
                                         <select
-                                            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-xs font-black outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 appearance-none shadow-inner cursor-pointer"
+                                            className="w-full px-4 md:px-6 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl text-xs font-black outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 appearance-none shadow-inner cursor-pointer"
                                             value={quote.status}
                                             onChange={(e) => updateQuote(quote._id, { status: e.target.value })}
                                         >
@@ -264,14 +270,14 @@ export default function AdminQuotesPage() {
                                         </select>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block">User Amount</label>
                                             <div className="relative">
-                                                <div className="absolute inset-y-0 left-6 flex items-center text-emerald-500 font-black">₹</div>
+                                                <div className="absolute inset-y-0 left-4 md:left-6 flex items-center text-emerald-500 font-black">₹</div>
                                                 <input
                                                     type="number"
-                                                    className="w-full pl-10 pr-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-lg font-black outline-none focus:bg-white focus:border-emerald-500 shadow-inner"
+                                                    className="w-full pl-8 md:pl-10 pr-4 md:pr-6 py-3 md:py-4 bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl text-base md:text-lg font-black outline-none focus:bg-white focus:border-emerald-500 shadow-inner"
                                                     defaultValue={quote.totalAmount}
                                                     onBlur={(e) => updateQuote(quote._id, { amount: e.target.value })}
                                                 />
@@ -280,10 +286,10 @@ export default function AdminQuotesPage() {
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block">Vendor Payout</label>
                                             <div className="relative">
-                                                <div className="absolute inset-y-0 left-6 flex items-center text-emerald-500 font-black">₹</div>
+                                                <div className="absolute inset-y-0 left-4 md:left-6 flex items-center text-emerald-500 font-black">₹</div>
                                                 <input
                                                     type="number"
-                                                    className="w-full pl-10 pr-6 py-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-lg font-black outline-none focus:bg-white focus:border-emerald-500 shadow-inner text-emerald-700"
+                                                    className="w-full pl-8 md:pl-10 pr-4 md:pr-6 py-3 md:py-4 bg-emerald-50 border border-emerald-100 rounded-xl md:rounded-2xl text-base md:text-lg font-black outline-none focus:bg-white focus:border-emerald-500 shadow-inner text-emerald-700"
                                                     defaultValue={quote.vendorAmount}
                                                     onBlur={(e) => updateQuote(quote._id, { vendorAmount: e.target.value })}
                                                 />
@@ -297,9 +303,9 @@ export default function AdminQuotesPage() {
                                         </div>
                                     )}
 
-                                    <div className="flex gap-3 pt-4">
-                                        <button onClick={() => finalizeQuote(quote._id)} className="flex-1 py-4 bg-gray-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 hover:scale-[1.02] shadow-lg shadow-gray-900/20 transition-all duration-300">Finalize & Email</button>
-                                        <button onClick={() => { setSelectedQuote(quote); setChatOpen(true); }} className="py-4 px-6 bg-white border border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 shadow-sm transition-all duration-300">Open Chat</button>
+                                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                                        <button onClick={() => finalizeQuote(quote._id)} className="flex-1 py-4 bg-gray-950 text-white rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 hover:scale-[1.02] shadow-lg shadow-gray-900/20 transition-all duration-300">Finalize & Email</button>
+                                        <button onClick={() => { setSelectedQuote(quote); setChatOpen(true); }} className="py-4 px-6 bg-white border border-gray-200 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 shadow-sm transition-all duration-300 shrink-0 text-center flex items-center justify-center">Open Chat</button>
                                     </div>
                                 </div>
                             </div>

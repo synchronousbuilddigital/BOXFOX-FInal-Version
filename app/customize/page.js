@@ -1893,8 +1893,8 @@ function CustomizeLabContent() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 sm:p-6 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Select Category</label>
                   <select
@@ -2659,7 +2659,7 @@ function CustomizeLabContent() {
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-[11px] font-medium outline-none focus:border-blue-400 transition-all resize-none"
                       rows={2}
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label className="text-[8px] font-black uppercase text-gray-400">Shift X</label>
                         <input type="range" min="0" max="100" value={boxTextSettings.x} onChange={(e) => setBoxTextSettings(prev => ({ ...prev, x: parseInt(e.target.value) }))} className="w-full h-1 bg-gray-200 rounded-full appearance-none accent-blue-600" />
@@ -2766,8 +2766,7 @@ function CustomizeLabContent() {
                   Updates with every change
                 </div>
               </div>
-
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Per Unit</p>
                   <div className="flex items-baseline gap-1">

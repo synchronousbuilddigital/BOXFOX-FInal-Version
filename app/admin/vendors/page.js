@@ -282,79 +282,164 @@ export default function AdminVendorsPage() {
             {/* Vendors Table */}
             <div className="bg-white border border-gray-150 rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50/75 border-b border-gray-200">
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Business & Category</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Representative</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Location</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Capacity / Entity</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none"></th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {filteredVendors.map((vendor) => (
-                                <tr key={vendor._id} className="hover:bg-gray-50/50 transition-colors group">
-                                    {/* Business & Category */}
-                                    <td className="px-6 py-5">
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-black text-xs shrink-0 italic">
-                                                {vendor.businessName ? vendor.businessName.charAt(0).toUpperCase() : "V"}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-black text-gray-950 uppercase tracking-tight leading-none mb-1.5">{vendor.businessName || "No Business Name"}</p>
-                                                <div className="flex flex-wrap items-center gap-1.5">
-                                                    <span className="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-[9px] font-black text-gray-500 uppercase tracking-wider">
-                                                        {getCategoryLabel(vendor.vendorCategory) || "General Supplier"}
-                                                    </span>
-                                                    {vendor.vendorSpecialties && vendor.vendorSpecialties.map(spec => (
-                                                        <span key={spec} className="px-2 py-0.5 bg-emerald-50 border border-emerald-200/50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-wider">
-                                                            {spec}
+                    <>
+                        {/* Desktop Table View */}
+                        <table className="hidden lg:table w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-gray-50/75 border-b border-gray-200">
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Business & Category</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Representative</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Location</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Capacity / Entity</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Status</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {filteredVendors.map((vendor) => (
+                                    <tr key={vendor._id} className="hover:bg-gray-50/50 transition-colors group">
+                                        {/* Business & Category */}
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-black text-xs shrink-0 italic">
+                                                    {vendor.businessName ? vendor.businessName.charAt(0).toUpperCase() : "V"}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-gray-950 uppercase tracking-tight leading-none mb-1.5">{vendor.businessName || "No Business Name"}</p>
+                                                    <div className="flex flex-wrap items-center gap-1.5">
+                                                        <span className="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                                            {getCategoryLabel(vendor.vendorCategory) || "General Supplier"}
                                                         </span>
-                                                    ))}
+                                                        {vendor.vendorSpecialties && vendor.vendorSpecialties.map(spec => (
+                                                            <span key={spec} className="px-2 py-0.5 bg-emerald-50 border border-emerald-200/50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-wider">
+                                                                {spec}
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </td>
+
+                                        {/* Representative */}
+                                        <td className="px-6 py-5">
+                                            <p className="text-sm font-bold text-gray-900 leading-none mb-1">{vendor.name}</p>
+                                            <div className="flex flex-col gap-0.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                                <span className="flex items-center gap-1 normal-case"><Mail size={10} className="text-emerald-500 shrink-0" /> {vendor.email}</span>
+                                                <span className="flex items-center gap-1"><Phone size={10} className="text-emerald-500 shrink-0" /> {vendor.phone}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* Location */}
+                                        <td className="px-6 py-5">
+                                            <p className="text-sm font-bold text-gray-900 leading-none mb-1">{vendor.vendorCity || "City N/A"}</p>
+                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{vendor.vendorState || "State N/A"}</p>
+                                        </td>
+
+                                        {/* Capacity / Entity */}
+                                        <td className="px-6 py-5 text-xs text-gray-500 font-bold">
+                                            <p className="text-gray-900 mb-0.5">{vendor.vendorLegalEntity || "Individual / Other"}</p>
+                                            <p className="text-[9px] uppercase tracking-widest text-gray-400">
+                                                {vendor.vendorYearsInBusiness || "0"} Years in Biz • {vendor.vendorNoOfEmployees || "0"} Employees
+                                            </p>
+                                        </td>
+
+                                        {/* Status */}
+                                        <td className="px-6 py-5">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                                vendor.vendorStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                vendor.vendorStatus === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                                'bg-amber-50 text-amber-700 border-amber-200'
+                                            }`}>
+                                                {vendor.vendorStatus}
+                                            </span>
+                                        </td>
+
+                                        {/* Actions */}
+                                        <td className="px-6 py-5 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedVendor(vendor);
+                                                        setDrawerTab("profile");
+                                                    }}
+                                                    className="px-4 py-2 bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1"
+                                                >
+                                                    Manage <ChevronRight size={10} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+
+                                {filteredVendors.length === 0 && (
+                                    <tr>
+                                        <td colSpan="6" className="py-24 text-center text-gray-400 font-black uppercase tracking-widest italic">
+                                            No manufacturing partners found matching filters
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+
+                        {/* Mobile Card View */}
+                        <div className="lg:hidden divide-y divide-gray-100">
+                            {filteredVendors.length === 0 ? (
+                                <div className="py-16 text-center text-gray-400 font-black uppercase tracking-widest italic text-xs">
+                                    No manufacturing partners found matching filters
+                                </div>
+                            ) : (
+                                filteredVendors.map((vendor) => (
+                                    <div key={vendor._id} className="p-5 space-y-4 hover:bg-gray-50/50 transition-colors">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                                                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-black text-sm shrink-0 italic">
+                                                    {vendor.businessName ? vendor.businessName.charAt(0).toUpperCase() : "V"}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-sm font-black text-gray-950 uppercase tracking-tight leading-none mb-1.5 truncate">{vendor.businessName || "No Business Name"}</p>
+                                                    <div className="flex flex-wrap items-center gap-1.5">
+                                                        <span className="px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-[9px] font-black text-gray-500 uppercase tracking-wider">
+                                                            {getCategoryLabel(vendor.vendorCategory) || "General Supplier"}
+                                                        </span>
+                                                        {vendor.vendorSpecialties && vendor.vendorSpecialties.length > 0 && (
+                                                            <span className="px-2 py-0.5 bg-emerald-50 border border-emerald-200/50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-wider">
+                                                                +{vendor.vendorSpecialties.length} Specs
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="shrink-0 text-right">
+                                                <span className={`inline-block px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest border ${
+                                                    vendor.vendorStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                    vendor.vendorStatus === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                                                    'bg-amber-50 text-amber-700 border-amber-200'
+                                                }`}>
+                                                    {vendor.vendorStatus}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </td>
 
-                                    {/* Representative */}
-                                    <td className="px-6 py-5">
-                                        <p className="text-sm font-bold text-gray-900 leading-none mb-1">{vendor.name}</p>
-                                        <div className="flex flex-col gap-0.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                                            <span className="flex items-center gap-1 normal-case"><Mail size={10} className="text-emerald-500 shrink-0" /> {vendor.email}</span>
-                                            <span className="flex items-center gap-1"><Phone size={10} className="text-emerald-500 shrink-0" /> {vendor.phone}</span>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Representative</p>
+                                                <p className="text-xs font-black text-gray-900 truncate">{vendor.name}</p>
+                                                <div className="flex flex-col gap-0.5 text-[9px] text-gray-500 font-bold uppercase tracking-wider">
+                                                    <span className="flex items-center gap-1 normal-case truncate"><Mail size={10} className="text-emerald-500 shrink-0" /> {vendor.email}</span>
+                                                    <span className="flex items-center gap-1"><Phone size={10} className="text-emerald-500 shrink-0" /> {vendor.phone}</span>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Location</p>
+                                                <p className="text-xs font-black text-gray-900 truncate">{vendor.vendorCity || "City N/A"}</p>
+                                                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{vendor.vendorState || "State N/A"}</p>
+                                            </div>
                                         </div>
-                                    </td>
 
-                                    {/* Location */}
-                                    <td className="px-6 py-5">
-                                        <p className="text-sm font-bold text-gray-900 leading-none mb-1">{vendor.vendorCity || "City N/A"}</p>
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{vendor.vendorState || "State N/A"}</p>
-                                    </td>
-
-                                    {/* Capacity / Entity */}
-                                    <td className="px-6 py-5 text-xs text-gray-500 font-bold">
-                                        <p className="text-gray-900 mb-0.5">{vendor.vendorLegalEntity || "Individual / Other"}</p>
-                                        <p className="text-[9px] uppercase tracking-widest text-gray-400">
-                                            {vendor.vendorYearsInBusiness || "0"} Years in Biz • {vendor.vendorNoOfEmployees || "0"} Employees
-                                        </p>
-                                    </td>
-
-                                    {/* Status */}
-                                    <td className="px-6 py-5">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                                            vendor.vendorStatus === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                            vendor.vendorStatus === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                                            'bg-amber-50 text-amber-700 border-amber-200'
-                                        }`}>
-                                            {vendor.vendorStatus}
-                                        </span>
-                                    </td>
-
-                                    {/* Actions */}
-                                    <td className="px-6 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-2">
+                                        <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                                            <div className="text-[9px] uppercase tracking-widest text-gray-400 font-bold">
+                                                {vendor.vendorYearsInBusiness || "0"} Yrs • {vendor.vendorNoOfEmployees || "0"} Emp
+                                            </div>
                                             <button 
                                                 onClick={() => {
                                                     setSelectedVendor(vendor);
@@ -365,19 +450,11 @@ export default function AdminVendorsPage() {
                                                 Manage <ChevronRight size={10} />
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-
-                            {filteredVendors.length === 0 && (
-                                <tr>
-                                    <td colSpan="6" className="py-24 text-center text-gray-400 font-black uppercase tracking-widest italic">
-                                        No manufacturing partners found matching filters
-                                    </td>
-                                </tr>
+                                    </div>
+                                ))
                             )}
-                        </tbody>
-                    </table>
+                        </div>
+                    </>
                 </div>
             </div>
 
@@ -403,14 +480,14 @@ export default function AdminVendorsPage() {
                             className="relative w-full max-w-3xl bg-white border-l border-gray-200 h-full flex flex-col shadow-2xl z-10"
                         >
                             {/* Drawer Header */}
-                            <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
-                                <div className="flex items-center gap-3">
+                            <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50/50">
+                                <div className="flex items-start sm:items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black italic text-lg shrink-0">
                                         {selectedVendor.businessName ? selectedVendor.businessName.charAt(0).toUpperCase() : "V"}
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-black text-gray-950 uppercase tracking-tight leading-tight">{selectedVendor.businessName}</h3>
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-0.5">
+                                    <div className="min-w-0">
+                                        <h3 className="text-lg sm:text-xl font-black text-gray-950 uppercase tracking-tight leading-tight truncate">{selectedVendor.businessName}</h3>
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-0.5 truncate">
                                             Rep: {selectedVendor.name} • Status: <span className={`font-black ${
                                                 selectedVendor.vendorStatus === 'approved' ? 'text-emerald-600' :
                                                 selectedVendor.vendorStatus === 'rejected' ? 'text-rose-600' :
@@ -420,21 +497,21 @@ export default function AdminVendorsPage() {
                                     </div>
                                 </div>
                                 
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-auto mt-2 md:mt-0">
                                     {/* Action Buttons */}
-                                    <div className="flex gap-1">
+                                    <div className="flex flex-wrap gap-2">
                                         {selectedVendor.vendorStatus !== 'approved' && (
                                             <button
                                                 onClick={() => updateVendor(selectedVendor._id, { vendorStatus: 'approved' })}
-                                                className="px-3 py-1.5 bg-emerald-500 text-white hover:bg-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5"
+                                                className="px-3 py-2 sm:py-1.5 bg-emerald-500 text-white hover:bg-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5"
                                             >
-                                                <CheckCircle2 size={12} /> Approve Partner
+                                                <CheckCircle2 size={12} /> Approve
                                             </button>
                                         )}
                                         {selectedVendor.vendorStatus !== 'rejected' && (
                                             <button
                                                 onClick={() => updateVendor(selectedVendor._id, { vendorStatus: 'rejected' })}
-                                                className="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5"
+                                                className="px-3 py-2 sm:py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5"
                                             >
                                                 <XCircle size={12} /> Reject
                                             </button>
@@ -443,7 +520,7 @@ export default function AdminVendorsPage() {
 
                                     <button 
                                         onClick={() => setSelectedVendor(null)}
-                                        className="p-2 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg transition-all text-gray-500 hover:text-gray-900"
+                                        className="p-2 shrink-0 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg transition-all text-gray-500 hover:text-gray-900"
                                     >
                                         <X size={16} />
                                     </button>
@@ -451,7 +528,7 @@ export default function AdminVendorsPage() {
                             </div>
 
                             {/* Tab Bar */}
-                            <div className="flex border-b border-gray-200 px-6 bg-white shrink-0">
+                            <div className="flex border-b border-gray-200 px-2 sm:px-6 bg-white shrink-0 overflow-x-auto custom-scrollbar">
                                 {[
                                     { key: "profile", label: "Business Details", icon: <Building size={14} /> },
                                     { key: "documents", label: "Compliance Files", icon: <FileText size={14} /> },
@@ -461,7 +538,7 @@ export default function AdminVendorsPage() {
                                     <button
                                         key={tab.key}
                                         onClick={() => setDrawerTab(tab.key)}
-                                        className={`flex items-center gap-2 px-4 py-3 border-b-2 text-xs font-black uppercase tracking-wider transition-all -mb-[2px] ${
+                                        className={`flex items-center gap-2 px-3 sm:px-4 py-3 border-b-2 text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap shrink-0 -mb-[2px] ${
                                             drawerTab === tab.key
                                                 ? "border-emerald-500 text-emerald-600"
                                                 : "border-transparent text-gray-400 hover:text-gray-700"

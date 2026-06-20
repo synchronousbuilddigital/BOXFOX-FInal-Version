@@ -133,7 +133,7 @@ export default function SettingsPage() {
             case 'General':
                 return (
                     <>
-                        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-10">
+                        <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm space-y-6 md:space-y-10">
                             <div>
                                 <h2 className="text-xl font-black text-gray-950 mb-2">Store Profile</h2>
                                 <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">Public information and branding</p>
@@ -159,15 +159,15 @@ export default function SettingsPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-10 border-t border-gray-50 flex items-center justify-between">
+                            <div className="pt-8 md:pt-10 border-t border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <p className="text-xs font-bold text-gray-400 italic">Last auto-saved: 5 minutes ago</p>
-                                <button className="px-10 py-4 bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
+                                <button className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-emerald-500 text-white rounded-xl md:rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
                                     Save Changes
                                 </button>
                             </div>
                         </div>
 
-                        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
+                        <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm space-y-6 md:space-y-8">
                             <div>
                                 <h2 className="text-xl font-black text-gray-950 mb-2">Announcement Bar</h2>
                                 <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">Message shown below navbar on storefront</p>
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                                 <p className="text-xs font-bold text-gray-400">Loading announcement settings...</p>
                             ) : (
                                 <>
-                                    <div className="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 md:p-6 bg-gray-50 rounded-2xl border border-gray-100">
                                         <div>
                                             <p className="font-black text-gray-950">Enable Announcement Bar</p>
                                             <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">Toggle visibility on customer-facing pages</p>
@@ -204,7 +204,7 @@ export default function SettingsPage() {
                                         <p className="text-[10px] font-bold text-gray-400 text-right">{announcementText.length}/180</p>
                                     </div>
 
-                                    <div className="pt-2 flex items-center justify-between gap-4">
+                                    <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                         <p className={`text-xs font-bold ${announcementMessage.includes('success') ? 'text-emerald-500' : 'text-gray-400'}`}>
                                             {announcementMessage || 'Use concise text for best visibility.'}
                                         </p>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                             )}
                         </div>
 
-                        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
+                        <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm space-y-6 md:space-y-8">
                             <div>
                                 <h2 className="text-xl font-black text-gray-950 mb-2">Integrations</h2>
                                 <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">Connect with your ecosystem</p>
@@ -244,7 +244,7 @@ export default function SettingsPage() {
                 );
             case 'Security':
                 return (
-                    <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-10">
+                    <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm space-y-8 md:space-y-10">
                         <div>
                             <h2 className="text-xl font-black text-gray-950 mb-2">Admin Security</h2>
                             <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">Manage your console access and credentials</p>
@@ -301,7 +301,7 @@ export default function SettingsPage() {
                                 </div>
                             </div>
 
-                            <div className="pt-10 border-t border-gray-50 flex items-center justify-between">
+                            <div className="pt-8 md:pt-10 border-t border-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div className="max-w-[300px]">
                                     {securityMessage.text && (
                                         <p className={`text-xs font-bold ${securityMessage.type === 'success' ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -340,7 +340,7 @@ export default function SettingsPage() {
                 );
             case 'Notifications':
                 return (
-                    <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-10">
+                    <div className="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm space-y-8 md:space-y-10">
                         <div>
                             <h2 className="text-xl font-black text-gray-950 mb-2">Communication Hub</h2>
                             <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">Configure alerts and system messages</p>
@@ -353,7 +353,7 @@ export default function SettingsPage() {
                                 { title: 'Customer Signups', desc: 'Weekly digest of new business accounts', active: false },
                                 { title: 'Critical System Logs', desc: 'Immediate alert on potential server failures', active: true },
                             ].map((item, i) => (
-                                <div key={i} className="flex items-center justify-between p-6 bg-gray-50 rounded-3xl group hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all border border-transparent hover:border-gray-100">
+                                <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 md:p-6 bg-gray-50 rounded-2xl md:rounded-3xl group hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all border border-transparent hover:border-gray-100">
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${item.active ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200' : 'bg-gray-200 text-gray-400'}`}>
                                             <Bell size={20} />
@@ -402,24 +402,24 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-6 md:space-y-10">
             <div>
-                <h1 className="text-4xl font-black text-gray-950 tracking-tighter uppercase leading-none">System Settings</h1>
-                <p className="text-gray-400 font-medium tracking-tight mt-1">Configure your lab storefront, integrations, and administration.</p>
+                <h1 className="text-3xl md:text-4xl font-black text-gray-950 tracking-tighter uppercase leading-none">System Settings</h1>
+                <p className="text-gray-400 font-medium tracking-tight mt-1 text-sm md:text-base">Configure your lab storefront, integrations, and administration.</p>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-10">
-                <div className="xl:col-span-1 space-y-2">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 md:gap-10">
+                <div className="xl:col-span-1 flex flex-row xl:flex-col gap-2 overflow-x-auto hide-scrollbar pb-2 xl:pb-0">
                     {tabs.map((tab, idx) => (
                         <button
                             key={tab.label}
                             onClick={() => setActiveTab(tab.label)}
-                            className={`w-full flex items-center justify-between px-6 py-5 rounded-3xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.label ? 'bg-gray-950 text-white shadow-2xl shadow-gray-200 scale-105 z-10' : 'text-gray-400 hover:bg-white hover:text-gray-950 hover:px-8'}`}
+                            className={`flex items-center justify-between px-4 xl:px-6 py-3 xl:py-5 rounded-2xl xl:rounded-3xl text-[10px] xl:text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all flex-shrink-0 ${activeTab === tab.label ? 'bg-gray-950 text-white shadow-xl xl:shadow-2xl shadow-gray-200 xl:scale-105 z-10' : 'text-gray-400 hover:bg-white hover:text-gray-950 xl:hover:px-8'}`}
                         >
-                            <span className="flex items-center gap-4">
+                            <span className="flex items-center gap-2 xl:gap-4">
                                 {tab.icon} {tab.label}
                             </span>
-                            {activeTab === tab.label && <motion.div layoutId="dot" className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]" />}
+                            {activeTab === tab.label && <motion.div layoutId="dot" className="hidden xl:block w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]" />}
                         </button>
                     ))}
                 </div>

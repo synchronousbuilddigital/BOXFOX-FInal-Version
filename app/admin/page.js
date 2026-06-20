@@ -112,7 +112,7 @@ export default function Dashboard() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.1, duration: 0.5, ease: "easeOut" }}
-                        className="relative group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/40 hover:-translate-y-1 transition-all duration-300"
+                        className="relative group bg-white p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/40 hover:-translate-y-1 transition-all duration-300"
                     >
                         {/* Decorative background glow */}
                         <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-10 bg-${stat.color}-500 group-hover:opacity-20 transition-opacity duration-500`}></div>
@@ -137,14 +137,14 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Link href="/admin/lab-config" className="group block h-full">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-700 p-10 rounded-[3rem] text-white flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-500 h-full">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-700 p-6 sm:p-10 rounded-[2rem] sm:rounded-[3rem] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:scale-[1.02] hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-500 h-full">
                         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
                         <div className="relative z-10 flex items-center gap-8">
                             <div className="w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-inner group-hover:-rotate-6 transition-transform duration-500">
                                 <Layers size={36} className="text-white drop-shadow-md" />
                             </div>
                             <div>
-                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-1">Lab Config Center</h3>
+                                <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-1">Lab Config Center</h3>
                                 <p className="text-emerald-100 text-[11px] font-black uppercase tracking-[0.2em]">Manage Categories & Sizes</p>
                             </div>
                         </div>
@@ -155,14 +155,14 @@ export default function Dashboard() {
                 </Link>
                 
                 <Link href="/admin/b2b" className="group block h-full">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 p-10 rounded-[3rem] text-white flex items-center justify-between hover:scale-[1.02] hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-500 h-full">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-950 p-6 sm:p-10 rounded-[2rem] sm:rounded-[3rem] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:scale-[1.02] hover:shadow-2xl hover:shadow-gray-900/30 transition-all duration-500 h-full">
                         <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700"></div>
                         <div className="relative z-10 flex items-center gap-8">
                             <div className="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover:rotate-6 transition-transform duration-500">
                                 <Settings size={36} className="text-emerald-400 drop-shadow-md" />
                             </div>
                             <div>
-                                <h3 className="text-3xl font-black text-white uppercase tracking-tighter mb-1">B2B Core Ops</h3>
+                                <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-1">B2B Core Ops</h3>
                                 <p className="text-gray-400 text-[11px] font-black uppercase tracking-[0.2em]">Pricing & Config Tokens</p>
                             </div>
                         </div>
@@ -175,8 +175,8 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 gap-8">
                 {/* Recent Orders */}
-                <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden">
-                    <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+                <div className="bg-white rounded-[2rem] sm:rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden">
+                    <div className="p-6 sm:p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
                                 <ShoppingBag size={20} />

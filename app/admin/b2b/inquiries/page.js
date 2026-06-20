@@ -58,9 +58,9 @@ export default function B2BInquiriesAdmin() {
     };
 
     return (
-        <div className="p-6 md:p-10 space-y-10">
+        <div className="p-4 md:p-10 space-y-6 md:space-y-10">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-8 lg:p-10 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-6 md:p-8 lg:p-10 rounded-3xl md:rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/20">
                 <div>
                     <h1 className="text-3xl lg:text-5xl font-black uppercase tracking-tighter flex items-center gap-4 text-gray-950 leading-none">
                         B2B <span className="text-gray-400 font-bold">Wholesale Dashboard</span>
@@ -76,7 +76,7 @@ export default function B2BInquiriesAdmin() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
                 {/* List View */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className="flex items-center justify-between px-4">
@@ -85,20 +85,20 @@ export default function B2BInquiriesAdmin() {
                     </div>
 
                     {loading ? (
-                        <div className="p-32 flex flex-col items-center gap-6 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/10">
+                        <div className="p-16 md:p-32 flex flex-col items-center gap-6 bg-white rounded-3xl md:rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/10">
                             <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center animate-pulse">
                                 <Loader2 className="animate-spin text-emerald-500" size={32} />
                             </div>
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">Loading Pipeline...</p>
                         </div>
                     ) : (
-                        <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-4 max-h-[50vh] lg:max-h-[calc(100vh-280px)] overflow-y-auto pr-2 custom-scrollbar">
                             {inquiries.map((inquiry) => (
                                 <motion.div
                                     key={inquiry._id}
                                     onClick={() => setSelectedInquiry(inquiry)}
                                     layoutId={inquiry._id}
-                                    className={`p-6 rounded-[2.5rem] border transition-all duration-300 cursor-pointer group hover:-translate-y-1 ${selectedInquiry?._id === inquiry._id
+                                    className={`p-5 md:p-6 rounded-3xl md:rounded-[2.5rem] border transition-all duration-300 cursor-pointer group hover:-translate-y-1 ${selectedInquiry?._id === inquiry._id
                                         ? 'bg-white border-emerald-500 shadow-2xl shadow-emerald-500/10 ring-4 ring-emerald-500/10'
                                         : 'bg-white border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 hover:border-emerald-200'
                                         }`}
@@ -134,10 +134,10 @@ export default function B2BInquiriesAdmin() {
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.98 }}
-                                className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/20 overflow-hidden min-h-[600px] flex flex-col"
+                                className="bg-white rounded-3xl md:rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/20 overflow-hidden min-h-[600px] flex flex-col"
                             >
                                 {/* Detail Header */}
-                                <div className="p-8 lg:p-10 border-b border-gray-50 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                <div className="p-6 md:p-8 lg:p-10 border-b border-gray-50 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div className="flex items-center gap-6">
                                         <div className="w-16 h-16 bg-gray-950 rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-gray-950/20 border border-gray-800">
                                             {selectedInquiry.companyName.charAt(0)}
@@ -149,16 +149,16 @@ export default function B2BInquiriesAdmin() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <button onClick={() => updateStatus(selectedInquiry._id, 'reviewed')} className="px-6 py-4 bg-white border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 shadow-sm transition-all duration-300">Review</button>
-                                        <button onClick={() => updateStatus(selectedInquiry._id, 'completed')} className="px-6 py-4 bg-emerald-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 hover:scale-[1.02] shadow-lg shadow-emerald-500/30 transition-all duration-300">Complete</button>
-                                        <button onClick={() => deleteInquiry(selectedInquiry._id)} className="p-4 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:bg-red-50 hover:border-red-200 hover:shadow-md rounded-2xl transition-all duration-300 ml-2"><Trash2 size={20} /></button>
+                                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 md:gap-3 w-full md:w-auto">
+                                        <button onClick={() => updateStatus(selectedInquiry._id, 'reviewed')} className="flex-1 sm:flex-none px-4 py-3 md:px-6 md:py-4 bg-white border border-gray-100 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 shadow-sm transition-all duration-300 text-center">Review</button>
+                                        <button onClick={() => updateStatus(selectedInquiry._id, 'completed')} className="flex-1 sm:flex-none px-4 py-3 md:px-6 md:py-4 bg-emerald-500 text-white rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-400 hover:scale-[1.02] shadow-lg shadow-emerald-500/30 transition-all duration-300 text-center">Complete</button>
+                                        <button onClick={() => deleteInquiry(selectedInquiry._id)} className="p-3 md:p-4 bg-white border border-gray-100 text-gray-300 hover:text-red-500 hover:bg-red-50 hover:border-red-200 hover:shadow-md rounded-xl md:rounded-2xl transition-all duration-300 sm:ml-2 flex items-center justify-center shrink-0"><Trash2 size={20} /></button>
                                     </div>
                                 </div>
 
                                 {/* Detailed Content */}
-                                <div className="p-10 overflow-y-auto flex-1 custom-scrollbar">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div className="p-6 md:p-10 overflow-y-auto flex-1 custom-scrollbar">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                                         {/* Company Info */}
                                         <div className="space-y-10">
                                             <div>
@@ -255,7 +255,7 @@ export default function B2BInquiriesAdmin() {
                                 </div>
                             </motion.div>
                         ) : (
-                            <div className="bg-white rounded-[3rem] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-20 min-h-[600px] shadow-xl shadow-gray-200/10">
+                            <div className="bg-white rounded-3xl md:rounded-[3rem] border border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-8 md:p-20 min-h-[400px] md:min-h-[600px] shadow-xl shadow-gray-200/10">
                                 <div className="w-24 h-24 bg-gray-50 rounded-[2rem] border border-gray-100 flex items-center justify-center text-gray-300 mb-8 shadow-inner">
                                     <Inbox size={40} />
                                 </div>

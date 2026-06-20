@@ -205,59 +205,113 @@ export default function StaffManagement() {
 
             {/* Staff List */}
             <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Team Member</th>
-                                <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Role / Access Level</th>
-                                <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Date Added</th>
-                                <th className="p-6 text-right text-[10px] font-black tracking-widest text-gray-400 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {staff.map((member) => (
-                                <tr key={member._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
-                                    <td className="p-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center font-black uppercase text-sm shadow-sm ring-2 ring-white">
+                <>
+                    {/* Desktop Table View */}
+                    <div className="hidden lg:block overflow-x-auto custom-scrollbar">
+                        <table className="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr className="bg-gray-50 border-b border-gray-100">
+                                    <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Team Member</th>
+                                    <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Role / Access Level</th>
+                                    <th className="p-6 text-[10px] font-black tracking-widest text-gray-400 uppercase">Date Added</th>
+                                    <th className="p-6 text-right text-[10px] font-black tracking-widest text-gray-400 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {staff.map((member) => (
+                                    <tr key={member._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors group">
+                                        <td className="p-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center font-black uppercase text-sm shadow-sm ring-2 ring-white">
+                                                    {member.name ? member.name.charAt(0) : '?'}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-gray-950">{member.name || 'Unnamed User'}</p>
+                                                    <p className="text-[11px] font-bold text-gray-500">{member.email}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="p-6">
+                                            <select
+                                                value={member.role}
+                                                onChange={(e) => handleUpdateRole(member._id, e.target.value)}
+                                                className={`text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-gray-100 outline-none cursor-pointer hover:shadow-sm transition-all focus:ring-2 focus:ring-emerald-500 appearance-none bg-white
+                                                    ${member.role === 'admin' ? 'text-indigo-600' : 'text-emerald-600'}
+                                                `}
+                                            >
+                                                <option value="admin" className="font-bold">Super Admin</option>
+                                                <option value="staff_fulfillment" className="font-bold">Fulfillment Mgr.</option>
+                                            </select>
+                                        </td>
+                                        <td className="p-6">
+                                            <p className="text-xs font-bold text-gray-500">{new Date(member.createdAt).toLocaleDateString()}</p>
+                                        </td>
+                                        <td className="p-6 text-right">
+                                            <button
+                                                onClick={() => handleRemoveStaff(member._id)}
+                                                className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                title="Revoke access"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile Card View */}
+                    <div className="lg:hidden divide-y divide-gray-100">
+                        {staff.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500 text-sm font-medium">No staff members found.</div>
+                        ) : (
+                            staff.map((member) => (
+                                <div key={member._id} className="p-5 space-y-4 hover:bg-gray-50 transition-colors">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex shrink-0 items-center justify-center font-black uppercase text-sm shadow-sm ring-2 ring-white">
                                                 {member.name ? member.name.charAt(0) : '?'}
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-black text-gray-950">{member.name || 'Unnamed User'}</p>
-                                                <p className="text-[11px] font-bold text-gray-500">{member.email}</p>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-black text-gray-950 truncate">{member.name || 'Unnamed User'}</p>
+                                                <p className="text-[11px] font-bold text-gray-500 truncate">{member.email}</p>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td className="p-6">
-                                        <select
-                                            value={member.role}
-                                            onChange={(e) => handleUpdateRole(member._id, e.target.value)}
-                                            className={`text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-gray-100 outline-none cursor-pointer hover:shadow-sm transition-all focus:ring-2 focus:ring-emerald-500 appearance-none bg-white
-                                                ${member.role === 'admin' ? 'text-indigo-600' : 'text-emerald-600'}
-                                            `}
-                                        >
-                                            <option value="admin" className="font-bold">Super Admin</option>
-                                            <option value="staff_fulfillment" className="font-bold">Fulfillment Mgr.</option>
-                                        </select>
-                                    </td>
-                                    <td className="p-6">
-                                        <p className="text-xs font-bold text-gray-500">{new Date(member.createdAt).toLocaleDateString()}</p>
-                                    </td>
-                                    <td className="p-6 text-right">
                                         <button
                                             onClick={() => handleRemoveStaff(member._id)}
-                                            className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            className="p-2 text-gray-400 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-xl transition-all"
                                             title="Revoke access"
                                         >
                                             <Trash2 size={16} />
                                         </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+
+                                    <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase">Role / Access Level</label>
+                                            <select
+                                                value={member.role}
+                                                onChange={(e) => handleUpdateRole(member._id, e.target.value)}
+                                                className={`text-xs font-black uppercase tracking-widest px-3 py-2 rounded-xl border border-gray-200 outline-none cursor-pointer hover:shadow-sm transition-all focus:ring-2 focus:ring-emerald-500 appearance-none bg-white w-full
+                                                    ${member.role === 'admin' ? 'text-indigo-600' : 'text-emerald-600'}
+                                                `}
+                                            >
+                                                <option value="admin" className="font-bold">Super Admin</option>
+                                                <option value="staff_fulfillment" className="font-bold">Fulfillment Mgr.</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between pt-2 border-t border-gray-200/50">
+                                            <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase">Date Added</span>
+                                            <span className="text-xs font-bold text-gray-600">{new Date(member.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </>
             </div>
 
         </div>

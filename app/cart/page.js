@@ -44,8 +44,8 @@ export default function CartPage() {
                             <ShoppingBag size={48} className="text-gray-200" />
                         </div>
                         <div className="space-y-4">
-                            <h1 className="text-5xl font-black text-gray-950 tracking-tighter uppercase">Your Cart is Empty.</h1>
-                            <p className="text-xl text-gray-400 font-medium max-w-md mx-auto">Start adding structural packaging solutions to your collection.</p>
+                            <h1 className="text-4xl sm:text-5xl font-black text-gray-950 tracking-tighter uppercase">Your Cart is Empty.</h1>
+                            <p className="text-base sm:text-xl text-gray-400 font-medium max-w-md mx-auto">Start adding structural packaging solutions to your collection.</p>
                         </div>
                         <Link
                             href="/shop"
@@ -68,7 +68,7 @@ export default function CartPage() {
                         <Link href="/shop" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-950 transition-colors mb-4">
                             <ChevronLeft size={14} /> Back to Catalog
                         </Link>
-                        <h1 className="text-6xl md:text-8xl font-black text-gray-950 tracking-tighter uppercase">Cart.</h1>
+                        <h1 className="text-5xl md:text-8xl font-black text-gray-950 tracking-tighter uppercase">Cart.</h1>
                     </div>
                     <div className="flex bg-gray-50 p-2 rounded-2xl border border-gray-100">
                         <button
@@ -91,10 +91,10 @@ export default function CartPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-gray-100 transition-all group overflow-hidden relative"
+                                    className="p-6 sm:p-8 bg-white border border-gray-100 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm hover:shadow-xl hover:shadow-gray-100 transition-all group overflow-hidden relative"
                                 >
-                                    <div className="flex flex-col md:flex-row gap-8 items-center">
-                                        <div className="w-32 h-32 bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100 p-4">
+                                    <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center text-center md:text-left">
+                                        <div className="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100 p-4">
                                             {/* Show customized image if available */}
                                             <img 
                                                 src={item.customDesign?.textures?.front || item.customDesign?.textures?.top || Object.values(item.customDesign?.textures || {}).find(t => t) || item.img || item.image} 
@@ -103,16 +103,16 @@ export default function CartPage() {
                                             />
                                         </div>
 
-                                        <div className="flex-1 space-y-2">
+                                        <div className="flex-1 space-y-2 min-w-0 w-full flex flex-col items-center md:items-start">
                                             <div className="flex items-center gap-3">
                                                 <span className="px-2 py-0.5 bg-gray-950 text-white text-[8px] font-black uppercase tracking-widest rounded">SKU Verified</span>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{item.category || 'General'}</p>
                                             </div>
-                                            <h3 className="text-2xl font-black text-gray-950 tracking-tighter uppercase group-hover:text-emerald-500 transition-colors">{(item.name || '').replace(/\s+[A-Z][A-Z\s]*BOX\s*$/i, '').replace(/_[A-Z][A-Z\s]*BOX\s*$/i, '') || item.name}</h3>
-                                            <p className="text-xs font-bold text-gray-400 italic">Customization pending team approval</p>
+                                            <h3 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tighter uppercase group-hover:text-emerald-500 transition-colors break-words">{(item.name || '').replace(/\s+[A-Z][A-Z\s]*BOX\s*$/i, '').replace(/_[A-Z][A-Z\s]*BOX\s*$/i, '') || item.name}</h3>
+                                            <p className="text-[10px] sm:text-xs font-bold text-gray-400 italic">Customization pending team approval</p>
                                         </div>
 
-                                        <div className="flex items-center gap-8 px-8 border-x border-gray-100 h-16">
+                                        <div className="flex items-center gap-8 px-0 md:px-8 md:border-x border-gray-100 h-auto md:h-16 w-full md:w-auto justify-between md:justify-center border-y md:border-y-0 py-4 md:py-0 border-gray-50">
                                             <div className="flex items-center bg-gray-50 rounded-xl p-1">
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity - (item.customDesign ? 100 : 10))}
@@ -135,9 +135,10 @@ export default function CartPage() {
                                             </div>
                                         </div>
 
-                                        <div className="text-right min-w-[140px]">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Production Total</p>
-                                            <h4 className="text-xl font-black text-gray-950 tracking-tighter">
+                                        <div className="flex items-center justify-between md:justify-end w-full md:w-auto text-right min-w-0 md:min-w-[140px]">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 md:block hidden">Production Total</p>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 md:hidden block">Total:</p>
+                                            <h4 className="text-xl font-black text-gray-950 tracking-tighter shrink-0">
                                                 ₹{(parseFloat(typeof item.price === 'number' ? item.price : item.price.replace(/[^0-9.]/g, '')) * item.quantity).toLocaleString('en-IN')}
                                             </h4>
                                         </div>
@@ -156,8 +157,8 @@ export default function CartPage() {
 
                     {/* Summary Sidebar */}
                     <div className="lg:col-span-4">
-                        <div className="bg-gray-950 rounded-[3rem] p-10 text-white sticky top-32 shadow-2xl shadow-gray-200">
-                            <h3 className="text-3xl font-black tracking-tighter uppercase mb-10 pb-8 border-b border-white/10">Summary.</h3>
+                        <div className="bg-gray-950 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 text-white sticky top-32 shadow-2xl shadow-gray-200">
+                            <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-white/10">Summary.</h3>
 
                             <div className="space-y-6 mb-10">
                                 <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest text-white/40">
@@ -175,7 +176,7 @@ export default function CartPage() {
                                 <div className="pt-6 border-t border-white/10 flex justify-between items-end">
                                     <div>
                                         <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-1">Total Payable</p>
-                                        <h2 className="text-5xl font-black tracking-tighter text-white">₹{cartTotal.toLocaleString('en-IN')}</h2>
+                                        <h2 className="text-4xl sm:text-5xl font-black tracking-tighter text-white">₹{cartTotal.toLocaleString('en-IN')}</h2>
                                     </div>
                                 </div>
                             </div>
@@ -207,11 +208,11 @@ export default function CartPage() {
                 </div>
 
                 {/* Upsell Section */}
-                <section className="mt-40">
-                    <div className="flex items-end justify-between mb-16">
-                        <div>
-                            <h2 className="text-4xl font-black text-gray-950 tracking-tighter uppercase">Recommended for You.</h2>
-                            <p className="text-gray-400 font-medium">Add these to optimize your structural packaging.</p>
+                <section className="mt-20 sm:mt-40">
+                    <div className="flex items-end justify-between mb-8 sm:mb-16">
+                        <div className="text-center sm:text-left w-full sm:w-auto">
+                            <h2 className="text-3xl sm:text-4xl font-black text-gray-950 tracking-tighter uppercase">Recommended for You.</h2>
+                            <p className="text-sm sm:text-base text-gray-400 font-medium">Add these to optimize your structural packaging.</p>
                         </div>
                     </div>
 

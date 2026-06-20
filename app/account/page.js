@@ -551,19 +551,19 @@ function AccountManagementContent() {
                             <span className="w-12 h-[2px] bg-emerald-500"></span>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">Secure Protocol v2.8</span>
                         </div>
-                        <h1 className="text-6xl sm:text-8xl font-black uppercase tracking-tighter text-gray-950 leading-[0.85]">
-                            Account <br /> <span className="text-emerald-500">Settings</span>
+                        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-gray-950 leading-[0.9] sm:leading-[0.85]">
+                            Account <br className="hidden sm:block" /> <span className="text-emerald-500">Settings</span>
                         </h1>
                         <p className="text-gray-400 font-bold tracking-[0.2em] uppercase text-[10px] sm:text-xs flex items-center gap-3 pt-2">
                             <Box size={16} className="text-emerald-500" /> Manage your profile and orders
                         </p>
                     </div>
                     
-                    <div className="relative group">
-                        <div className="absolute -inset-4 bg-emerald-500/5 rounded-[2.5rem] blur-2xl group-hover:bg-emerald-500/10 transition-all duration-500"></div>
-                        <div className="relative flex items-center gap-5 bg-white border border-gray-100 p-4 pr-8 rounded-[2.5rem] shadow-2xl shadow-gray-200/50">
-                            <div className="relative">
-                                <div className="w-16 h-16 rounded-2xl bg-gray-950 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-emerald-500/20 border-2 border-emerald-500/30">
+                    <div className="relative group w-full md:w-auto">
+                        <div className="absolute -inset-2 md:-inset-4 bg-emerald-500/5 rounded-[2rem] md:rounded-[2.5rem] blur-xl md:blur-2xl group-hover:bg-emerald-500/10 transition-all duration-500"></div>
+                        <div className="relative flex items-center gap-4 md:gap-5 bg-white border border-gray-100 p-3 md:p-4 pr-6 md:pr-8 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl shadow-gray-200/50 w-full md:w-auto">
+                            <div className="relative shrink-0">
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gray-950 flex items-center justify-center text-white text-xl md:text-2xl font-black shadow-lg shadow-emerald-500/20 border-2 border-emerald-500/30">
                                     {user?.name?.charAt(0)}
                                 </div>
                                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-white rounded-full"></div>
@@ -647,8 +647,7 @@ function AccountManagementContent() {
                                     key="dashboard"
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -30 }}
-                                    className="bg-white rounded-[4rem] p-12 sm:p-20 shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group/card"
+                                    className="bg-white rounded-[2rem] md:rounded-[4rem] p-6 sm:p-12 md:p-20 shadow-2xl shadow-gray-200/50 border border-gray-100 relative overflow-hidden group/card"
                                 >
                                     {/* Tech Ornament */}
                                     <div className="absolute top-0 right-0 p-12 opacity-[0.05] group-hover/card:opacity-[0.1] transition-opacity duration-700">
@@ -668,8 +667,8 @@ function AccountManagementContent() {
                                             </span>
                                         </h2>
                                         
-                                        <div className="p-8 bg-gray-50 rounded-[3rem] border border-gray-100 mb-12 relative overflow-hidden">
-                                            <p className="text-gray-500 text-xl font-medium leading-relaxed italic relative z-10">
+                                        <div className="p-6 md:p-8 bg-gray-50 rounded-[2rem] md:rounded-[3rem] border border-gray-100 mb-8 md:mb-12 relative overflow-hidden">
+                                            <p className="text-gray-500 text-base md:text-xl font-medium leading-relaxed italic relative z-10">
                                                 From your account dashboard you can view your <button onClick={() => setActiveTab('orders')} className="text-gray-950 font-black hover:text-emerald-600 transition-colors">recent orders</button>, manage your <button onClick={() => setActiveTab('addresses')} className="text-gray-950 font-black hover:text-emerald-600 transition-colors">shipping addresses</button>, and <button onClick={() => setActiveTab('details')} className="text-gray-950 font-black hover:text-emerald-600 transition-colors">edit your password and account details</button>.
                                             </p>
                                             <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
@@ -684,10 +683,9 @@ function AccountManagementContent() {
                                             ].map((item) => (
                                                 <button 
                                                     key={item.id}
-                                                    onClick={() => setActiveTab(item.id)} 
-                                                    className="p-8 bg-white rounded-[2.5rem] border border-gray-100 flex items-center gap-6 group/item hover:bg-gray-950 hover:border-gray-950 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-gray-950/20 text-left"
+                                                    className="p-6 sm:p-8 bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 flex items-center gap-4 sm:gap-6 group/item hover:bg-gray-950 hover:border-gray-950 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-gray-950/20 text-left"
                                                 >
-                                                    <div className={`w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover/item:bg-emerald-500 group-hover/item:text-white transition-all duration-500 shadow-inner group-hover/item:shadow-lg group-hover/item:shadow-emerald-500/30`}>
+                                                    <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-400 group-hover/item:bg-emerald-500 group-hover/item:text-white transition-all duration-500 shadow-inner group-hover/item:shadow-lg group-hover/item:shadow-emerald-500/30 shrink-0`}>
                                                         <item.icon size={28} className="group-hover/item:scale-110 transition-transform duration-500" />
                                                     </div>
                                                     <div>
@@ -1110,8 +1108,7 @@ function AccountManagementContent() {
                                             />
                                         </div>
                                     </div>
-
-                                        <div className="grid grid-cols-3 gap-3 mb-8">
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
                                             {QUOTE_PHASES.map((phase) => {
                                                 const count = quotes.filter((quote) => getClientQuoteStatus(quote.status, quote.assignedVendor) === phase).length;
                                                 return (

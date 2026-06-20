@@ -142,8 +142,7 @@ export default function ContactPage() {
 
                         {/* Right: Forms */}
                         <div className="lg:col-span-7 space-y-12">
-                            {/* Get In Touch Form */}
-                            <div className="bg-gray-50 p-10 sm:p-14 rounded-[4rem] border border-gray-100">
+                            <div className="bg-gray-50 p-8 sm:p-14 rounded-[2.5rem] sm:rounded-[4rem] border border-gray-100">
                                 {submitted ? (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9 }}
@@ -177,7 +176,7 @@ export default function ContactPage() {
                                                     name="name"
                                                     value={formData.name}
                                                     onChange={handleChange}
-                                                    className="w-full px-8 py-5 rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
+                                                    className="w-full px-6 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
                                                     placeholder="Enter Full Name"
                                                 />
                                             </div>
@@ -189,7 +188,7 @@ export default function ContactPage() {
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleChange}
-                                                    className="w-full px-8 py-5 rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
+                                                    className="w-full px-6 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
                                                     placeholder="name@company.com"
                                                 />
                                             </div>
@@ -200,7 +199,7 @@ export default function ContactPage() {
                                                     name="subject"
                                                     value={formData.subject}
                                                     onChange={handleChange}
-                                                    className="w-full px-8 py-5 rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
+                                                    className="w-full px-6 sm:px-8 py-4 sm:py-5 rounded-[1.5rem] sm:rounded-[2rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all"
                                                     placeholder="How can we help?"
                                                 />
                                             </div>
@@ -212,7 +211,7 @@ export default function ContactPage() {
                                                     name="message"
                                                     value={formData.message}
                                                     onChange={handleChange}
-                                                    className="w-full px-8 py-6 rounded-[2.5rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all resize-none"
+                                                    className="w-full px-6 sm:px-8 py-5 sm:py-6 rounded-[2rem] sm:rounded-[2.5rem] bg-white border border-gray-100 focus:border-emerald-500 outline-none font-bold text-sm transition-all resize-none"
                                                     placeholder="Describe your requirement..."
                                                 ></textarea>
                                             </div>

@@ -184,7 +184,7 @@ export default function B2BPage() {
                             <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] sm:text-xs italic">Submit technical specifications for architectural review.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left">
+                        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 text-left">
                             {/* Contact Details */}
                             <div className="space-y-2 sm:space-y-3">
                                 <label className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 sm:ml-6">Company Name</label>
@@ -203,7 +203,7 @@ export default function B2BPage() {
                             <div className="space-y-2 sm:space-y-3">
                                 <label className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 sm:ml-6">Industry Domain</label>
                                 <div className="relative group">
-                                    <select required name="category" value={formData.category} onChange={handleChange} className="w-full px-6 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer text-sm sm:text-base">
+                                    <select required name="category" value={formData.category} onChange={handleChange} className="w-full px-5 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer text-[11px] sm:text-base truncate pr-10">
                                         <option value="">Select Domain</option>
                                         {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                                     </select>
@@ -213,7 +213,7 @@ export default function B2BPage() {
                             <div className="space-y-2 sm:space-y-3">
                                 <label className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 sm:ml-6">Sub Category</label>
                                 <div className="relative group">
-                                    <select required name="subCategory" value={formData.subCategory} onChange={handleChange} disabled={!formData.category} className="w-full px-6 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer disabled:opacity-30 text-sm sm:text-base">
+                                    <select required name="subCategory" value={formData.subCategory} onChange={handleChange} disabled={!formData.category} className="w-full px-5 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer disabled:opacity-30 text-[11px] sm:text-base truncate pr-10">
                                         <option value="">Select Sub-System</option>
                                         {subCategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
                                     </select>
@@ -223,7 +223,7 @@ export default function B2BPage() {
                             <div className="space-y-2 sm:space-y-3">
                                 <label className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 sm:ml-6">Technical Spec</label>
                                 <div className="relative group">
-                                    <select required name="spec" value={formData.spec} onChange={handleChange} disabled={!formData.subCategory} className="w-full px-6 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer disabled:opacity-30 text-sm sm:text-base">
+                                    <select required name="spec" value={formData.spec} onChange={handleChange} disabled={!formData.subCategory} className="w-full px-5 sm:px-8 py-4 sm:py-6 rounded-2xl sm:rounded-3xl bg-white border border-gray-100 focus:border-emerald-500 outline-none transition-all font-black text-gray-950 shadow-sm appearance-none cursor-pointer disabled:opacity-30 text-[11px] sm:text-base truncate pr-10">
                                         <option value="">Select Dimension Node</option>
                                         {specs.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
@@ -307,8 +307,8 @@ export default function B2BPage() {
 
 function FeatureCard({ icon, title, desc }) {
     return (
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="p-8 sm:p-12 md:p-16 rounded-[2.5rem] sm:rounded-[4rem] bg-white border border-gray-100 hover:border-emerald-500/40 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.05)] transition-all group">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2rem] bg-gray-50 flex items-center justify-center text-gray-950 border border-gray-100 group-hover:bg-emerald-500 group-hover:text-white transition-all mb-6 sm:mb-10 shadow-sm ring-4 sm:ring-8 ring-gray-50/50">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="p-6 sm:p-12 md:p-16 rounded-[2rem] sm:rounded-[4rem] bg-white border border-gray-100 hover:border-emerald-500/40 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.05)] transition-all group flex flex-col min-w-0">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-[1.2rem] sm:rounded-[2rem] bg-gray-50 flex items-center justify-center text-gray-950 border border-gray-100 group-hover:bg-emerald-500 group-hover:text-white transition-all mb-5 sm:mb-10 shadow-sm ring-4 sm:ring-8 ring-gray-50/50 shrink-0">
                 {icon}
             </div>
             <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-3 sm:mb-4 text-gray-950 group-hover:text-emerald-600 transition-colors leading-none">{title}</h3>

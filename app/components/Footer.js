@@ -9,21 +9,21 @@ export default function Footer() {
         <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px]" />
       </div>
 
-      <div className="max-w-[1700px] mx-auto px-6 lg:px-16 pt-6 pb-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 items-start">
+      <div className="max-w-[1700px] mx-auto px-6 lg:px-16 pt-10 sm:pt-6 pb-12 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 items-start">
 
           {/* Brand Identity - Minimal */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="col-span-2 lg:col-span-2 space-y-5 md:space-y-6 flex flex-col items-center sm:items-start text-center sm:text-left">
             <Link href="/" className="inline-block">
-              <img src="/BOXFOX-1.png" alt="BoxFox Logo" className="h-8 w-auto object-contain" />
+              <img src="/BOXFOX-1.png" alt="BoxFox Logo" className="h-8 md:h-10 w-auto object-contain" />
             </Link>
-            <h2 className="text-2xl font-black leading-[1.1] tracking-tighter uppercase text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-black leading-[1.1] tracking-tighter uppercase text-gray-900 max-w-[280px] sm:max-w-none">
               Premium <span className="text-emerald-600">Packaging Solutions</span>
             </h2>
-            <p className="text-gray-500 text-sm font-semibold max-w-xs">
+            <p className="text-gray-500 text-sm font-semibold max-w-xs sm:max-w-sm">
               India’s trusted partner for beautiful boxes and custom packaging designs.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center sm:justify-start gap-4">
               {[
                 { Icon: Instagram, href: "https://instagram.com/boxfox", color: "hover:text-pink-600 hover:bg-pink-50" },
                 { Icon: Facebook, href: "https://facebook.com/boxfox", color: "hover:text-blue-600 hover:bg-blue-50" },
@@ -42,7 +42,7 @@ export default function Footer() {
           </div>
 
           {/* Collection Links */}
-          <div className="space-y-6">
+          <div className="col-span-1 space-y-6 text-left">
             <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Collection</h4>
             <ul className="space-y-3">
               {[
@@ -60,7 +60,7 @@ export default function Footer() {
           </div>
 
           {/* Protocol Links */}
-          <div className="space-y-6">
+          <div className="col-span-1 space-y-6 text-left">
             <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Support</h4>
             <ul className="space-y-3">
               {[
@@ -78,9 +78,9 @@ export default function Footer() {
           </div>
 
           {/* Contact - Refined */}
-          <div className="space-y-6">
+          <div className="col-span-2 sm:col-span-2 lg:col-span-1 space-y-6 text-center sm:text-left flex flex-col items-center sm:items-start mt-4 lg:mt-0">
             <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Connect</h4>
-            <div className="space-y-4">
+            <div className="space-y-4 w-full flex flex-col items-center sm:items-start">
               <div className="space-y-1">
                 <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Support</p>
                 <a href="mailto:office.ggn@iopl.co" className="block text-[11px] font-black text-gray-950 hover:text-emerald-600 truncate">office.ggn@iopl.co</a>
@@ -106,9 +106,9 @@ export default function Footer() {
         </div>
 
         {/* Minimal Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gray-50 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mt-12 md:mt-16 pt-8 border-t border-gray-50 flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
-            <p className="text-[10px] font-black text-gray-950 tracking-[0.2em] uppercase" suppressHydrationWarning>
+            <p className="text-[9px] md:text-[10px] font-black text-gray-950 tracking-[0.2em] uppercase" suppressHydrationWarning>
               &copy; 2020-{new Date().getFullYear()} Indo Omakase Pvt Ltd. All Rights Reserved
             </p>
             <span className="hidden md:block w-px h-3 bg-gray-200"></span>
@@ -116,13 +116,13 @@ export default function Footer() {
               href="https://www.synchronousbuilddigital.com/" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-[9px] font-black text-gray-400 hover:text-emerald-600 tracking-[0.2em] uppercase transition-all flex items-center gap-1.5"
+              className="text-[8px] md:text-[9px] font-black text-gray-400 hover:text-emerald-600 tracking-[0.2em] uppercase transition-all flex items-center gap-1.5"
             >
               Built by Synchronous Build Digital
               <ExternalLink size={10} strokeWidth={3} />
             </a>
           </div>
-          <div className="flex gap-8 uppercase tracking-[0.2em] font-black text-[9px] text-gray-950">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 uppercase tracking-[0.2em] font-black text-[8px] md:text-[9px] text-gray-950">
             {[
               { name: "Privacy Policy", href: "/privacy" },
               { name: "Terms and Conditions", href: "/terms" }

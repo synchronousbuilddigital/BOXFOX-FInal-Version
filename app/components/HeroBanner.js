@@ -105,7 +105,7 @@ export default function HeroBanner() {
 
       {/* ── Slider fills the half-hero area ── */}
       <div
-        className="relative w-full h-[250px] sm:h-[400px] md:h-[500px] group"
+        className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -193,7 +193,7 @@ export default function HeroBanner() {
         </AnimatePresence>
 
         {/* ── CTA Overlay (bottom-left) ── */}
-        <div className="hidden sm:block absolute bottom-0 left-0 right-0 z-30 px-6 sm:px-10 lg:px-16 pb-12 sm:pb-16">
+        <div className="absolute bottom-0 left-0 right-0 z-30 px-4 sm:px-10 lg:px-16 pb-8 sm:pb-16 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-20">
           <div className="max-w-xl">
             {/* Eyebrow */}
             <motion.p

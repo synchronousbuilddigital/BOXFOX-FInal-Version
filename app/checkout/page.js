@@ -313,7 +313,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="space-y-6">
-                            <h1 className="text-6xl md:text-7xl font-black text-gray-950 tracking-tighter uppercase leading-none">Manifest<br />Submitted.</h1>
+                            <h1 className="text-5xl md:text-7xl font-black text-gray-950 tracking-tighter uppercase leading-none">Manifest<br />Submitted.</h1>
                             <p className="text-xl text-gray-400 font-medium">Logistics ID #{orderId} is under verification.</p>
                         </div>
 
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                                 <div className="w-8 h-[2px] bg-emerald-500" />
                                 <span className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.4em]">Checkout_Protocol_v2.1</span>
                             </div>
-                            <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black text-gray-950 tracking-tighter uppercase leading-[0.8] mb-2">
+                            <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black text-gray-950 tracking-tighter uppercase leading-[0.9] sm:leading-[0.8] mb-2">
                                 Confirm<br /><span className="text-emerald-500 italic">Shipping.</span>
                             </h1>
                         </motion.div>
@@ -432,7 +432,7 @@ export default function CheckoutPage() {
                                     exit={{ opacity: 0, y: -20 }}
                                     className="space-y-12"
                                 >
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                         <div className="space-y-3 group">
                                             <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4 group-focus-within:text-emerald-500 transition-colors">
                                                 <div className="w-1.5 h-1.5 bg-current rounded-full" /> Full Name <span className="text-red-500">*</span>
@@ -497,7 +497,7 @@ export default function CheckoutPage() {
                                                     <button
                                                         key={idx}
                                                         onClick={() => handleSelectSavedAddress(addr, idx)}
-                                                        className={`group p-8 rounded-[2.5rem] border text-left transition-all relative overflow-hidden ${selectedAddressIndex === idx
+                                                        className={`group p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border text-left transition-all relative overflow-hidden ${selectedAddressIndex === idx
                                                                 ? 'bg-gray-950 border-gray-950 text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)]'
                                                                 : 'bg-gray-50 border-gray-100 hover:border-emerald-200 hover:bg-white'
                                                             }`}
@@ -521,7 +521,7 @@ export default function CheckoutPage() {
                                         </div>
                                     )}
 
-                                    <div className="bg-gray-50/50 p-8 md:p-12 rounded-[3.5rem] border border-gray-100 space-y-10">
+                                    <div className="bg-gray-50/50 p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 space-y-6 sm:space-y-10">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-4 group">
                                                 <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 group-focus-within:text-emerald-500 transition-colors">Street Mapping <span className="text-red-500">*</span></label>

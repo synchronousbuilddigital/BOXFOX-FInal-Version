@@ -109,40 +109,39 @@ export default function AnalyticsPage() {
 
     return (
         <div className="space-y-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                <div>
-                    <h1 className="text-4xl font-black text-gray-950 tracking-tighter uppercase">Performance Analytics</h1>
-                    <p className="text-gray-400 font-medium">Deep insights into your packaging lab throughput.</p>
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl md:text-4xl font-black text-gray-950 tracking-tighter uppercase">Performance Analytics</h1>
+                <p className="text-gray-400 font-medium text-sm md:text-base">Deep insights into your packaging lab throughput.</p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Users</p>
+                    <p className="text-xl md:text-2xl font-black text-gray-950">{data.totalCustomers}</p>
                 </div>
-                <div className="flex gap-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm overflow-x-auto max-w-full">
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Users</p>
-                        <p className="text-lg font-black text-gray-950">{data.totalCustomers}</p>
-                    </div>
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Orders</p>
-                        <p className="text-lg font-black text-gray-950">{data.totalOrders}</p>
-                    </div>
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[120px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Gross Rev</p>
-                        <p className="text-lg font-black text-emerald-500">₹{parseFloat(data.totalRevenue || 0).toLocaleString('en-IN')}</p>
-                    </div>
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cart/Wish</p>
-                        <p className="text-lg font-black text-gray-950">{data.totalWishlistItems + data.totalCartItems}</p>
-                    </div>
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Items Sold</p>
-                        <p className="text-lg font-black text-gray-950">{data.totalProductsSold || 0}</p>
-                    </div>
-                    <div className="px-4 py-2 border-r border-gray-100 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Discounts</p>
-                        <p className="text-lg font-black text-gray-400 decoration-red-500 line-through">₹{parseFloat(data.totalDiscounts || 0).toLocaleString('en-IN')}</p>
-                    </div>
-                    <div className="px-4 py-2 min-w-[100px]">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Avg Order</p>
-                        <p className="text-lg font-black text-emerald-500">₹{parseFloat(data.avgOrderValue || 0).toLocaleString('en-IN')}</p>
-                    </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Orders</p>
+                    <p className="text-xl md:text-2xl font-black text-gray-950">{data.totalOrders}</p>
+                </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-emerald-100 shadow-sm flex flex-col justify-center bg-emerald-50/30">
+                    <p className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Gross Rev</p>
+                    <p className="text-xl md:text-2xl font-black text-emerald-600 truncate" title={`₹${parseFloat(data.totalRevenue || 0).toLocaleString('en-IN')}`}>₹{parseFloat(data.totalRevenue || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cart/Wish</p>
+                    <p className="text-xl md:text-2xl font-black text-gray-950">{data.totalWishlistItems + data.totalCartItems}</p>
+                </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col justify-center">
+                    <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Items Sold</p>
+                    <p className="text-xl md:text-2xl font-black text-gray-950">{data.totalProductsSold || 0}</p>
+                </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-red-100 shadow-sm flex flex-col justify-center bg-red-50/30">
+                    <p className="text-[9px] md:text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Discounts</p>
+                    <p className="text-xl md:text-2xl font-black text-red-400 decoration-red-400 line-through truncate" title={`₹${parseFloat(data.totalDiscounts || 0).toLocaleString('en-IN')}`}>₹{parseFloat(data.totalDiscounts || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div className="bg-white p-4 md:p-6 rounded-[1.5rem] border border-emerald-100 shadow-sm flex flex-col justify-center bg-emerald-50/30">
+                    <p className="text-[9px] md:text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Avg Order</p>
+                    <p className="text-xl md:text-2xl font-black text-emerald-600 truncate" title={`₹${parseFloat(data.avgOrderValue || 0).toLocaleString('en-IN')}`}>₹{parseFloat(data.avgOrderValue || 0).toLocaleString('en-IN')}</p>
                 </div>
             </div>
 

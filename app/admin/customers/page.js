@@ -83,94 +83,160 @@ export default function CustomersManager() {
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Accessing global registry...</p>
                         </div>
                     ) : (
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-gray-50/50">
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Customer Profile</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Contact Info</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Financial Volume</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Joined Date</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Account Role</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Global Status</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Orders</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Spent</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Cart/Wishlist</th>
-                                    <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {filteredCustomers.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="9" className="px-8 py-20 text-center text-gray-400 font-medium">No customers found</td>
+                        <>
+                            {/* Desktop Table View */}
+                            <table className="hidden lg:table w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50/50">
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Customer Profile</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Contact Info</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Financial Volume</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Joined Date</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Account Role</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Global Status</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Orders</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Total Spent</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Cart/Wishlist</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none text-right">Actions</th>
                                     </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {filteredCustomers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="9" className="px-8 py-20 text-center text-gray-400 font-medium">No customers found</td>
+                                        </tr>
+                                    ) : (
+                                        filteredCustomers.map((user) => (
+                                            <tr key={user._id} className="hover:bg-gray-50/50 transition-colors group">
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-black border border-gray-100">
+                                                            {user.name?.charAt(0) || 'U'}
+                                                        </div>
+                                                        <p className="text-sm font-black text-gray-950">{user.name}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                                                            <Mail size={12} className="text-gray-300" /> {user.email}
+                                                        </div>
+                                                        {user.phone && (
+                                                            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                                                                <Phone size={12} className="text-gray-300" /> {user.phone}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="space-y-1">
+                                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                                                            Total Revenue: <span className="text-emerald-500 font-black text-xs">₹{user.totalSpent?.toLocaleString('en-IN') || 0}</span>
+                                                        </div>
+                                                        <div className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
+                                                            Orders: {user.totalOrders || 0} | Items added: {user.productsOrdered || 0}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap text-xs font-bold text-gray-500">
+                                                    {new Date(user.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${user.role === 'admin' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}>
+                                                        {user.role}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600">
+                                                        Active
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap text-sm font-bold text-gray-950">
+                                                    {user.totalOrders || 0}
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap text-sm font-black text-emerald-500">
+                                                    ₹{(user.totalSpent || 0).toLocaleString('en-IN')}
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap">
+                                                    <div className="flex gap-3 text-xs font-bold text-gray-400">
+                                                        <span title="Cart Items">🛒 {user.cartCount || 0}</span>
+                                                        <span title="Wishlist Items">❤️ {user.wishlistCount || 0}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 whitespace-nowrap text-right">
+                                                    <button onClick={() => handleDelete(user._id)} className="p-2 text-gray-300 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg">
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+
+                            {/* Mobile Card View */}
+                            <div className="lg:hidden divide-y divide-gray-100">
+                                {filteredCustomers.length === 0 ? (
+                                    <div className="p-10 text-center text-gray-400 font-medium">No customers found</div>
                                 ) : (
                                     filteredCustomers.map((user) => (
-                                        <tr key={user._id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-8 py-6 whitespace-nowrap">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-black border border-gray-100">
+                                        <div key={user._id} className="p-5 sm:p-6 space-y-4 hover:bg-gray-50/50 transition-colors">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 font-black border border-gray-100 shrink-0">
                                                         {user.name?.charAt(0) || 'U'}
                                                     </div>
-                                                    <p className="text-sm font-black text-gray-950">{user.name}</p>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-sm font-black text-gray-950 truncate">{user.name}</p>
+                                                        <span className={`inline-block px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest mt-1 ${user.role === 'admin' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}>
+                                                            {user.role}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap">
-                                                <div className="space-y-1">
+                                                <div className="text-right shrink-0">
+                                                    <button onClick={() => handleDelete(user._id)} className="p-2 text-gray-300 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight truncate">
+                                                    <Mail size={12} className="text-gray-300 shrink-0" /> <span className="truncate">{user.email}</span>
+                                                </div>
+                                                {user.phone && (
                                                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                                                        <Mail size={12} className="text-gray-300" /> {user.email}
+                                                        <Phone size={12} className="text-gray-300 shrink-0" /> {user.phone}
                                                     </div>
-                                                    {user.phone && (
-                                                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                                                            <Phone size={12} className="text-gray-300" /> {user.phone}
-                                                        </div>
-                                                    )}
+                                                )}
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                                                    <Calendar size={12} className="text-gray-300 shrink-0" /> Joined {new Date(user.createdAt).toLocaleDateString()}
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap">
-                                                <div className="space-y-1">
-                                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                                                        Total Revenue: <span className="text-emerald-500 font-black text-xs">₹{user.totalSpent?.toLocaleString('en-IN') || 0}</span>
-                                                    </div>
-                                                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
-                                                        Orders: {user.totalOrders || 0} | Items added: {user.productsOrdered || 0}
-                                                    </div>
+                                            </div>
+
+                                            <div className="pt-4 border-t border-gray-50 grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Spent</p>
+                                                    <p className="text-sm font-black text-emerald-500">₹{(user.totalSpent || 0).toLocaleString('en-IN')}</p>
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap text-xs font-bold text-gray-500">
-                                                {new Date(user.createdAt).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${user.role === 'admin' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'}`}>
-                                                    {user.role}
-                                                </span>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap">
-                                                <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600">
-                                                    Active
-                                                </span>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap text-sm font-bold text-gray-950">
-                                                {user.totalOrders || 0}
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap text-sm font-black text-emerald-500">
-                                                ₹{(user.totalSpent || 0).toLocaleString('en-IN')}
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap">
+                                                <div className="text-right">
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Orders</p>
+                                                    <p className="text-sm font-black text-gray-950">{user.totalOrders || 0}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex justify-between items-center bg-gray-50/50 p-3 rounded-xl border border-gray-100 mt-2">
+                                                <span className="px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-600">Active</span>
                                                 <div className="flex gap-3 text-xs font-bold text-gray-400">
                                                     <span title="Cart Items">🛒 {user.cartCount || 0}</span>
                                                     <span title="Wishlist Items">❤️ {user.wishlistCount || 0}</span>
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-6 whitespace-nowrap text-right">
-                                                <button onClick={() => handleDelete(user._id)} className="p-2 text-gray-300 hover:text-red-500 transition-all hover:bg-red-50 rounded-lg">
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </div>
                                     ))
                                 )}
-                            </tbody>
-                        </table>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>

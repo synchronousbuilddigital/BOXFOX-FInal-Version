@@ -168,7 +168,7 @@ export default function BestSellersAdmin() {
                         />
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2 space-y-3 custom-scrollbar">
                         {filteredProducts.length === 0 ? (
                             <div className="p-8 text-center text-gray-400 font-bold">No products found.</div>
                         ) : (
@@ -176,11 +176,11 @@ export default function BestSellersAdmin() {
                                 const isAdded = bestSellers.some(p => p._id === product._id);
                                 return (
                                     <div key={product._id} className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${isAdded ? 'bg-gray-50 border-gray-100 opacity-60' : 'bg-white border-gray-100 hover:border-emerald-200 hover:shadow-md'}`}>
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-4 min-w-0 flex-1 pr-3">
                                             <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                                                 <img src={product.img || product.images?.[0] || "/BOXFOX-1.png"} alt={product.name} className="w-full h-full object-cover" />
                                             </div>
-                                            <div className="min-w-0">
+                                            <div className="min-w-0 flex-1">
                                                 <h3 className="text-sm font-black text-gray-950 truncate tracking-tight">{product.name}</h3>
                                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{product.price}</p>
                                             </div>
@@ -216,7 +216,7 @@ export default function BestSellersAdmin() {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2">
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
                         {bestSellers.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
                                 <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center">

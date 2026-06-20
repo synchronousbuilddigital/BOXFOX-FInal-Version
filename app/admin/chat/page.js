@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, User, MessageSquare, Search, RefreshCw, ChevronRight } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminChatPage() {
@@ -69,13 +68,12 @@ export default function AdminChatPage() {
     if (authLoading) return <div className="min-h-screen bg-[#080d14] flex items-center justify-center text-white/30 font-black uppercase tracking-widest italic">Syncing Admin Desk...</div>;
 
     return (
-        <div className="min-h-screen bg-[#080d14] text-white selection:bg-emerald-500/30">
-            <Navbar />
-            <main className="max-w-[1600px] mx-auto px-6 py-32 flex gap-8 h-[calc(100vh-50px)]">
+        <div className="bg-[#080d14] text-white selection:bg-emerald-500/30 -m-4 md:-m-8 p-4 md:p-8 min-h-[calc(100vh-70px)] flex flex-col">
+            <main className="max-w-[1600px] w-full mx-auto flex flex-col lg:flex-row gap-4 lg:gap-8 flex-1">
                 
                 {/* Sidebar - Partners List */}
-                <aside className="w-96 bg-white/5 border border-white/10 rounded-[3rem] overflow-hidden flex flex-col">
-                    <div className="p-8 border-b border-white/5 space-y-6">
+                <aside className="w-full lg:w-96 bg-white/5 border border-white/10 rounded-[2rem] lg:rounded-[3rem] overflow-hidden flex flex-col h-[400px] lg:h-auto shrink-0">
+                    <div className="p-6 lg:p-8 border-b border-white/5 space-y-4 lg:space-y-6">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-black uppercase tracking-tight italic">Messages</h2>
                             <button onClick={loadPartners} className="p-2 hover:bg-white/5 rounded-xl transition-colors"><RefreshCw size={16} /></button>
@@ -90,69 +88,75 @@ export default function AdminChatPage() {
                             <button 
                                 key={partner._id} 
                                 onClick={() => setSelectedPartner(partner)}
-                                className={`w-full p-6 flex items-center gap-4 transition-all border-b border-white/[0.03] ${selectedPartner?._id === partner._id ? 'bg-emerald-500 text-white' : 'hover:bg-white/5'}`}
+                                className={`w-full p-4 lg:p-6 flex items-center gap-4 transition-all border-b border-white/[0.03] ${selectedPartner?._id === partner._id ? 'bg-emerald-500 text-white' : 'hover:bg-white/5'}`}
                             >
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black italic shadow-lg ${selectedPartner?._id === partner._id ? 'bg-white text-emerald-500' : 'bg-white/5 text-white/40'}`}>
+                                <div className={`w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center font-black italic shadow-lg ${selectedPartner?._id === partner._id ? 'bg-white text-emerald-500' : 'bg-white/5 text-white/40'}`}>
                                     {partner.name?.charAt(0)}
                                 </div>
-                                <div className="flex-1 text-left">
-                                    <p className="text-sm font-black uppercase italic tracking-tight">{partner.name}</p>
+                                <div className="flex-1 text-left min-w-0">
+                                    <p className="text-sm font-black uppercase italic tracking-tight truncate">{partner.name}</p>
                                     <p className={`text-[10px] font-bold truncate uppercase tracking-widest ${selectedPartner?._id === partner._id ? 'text-white/70' : 'text-white/30'}`}>{partner.lastMessage}</p>
                                 </div>
-                                {selectedPartner?._id === partner._id && <ChevronRight size={14} />}
+                                {selectedPartner?._id === partner._id && <ChevronRight size={14} className="flex-shrink-0" />}
                             </button>
                         ))}
                     </div>
                 </aside>
 
                 {/* Chat Area */}
-                <section className="flex-1 bg-white/5 border border-white/10 rounded-[3rem] overflow-hidden flex flex-col relative">
+                <section className="flex-1 w-full bg-white/5 border border-white/10 rounded-[2rem] lg:rounded-[3rem] overflow-hidden flex flex-col relative h-[500px] lg:h-auto">
                     {selectedPartner ? (
                         <>
-                            <header className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                            <header className="p-6 lg:p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black italic">
+                                    <button 
+                                        onClick={() => setSelectedPartner(null)} 
+                                        className="lg:hidden p-2 -ml-2 hover:bg-white/5 rounded-xl transition-colors text-white/50 hover:text-white"
+                                    >
+                                        <ChevronRight className="rotate-180" size={20} />
+                                    </button>
+                                    <div className="w-10 h-10 rounded-xl bg-emerald-500 flex-shrink-0 flex items-center justify-center text-white font-black italic">
                                         {selectedPartner.name?.charAt(0)}
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-black uppercase italic tracking-tight">{selectedPartner.name}</p>
-                                        <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em]">{selectedPartner.email}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-black uppercase italic tracking-tight truncate">{selectedPartner.name}</p>
+                                        <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] truncate">{selectedPartner.email}</p>
                                     </div>
                                 </div>
                             </header>
 
-                            <div ref={scrollRef} className="flex-1 overflow-y-auto p-10 space-y-8 custom-scrollbar relative">
+                            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 lg:p-10 space-y-6 lg:space-y-8 custom-scrollbar relative">
                                 <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "30px 30px" }} />
                                 {messages.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.sender === user._id ? 'justify-end' : 'justify-start'} relative z-10`}>
-                                        <div className={`max-w-[70%] p-6 rounded-[2rem] shadow-2xl flex flex-col gap-2 ${msg.sender === user._id ? 'bg-emerald-500 text-white rounded-tr-none' : 'bg-white/10 text-white rounded-tl-none border border-white/10'}`}>
-                                            <p className="text-sm font-medium leading-relaxed italic">{msg.message}</p>
+                                        <div className={`max-w-[85%] lg:max-w-[70%] p-4 lg:p-6 rounded-[1.5rem] lg:rounded-[2rem] shadow-2xl flex flex-col gap-2 ${msg.sender === user._id ? 'bg-emerald-500 text-white rounded-tr-none' : 'bg-white/10 text-white rounded-tl-none border border-white/10'}`}>
+                                            <p className="text-xs lg:text-sm font-medium leading-relaxed italic">{msg.message}</p>
                                             <p className="text-[8px] font-black uppercase tracking-widest opacity-40">{new Date(msg.createdAt).toLocaleTimeString()}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <form onSubmit={handleSend} className="p-8 bg-black/20 border-t border-white/5 flex gap-4">
+                            <form onSubmit={handleSend} className="p-4 lg:p-8 bg-black/20 border-t border-white/5 flex gap-2 lg:gap-4">
                                 <input 
                                     type="text" 
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     placeholder="Reply to user..."
-                                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-emerald-500 transition-all"
+                                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 lg:px-6 py-3 lg:py-4 text-xs lg:text-sm font-bold outline-none focus:border-emerald-500 transition-all"
                                 />
-                                <button type="submit" className="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 active:scale-90">
-                                    <Send size={20} />
+                                <button type="submit" className="w-12 h-12 lg:w-14 lg:h-14 flex-shrink-0 bg-emerald-500 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20 active:scale-90">
+                                    <Send size={18} />
                                 </button>
                             </form>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center opacity-20 text-center space-y-6">
-                            <div className="w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center">
-                                <MessageSquare size={48} />
+                        <div className="flex-1 flex flex-col items-center justify-center opacity-20 text-center space-y-6 p-6">
+                            <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-[2rem] lg:rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center">
+                                <MessageSquare size={40} className="lg:w-12 lg:h-12" />
                             </div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter italic">Select a Conversation</h3>
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] max-w-xs">Resolve user inquiries and manage brand communications in real-time.</p>
+                            <h3 className="text-xl lg:text-2xl font-black uppercase tracking-tighter italic">Select a Conversation</h3>
+                            <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.4em] max-w-xs">Resolve user inquiries and manage brand communications in real-time.</p>
                         </div>
                     )}
                 </section>

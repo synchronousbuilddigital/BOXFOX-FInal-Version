@@ -232,7 +232,7 @@ function QuoteForm() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <input type="text" placeholder="Full Name" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-emerald-500" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
         <input type="email" placeholder="Business Email" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-emerald-500" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
         <input type="tel" placeholder="Phone Number" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-emerald-500" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} required />
@@ -246,10 +246,10 @@ function QuoteForm() {
             onClick={() => setOpenGiftDropdown(!openGiftDropdown)}
             className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-emerald-500 text-left flex items-center justify-between hover:border-emerald-300 transition-colors"
           >
-            <span className={formData.giftType ? 'text-gray-900' : 'text-gray-400'}>
+            <span className={`${formData.giftType ? 'text-gray-900' : 'text-gray-400'} truncate min-w-0 flex-1`}>
               {formData.giftType || 'Select Gift Box Type'}
             </span>
-            <ChevronDown size={16} className={`transition-transform ${openGiftDropdown ? 'rotate-180' : ''}`} />
+            <ChevronDown size={16} className={`transition-transform shrink-0 ml-2 ${openGiftDropdown ? 'rotate-180' : ''}`} />
           </button>
 
           {openGiftDropdown && (
@@ -277,18 +277,18 @@ function QuoteForm() {
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic underline decoration-emerald-500/30 underline-offset-4">Gift Specifications</p>
         {formData.items.map((item, i) => (
           <div key={i} className="space-y-3">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Product Name Dropdown */}
-              <div className="col-span-2 relative">
+              <div className="sm:col-span-2 relative">
                 <button
                   type="button"
                   onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
                   className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-emerald-500 text-left flex items-center justify-between hover:border-emerald-300 transition-colors"
                 >
-                  <span className={item.productName ? 'text-gray-900' : 'text-gray-400'}>
+                  <span className={`${item.productName ? 'text-gray-900' : 'text-gray-400'} truncate min-w-0 flex-1`}>
                     {item.productName || 'Select Product'}
                   </span>
-                  <ChevronDown size={16} className={`transition-transform ${openDropdown === i ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={16} className={`transition-transform shrink-0 ml-2 ${openDropdown === i ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown Menu */}
@@ -332,10 +332,10 @@ function QuoteForm() {
                 onClick={() => setOpenGiftDropdownIndex(openGiftDropdownIndex === i ? null : i)}
                 className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-3 text-xs font-bold outline-none focus:border-emerald-500 text-left flex items-center justify-between hover:border-emerald-300 transition-colors"
               >
-                <span className={item.gift ? 'text-gray-900' : 'text-gray-400'}>
+                <span className={`${item.gift ? 'text-gray-900' : 'text-gray-400'} truncate min-w-0 flex-1`}>
                   {item.gift || 'Select Gift Option (optional)'}
                 </span>
-                <ChevronDown size={16} className={`transition-transform ${openGiftDropdownIndex === i ? 'rotate-180' : ''}`} />
+                <ChevronDown size={16} className={`transition-transform shrink-0 ml-2 ${openGiftDropdownIndex === i ? 'rotate-180' : ''}`} />
               </button>
 
               {openGiftDropdownIndex === i && (

@@ -189,51 +189,38 @@ export default function LabConfigAdmin() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FDFDFD] text-gray-950 font-sans">
-            {/* Optimized Header */}
-            <header className="fixed top-0 w-full bg-white/90 backdrop-blur-2xl border-b border-gray-100 z-[100]">
-                <div className="max-w-[1600px] mx-auto px-8 h-20 flex items-center justify-between relative">
-                    <div className="flex items-center gap-8">
-                        <Link href="/admin" className="flex items-center gap-2 group">
-                            <div className="w-9 h-9 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-gray-950 group-hover:text-white transition-all">
-                                <ArrowLeft size={16} />
-                            </div>
-                        </Link>
-
-                        <div className="flex flex-col">
-                            <h1 className="text-base font-black uppercase tracking-tight leading-none">
-                                Lab <span className="text-emerald-500 italic">Config</span>
-                            </h1>
-                        </div>
-                    </div>
-
-                    {/* Centered Tab Switcher */}
-                    <div className="absolute left-1/2 -translate-x-1/2 flex bg-gray-100/50 p-1 rounded-xl border border-gray-100">
-                        <button
-                            onClick={() => setActiveTab('hierarchy')}
-                            className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'hierarchy' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
-                        >
-                            Hierarchy
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('specifications')}
-                            className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'specifications' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
-                        >
-                            Standard Sizes
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('pricing')}
-                            className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'pricing' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
-                        >
-                            Pricing
-                        </button>
-                    </div>
-
-
+        <div className="space-y-10 max-w-[1600px] mx-auto pb-24">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-black text-gray-950 tracking-tighter uppercase leading-none">
+                        Lab <span className="text-emerald-500 italic">Config</span>
+                    </h1>
+                    <p className="text-gray-400 font-medium text-sm md:text-base mt-2">Manage hierarchies, specifications, and pricing configurations.</p>
                 </div>
-            </header>
 
-            <main className="pt-32 pb-24 px-8 max-w-[1600px] mx-auto">
+                <div className="flex bg-gray-100/50 p-1 rounded-xl border border-gray-100 overflow-x-auto self-start">
+                    <button
+                        onClick={() => setActiveTab('hierarchy')}
+                        className={`px-4 lg:px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeTab === 'hierarchy' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
+                    >
+                        Hierarchy
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('specifications')}
+                        className={`px-4 lg:px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeTab === 'specifications' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
+                    >
+                        Standard Sizes
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('pricing')}
+                        className={`px-4 lg:px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${activeTab === 'pricing' ? 'bg-white text-gray-950 shadow-sm border border-gray-100' : 'text-gray-400 hover:text-gray-500'}`}
+                    >
+                        Pricing
+                    </button>
+                </div>
+            </div>
+
+            <div className="w-full">
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-60 gap-6">
                         <div className="relative">
@@ -654,7 +641,7 @@ export default function LabConfigAdmin() {
                         ) : null}
                     </AnimatePresence>
                 )}
-            </main>
+            </div>
         </div>
     );
 }
