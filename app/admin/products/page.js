@@ -1644,61 +1644,93 @@ export default function ProductsManager() {
                                                         </div>
                                                         <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
                                                     </label>
-
                                                     {/* Image Thumbnails */}
-                                                    {formData.images.split(',').map((url, i) => url.trim() && (
-                                                        <div key={i} className="w-[160px] md:w-auto shrink-0 snap-start aspect-square rounded-2xl md:rounded-[2rem] border border-gray-100 overflow-hidden relative bg-gray-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                                            <img src={url.trim()} className="w-full h-full object-contain p-2 text-[10px] text-gray-400 font-medium flex items-center justify-center" alt={`Product ${i + 1}`} />
+                                                    {(formData.images || '').split(',').map((url, i) => {
+                                                        const trimmedUrl = url.trim();
+                                                        if (!trimmedUrl) return null;
+                                                        return (
+                                                            <div key={i} className="w-[160px] md:w-auto shrink-0 snap-start flex flex-col justify-between p-3 bg-white border border-gray-100 rounded-2xl md:rounded-[2rem] shadow-sm hover:shadow-md transition-all duration-300 group relative">
+                                                                <div className="flex flex-col gap-3">
+                                                                    {/* Image Container */}
+                                                                    <div className="aspect-square rounded-xl md:rounded-[1.5rem] overflow-hidden relative bg-gray-50 flex items-center justify-center border border-gray-50">
+                                                                        <img src={trimmedUrl} className="w-full h-full object-contain p-2" alt={`Product ${i + 1}`} />
+                                                                        
+                                                                        {/* Download Icon on Hover */}
+                                                                        <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleDownload(trimmedUrl, `${formData.name}_img_${i + 1}`)}
+                                                                                className="p-1.5 bg-white/95 backdrop-blur-sm text-gray-700 hover:text-gray-900 rounded-lg transition-all shadow-sm flex items-center justify-center"
+                                                                                title="Download Image"
+                                                                            >
+                                                                                <Download size={12} />
+                                                                            </button>
+                                                                        </div>
 
-                                                            {/* Primary Badge */}
-                                                            {i === 0 && (
-                                                                <div className="absolute bottom-2 md:bottom-3 left-2 md:left-3 px-2 py-1 bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md md:rounded-lg shadow-lg z-10">
-                                                                    Primary
+                                                                        {/* Primary Indicator on Image */}
+                                                                        {i === 0 && (
+                                                                            <div className="absolute top-2 left-2 px-2 py-0.5 bg-emerald-500 text-white text-[8px] font-black uppercase tracking-widest rounded-md shadow-sm z-10">
+                                                                                Primary
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* Text and Primary Status */}
+                                                                    <div className="flex items-center justify-between px-1">
+                                                                        <span className="text-xs font-black text-gray-800 tracking-tight">Product {i + 1}</span>
+                                                                        {i === 0 ? (
+                                                                            <span className="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Primary</span>
+                                                                        ) : (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newUrls = formData.images.split(',').map(u => u.trim()).filter(Boolean);
+                                                                                    const [moved] = newUrls.splice(i, 1);
+                                                                                    newUrls.unshift(moved);
+                                                                                    setFormData({ ...formData, images: newUrls.join(', ') });
+                                                                                }}
+                                                                                className="text-[9px] font-black uppercase text-emerald-600 hover:text-emerald-700 transition-colors"
+                                                                            >
+                                                                                Make Primary
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                            )}
 
-                                                            {/* Action Overlay */}
-                                                            <div className="absolute inset-0 bg-gray-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const newUrl = prompt('Edit Image URL:', url.trim());
-                                                                        if (newUrl !== null && newUrl !== url.trim()) {
-                                                                            const newUrls = formData.images.split(',').map(u => u.trim()).filter(Boolean);
-                                                                            newUrls[i] = newUrl;
-                                                                            setFormData({ ...formData, images: newUrls.join(', ') });
-                                                                        }
-                                                                    }}
-                                                                    className="w-9 h-9 bg-white text-gray-900 rounded-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
-                                                                    title="Edit URL"
-                                                                >
-                                                                    <Link2 size={16} />
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleDownload(url.trim(), `${formData.name}_img_${i + 1}`)}
-                                                                    className="w-9 h-9 bg-white text-gray-900 rounded-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
-                                                                    title="Download"
-                                                                >
-                                                                    <Download size={16} />
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const urlToDelete = url.trim();
-                                                                        handleCloudinaryDelete(urlToDelete);
-                                                                        const newUrls = formData.images.split(',').map(u => u.trim()).filter(Boolean);
-                                                                        newUrls.splice(i, 1);
-                                                                        setFormData({ ...formData, images: newUrls.join(', ') });
-                                                                    }}
-                                                                    className="w-9 h-9 bg-red-500 text-white rounded-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl"
-                                                                    title="Remove"
-                                                                >
-                                                                    <X size={16} />
-                                                                </button>
+                                                                {/* Actions */}
+                                                                <div className="flex gap-2 justify-between items-center text-[10px] mt-2 pt-2 border-t border-gray-50 px-1">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const newUrl = prompt('Edit Image URL:', trimmedUrl);
+                                                                            if (newUrl !== null && newUrl !== trimmedUrl) {
+                                                                                const newUrls = formData.images.split(',').map(u => u.trim()).filter(Boolean);
+                                                                                newUrls[i] = newUrl;
+                                                                                setFormData({ ...formData, images: newUrls.join(', ') });
+                                                                            }
+                                                                        }}
+                                                                        className="text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-1 font-bold uppercase tracking-wider text-[9px]"
+                                                                    >
+                                                                        <Edit size={10} /> Edit
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            if (confirm('Are you sure you want to remove this image?')) {
+                                                                                handleCloudinaryDelete(trimmedUrl);
+                                                                                const newUrls = formData.images.split(',').map(u => u.trim()).filter(Boolean);
+                                                                                newUrls.splice(i, 1);
+                                                                                setFormData({ ...formData, images: newUrls.join(', ') });
+                                                                            }
+                                                                        }}
+                                                                        className="text-red-400 hover:text-red-600 transition-colors flex items-center gap-1 font-bold uppercase tracking-wider text-[9px]"
+                                                                    >
+                                                                        <Trash2 size={10} /> Remove
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
 
