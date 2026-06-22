@@ -156,6 +156,11 @@ export default function ProductsManager() {
     const [sortBy, setSortBy] = useState('newest'); // newest, name, status
     const ITEMS_PER_PAGE = 20;
 
+    const [categoriesList, setCategoriesList] = useState([]);
+    const [showNewCatInput, setShowNewCatInput] = useState(false);
+    const [newCatName, setNewCatName] = useState('');
+    const [isCreatingCat, setIsCreatingCat] = useState(false);
+
     const [formData, setFormData] = useState({
         name: '',
         sku: '',
@@ -210,8 +215,93 @@ export default function ProductsManager() {
             .catch(() => setLoading(false));
     };
 
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch('/api/admin/box-categories');
+            const json = await res.json();
+            if (res.ok && json.success && Array.isArray(json.data)) {
+                const list = json.data.map(item => ({ _id: item._id, name: item.name }));
+                setCategoriesList(list);
+            } else {
+                setCategoriesList([
+                    "CupCake", "Brownie", "Hamper Box", "Macaron", "Chocolate Box",
+                    "Pastry", "Gifting", "Loaf", "Platter", "Cake Box",
+                    "Burger Box", "Food Box", "Pizza Box", "Wok Box", "Wrap Box",
+                    "Popcorn", "Carry Bag"
+                ].map((name, idx) => ({ _id: `fallback-${idx}`, name })));
+            }
+        } catch (err) {
+            console.error("Failed to fetch categories:", err);
+            setCategoriesList([
+                "CupCake", "Brownie", "Hamper Box", "Macaron", "Chocolate Box",
+                "Pastry", "Gifting", "Loaf", "Platter", "Cake Box",
+                "Burger Box", "Food Box", "Pizza Box", "Wok Box", "Wrap Box",
+                "Popcorn", "Carry Bag"
+            ].map((name, idx) => ({ _id: `fallback-${idx}`, name })));
+        }
+    };
+
+    const handleCreateCategory = async () => {
+        if (!newCatName.trim()) return;
+        setIsCreatingCat(true);
+        try {
+            const res = await fetch('/api/admin/box-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newCatName.trim() })
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                const newCat = { _id: json.data._id, name: json.data.name };
+                setCategoriesList(prev => [...prev, newCat]);
+                setFormData(prev => ({ ...prev, category: newCat.name }));
+                setNewCatName('');
+                setShowNewCatInput(false);
+            } else {
+                alert(json.error || "Failed to create category");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Connection error while creating category");
+        } finally {
+            setIsCreatingCat(false);
+        }
+    };
+
+    const handleDeleteCategory = async () => {
+        const catObj = categoriesList.find(c => c.name === formData.category);
+        if (!catObj) return;
+
+        if (!catObj._id || catObj._id.startsWith('fallback-')) {
+            alert("Cannot delete standard fallback categories.");
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete the category "${catObj.name}"? This will not delete the products under it.`)) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/box-categories?id=${catObj._id}`, {
+                method: 'DELETE'
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                setCategoriesList(prev => prev.filter(c => c._id !== catObj._id));
+                const remaining = categoriesList.filter(c => c._id !== catObj._id);
+                setFormData(prev => ({ ...prev, category: remaining[0]?.name || '' }));
+            } else {
+                alert(json.error || "Failed to delete category");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Connection error while deleting category");
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
+        fetchCategories();
     }, []);
 
     const handleImageUpload = async (e) => {
@@ -990,23 +1080,9 @@ export default function ProductsManager() {
                     >
                         <option value="All">All Categories</option>
                         <option value="Pending SKU">Pending SKU</option>
-                        <option value="CupCake">CupCake</option>
-                        <option value="Brownie">Brownie</option>
-                        <option value="Hamper Box">Hamper Box</option>
-                        <option value="Macaron">Macaron</option>
-                        <option value="Chocolate Box">Chocolate Box</option>
-                        <option value="Pastry">Pastry</option>
-                        <option value="Gifting">Gifting</option>
-                        <option value="Loaf">Loaf</option>
-                        <option value="Platter">Platter</option>
-                        <option value="Cake Box">Cake Box</option>
-                        <option value="Burger Box">Burger Box</option>
-                        <option value="Food Box">Food Box</option>
-                        <option value="Pizza Box">Pizza Box</option>
-                        <option value="Wok Box">Wok Box</option>
-                        <option value="Wrap Box">Wrap Box</option>
-                        <option value="Popcorn">Popcorn</option>
-                        <option value="Carry Bag">Carry Bag</option>
+                        {categoriesList.map(cat => (
+                            <option key={cat._id} value={cat.name}>{cat.name}</option>
+                        ))}
                     </select>
                     <Filter size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
@@ -1302,30 +1378,68 @@ export default function ProductsManager() {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div className="space-y-2">
-                                                    <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Category</label>
-                                                    <select
-                                                        value={formData.category}
-                                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-bold text-gray-950 focus:ring-2 focus:ring-gray-950/5 outline-none transition-all appearance-none"
-                                                    >
-                                                        <option value="CupCake">CupCake</option>
-                                                        <option value="Brownie">Brownie</option>
-                                                        <option value="Hamper Box">Hamper Box</option>
-                                                        <option value="Macaron">Macaron</option>
-                                                        <option value="Chocolate Box">Chocolate Box</option>
-                                                        <option value="Pastry">Pastry</option>
-                                                        <option value="Gifting">Gifting</option>
-                                                        <option value="Loaf">Loaf</option>
-                                                        <option value="Platter">Platter</option>
-                                                        <option value="Cake Box">Cake Box</option>
-                                                        <option value="Burger Box">Burger Box</option>
-                                                        <option value="Food Box">Food Box</option>
-                                                        <option value="Pizza Box">Pizza Box</option>
-                                                        <option value="Wok Box">Wok Box</option>
-                                                        <option value="Wrap Box">Wrap Box</option>
-                                                        <option value="Popcorn">Popcorn</option>
-                                                        <option value="Carry Bag">Carry Bag</option>
-                                                    </select>
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Category</label>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowNewCatInput(!showNewCatInput)}
+                                                            className="text-[10px] font-black text-emerald-600 uppercase tracking-widest hover:underline"
+                                                        >
+                                                            {showNewCatInput ? "Cancel" : "+ New Category"}
+                                                        </button>
+                                                    </div>
+
+                                                    {showNewCatInput ? (
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={newCatName}
+                                                                onChange={e => setNewCatName(e.target.value)}
+                                                                placeholder="New Category Name"
+                                                                className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm font-bold text-gray-950 focus:ring-2 focus:ring-gray-950/5 outline-none transition-all"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                disabled={isCreatingCat}
+                                                                onClick={handleCreateCategory}
+                                                                className="px-4 py-2 bg-emerald-500 text-white rounded-xl font-black text-xs uppercase hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                                            >
+                                                                {isCreatingCat ? "Saving..." : "Add"}
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex gap-2">
+                                                            <div className="relative flex-1">
+                                                                <select
+                                                                    value={formData.category}
+                                                                    onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-bold text-gray-950 focus:ring-2 focus:ring-gray-950/5 outline-none transition-all appearance-none pr-12"
+                                                                >
+                                                                    {categoriesList.map(cat => (
+                                                                        <option key={cat._id} value={cat.name}>{cat.name}</option>
+                                                                    ))}
+                                                                </select>
+                                                                <Filter size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                                            </div>
+
+                                                            {(() => {
+                                                                const catObj = categoriesList.find(c => c.name === formData.category);
+                                                                const isCustom = catObj && catObj._id && !catObj._id.startsWith('fallback-');
+                                                                if (!isCustom) return null;
+
+                                                                return (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={handleDeleteCategory}
+                                                                        className="p-3 bg-red-50 text-red-500 rounded-xl md:rounded-2xl border border-red-100 hover:bg-red-100 transition-all flex items-center justify-center shadow-sm shrink-0"
+                                                                        title="Delete Category"
+                                                                    >
+                                                                        <Trash2 size={18} />
+                                                                    </button>
+                                                                );
+                                                            })()}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Badge (Optional)</label>

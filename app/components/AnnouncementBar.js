@@ -38,20 +38,24 @@ export default function AnnouncementBar() {
 
 
   return (
-    <div className="w-full bg-gray-950 text-white border-b border-white/10 overflow-hidden" suppressHydrationWarning>
-      <div className="py-1.5 flex whitespace-nowrap animate-marquee">
-        <div className="flex shrink-0">
+    <div className="w-full bg-gray-950 text-white border-b border-white/10 overflow-hidden relative" suppressHydrationWarning>
+      {/* Side Fade Gradient Overlays for Premium Aesthetic */}
+      <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-gray-950 to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-gray-950 to-transparent z-10 pointer-events-none" />
+
+      <div className="py-2.5 flex whitespace-nowrap animate-marquee">
+        <div className="flex shrink-0 items-center">
           {[...Array(6)].map((_, i) => (
-            <p key={i} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-0 text-white px-12">
+            <span key={i} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
               {announcement.text}
-            </p>
+            </span>
           ))}
         </div>
-        <div className="flex shrink-0">
+        <div className="flex shrink-0 items-center">
           {[...Array(6)].map((_, i) => (
-            <p key={`copy-${i}`} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-0 text-white px-12">
+            <span key={`copy-${i}`} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
               {announcement.text}
-            </p>
+            </span>
           ))}
         </div>
       </div>

@@ -46,7 +46,7 @@ async function getWishlistIdSet() {
   return wishlistIdsPromise;
 }
 
-export default function ProductCard({ product, imageOnly = false, priority = false }) {
+export default function ProductCard({ product, imageOnly = false, priority = false, isSmall = false }) {
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -101,7 +101,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
     return (
       <Link
         href={`/products/${routeId}`}
-        className="group relative block aspect-4/5 overflow-hidden rounded-4xl bg-white shadow-sm transition-all hover:shadow-2xl hover:-translate-y-2 p-4"
+        className={`group relative block aspect-4/5 overflow-hidden rounded-4xl bg-white shadow-sm transition-all hover:shadow-2xl hover:-translate-y-2 mx-auto w-full ${isSmall ? 'p-2 max-w-[220px] sm:max-w-[260px]' : 'p-4 max-w-[300px] sm:max-w-[340px]'}`}
         aria-label={name}
       >
         <Image
@@ -140,8 +140,8 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
   }
 
   return (
-    <Link href={`/products/${routeId}`} className="group flex flex-col h-full relative">
-      <div className="relative mb-4 sm:mb-5 aspect-4/5 overflow-hidden rounded-2xl sm:rounded-4xl bg-gray-50 border border-gray-950/8 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-emerald-500/10 group-hover:border-gray-950/20 p-2 sm:p-5">
+    <Link href={`/products/${routeId}`} className={`group flex flex-col h-full relative mx-auto w-full ${isSmall ? 'max-w-[220px] sm:max-w-[260px]' : 'max-w-[300px] sm:max-w-[340px]'}`}>
+      <div className={`relative aspect-4/5 overflow-hidden rounded-2xl sm:rounded-4xl bg-gray-50 border border-gray-950/8 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-emerald-500/10 group-hover:border-gray-950/20 ${isSmall ? 'mb-2 sm:mb-3 p-1.5 sm:p-3' : 'mb-4 sm:mb-5 p-2 sm:p-5'}`}>
         <Image
           src={img || "/BOXFOX-1.png"}
           alt={name || 'Product image'}
@@ -229,7 +229,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
       </div>
 
       <div className="flex flex-col grow px-1.5 pb-2">
-        <h3 className="text-[12px] sm:text-lg font-black text-gray-950 leading-[1.1] tracking-tighter uppercase line-clamp-2 group-hover:text-emerald-500 transition-colors">
+        <h3 className={`font-black text-gray-950 leading-[1.1] tracking-tighter uppercase line-clamp-2 group-hover:text-emerald-500 transition-colors ${isSmall ? 'text-[10px] sm:text-[13px]' : 'text-[12px] sm:text-lg'}`}>
           {name}
         </h3>
         {(() => {
@@ -258,7 +258,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
 
         <div className="flex flex-wrap items-center justify-between mt-auto pt-2 gap-1.5 sm:gap-2">
           <div className="flex flex-col justify-center min-w-0">
-            <span className="text-sm sm:text-xl font-black text-gray-950 tracking-tighter leading-none">
+            <span className={`font-black text-gray-950 tracking-tighter leading-none ${isSmall ? 'text-xs sm:text-base' : 'text-sm sm:text-xl'}`}>
               {(() => {
                 // Try tiered pricing first (New Logic: 1, 10, 50, 100, 500, 1000)
                 if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000) {
@@ -293,10 +293,10 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             )}
           </div>
 
-          <div className="flex items-center justify-center gap-1.5 px-2.5 sm:px-4 py-2 sm:py-2.5 bg-gray-50 text-gray-500 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest group-hover:bg-gray-100 group-hover:text-gray-900 transition-all shadow-sm border border-gray-150 shrink-0">
+          <div className={`flex items-center justify-center gap-1 bg-gray-50 text-gray-500 rounded-full font-black uppercase tracking-widest group-hover:bg-gray-100 group-hover:text-gray-900 transition-all shadow-sm border border-gray-150 shrink-0 ${isSmall ? 'px-2 py-1.5 text-[7px] sm:text-[9px]' : 'px-2.5 sm:px-4 py-2 sm:py-2.5 text-[8px] sm:text-[10px]'}`}>
             <span className="hidden xs:inline">Details</span>
             <span className="xs:hidden">View</span>
-            <ArrowUpRight size={11} className="sm:w-3.5 sm:h-3.5 opacity-50" />
+            <ArrowUpRight size={isSmall ? 9 : 11} className="opacity-50" />
           </div>
 
           <button
@@ -311,7 +311,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
               }, 400);
             }}
             disabled={isAdding}
-            className={`flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-emerald-600 text-white rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 shrink-0 ${isAdding ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`flex items-center justify-center gap-1 bg-emerald-600 text-white rounded-full font-black uppercase tracking-widest hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/20 shrink-0 ${isAdding ? 'opacity-70 cursor-not-allowed' : ''} ${isSmall ? 'px-2.5 py-1.5 text-[7px] sm:text-[9px]' : 'px-3 sm:px-5 py-2 sm:py-2.5 text-[8px] sm:text-[10px]'}`}
           >
             {isAdding ? (
               <span className="flex items-center gap-1">

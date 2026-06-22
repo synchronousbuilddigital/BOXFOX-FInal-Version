@@ -8,7 +8,7 @@ const PAGE_SIZE = 20;
 
 // Memoized ProductCard to prevent re-renders when parent updates
 const MemoProductCard = React.memo(ProductCard, (prev, next) => {
-  return prev.product === next.product;
+  return prev.product === next.product && prev.isSmall === next.isSmall;
 });
 
 export default function ProductSection({ searchQuery = "", category = "All", priceRange = "all", sortBy = "default", targetPage = "shop", gridCols }) {
@@ -191,7 +191,7 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
             >
               {pageProducts.map((product, index) => (
                 <div key={product._id || product.id || `product-${index}`} className="h-full">
-                  <MemoProductCard product={product} />
+                  <MemoProductCard product={product} isSmall={targetPage === 'gift'} />
                 </div>
               ))}
             </motion.div>
