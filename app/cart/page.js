@@ -107,6 +107,12 @@ export default function CartPage() {
                                             <div className="flex items-center gap-3">
                                                 <span className="px-2 py-0.5 bg-gray-950 text-white text-[8px] font-black uppercase tracking-widest rounded">SKU Verified</span>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{item.category || 'General'}</p>
+                                                {item.selectedColor && (
+                                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-md px-2 py-0.5 shrink-0">
+                                                        <span className="w-2.5 h-2.5 rounded-full border border-gray-300 shrink-0" style={{ backgroundColor: item.selectedColor }} />
+                                                        <span className="text-[8px] font-black text-gray-650 uppercase tracking-wider">{item.selectedColor.toUpperCase()}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                             <h3 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tighter uppercase group-hover:text-emerald-500 transition-colors break-words">{(item.name || '').replace(/\s+[A-Z][A-Z\s]*BOX\s*$/i, '').replace(/_[A-Z][A-Z\s]*BOX\s*$/i, '') || item.name}</h3>
                                             <p className="text-[10px] sm:text-xs font-bold text-gray-400 italic">Customization pending team approval</p>

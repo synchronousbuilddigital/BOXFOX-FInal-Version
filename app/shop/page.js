@@ -6,28 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Search, Filter, ChevronDown, SlidersHorizontal, ArrowUpDown, X } from "lucide-react";
 import ProductSection from "../components/ProductSection";
 
-// Canonical category order — matches home page CategorySection exactly
-const CATEGORY_ORDER = [
-    "All",
-    "Pizza Box",
-    "Cake Box",
-    "Burger Box",
-    "Food Box",
-    "Wok Box",
-    "CupCake",
-    "CupCake + Bento",
-    "Gifting",
-    "Hamper Box",
-    "Platter",
-    "Loaf",
-    "Pastry",
-    "Chocolate Box",
-    "Macaron",
-    "Brownie",
-    "Wrap Box",
-    "Popcorn",
-    "Carry Bag",
-];
 
 const PRICE_RANGES = [
     { value: "all",      label: "All Prices" },
@@ -58,7 +36,9 @@ function ShopPageInner() {
     const [priceRange, setPriceRangeState] = useState(() => searchParams.get('price') || "all");
     const [sortBy, setSortByState] = useState(() => searchParams.get('sort') || "default");
 
-    const [categories, setCategories] = useState(CATEGORY_ORDER);
+    const [categories, setCategories] = useState(["All"]);
+    const [showMoreCategories, setShowMoreCategories] = useState(false);
+    const [categorySearchQuery, setCategorySearchQuery] = useState("");
     const [totalProducts, setTotalProducts] = useState(0);
     const [showFilter, setShowFilter] = useState(false); // false | 'cat' | 'filters'
 
@@ -108,6 +88,14 @@ function ShopPageInner() {
                 
                 if (Array.isArray(data)) {
                     console.log("[ShopPage] Data is array with length:", data.length);
+                    
+                    // Extract unique category names dynamically from active products
+                    const uniqueCategories = [
+                        "All",
+                        ...Array.from(new Set(data.filter(p => p.isActive !== false).map(p => p.category).filter(Boolean)))
+                    ];
+                    setCategories(uniqueCategories);
+
                     // Handle both flat array and sections structure
                     let total = 0;
                     if (data.length > 0 && data[0].items) {
@@ -169,14 +157,16 @@ function ShopPageInner() {
                         </div>
                     </div>
 
-                    {/* Desktop Filter Bar */}
-                    <div className="hidden lg:block mt-6">
+                    <div className="hidden lg:block mt-6 relative z-40">
                         {/* Category Row */}
                         <div className="flex items-center gap-2 overflow-x-auto pb-3 scrollbar-none">
-                            {categories.map((cat) => (
+                            {categories.slice(0, 10).map((cat) => (
                                 <button
                                     key={cat}
-                                    onClick={() => setCategory(cat)}
+                                    onClick={() => {
+                                        setCategory(cat);
+                                        setShowMoreCategories(false);
+                                    }}
                                     className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-all duration-200 flex-shrink-0 ${
                                         category === cat
                                             ? 'bg-gray-950 text-white shadow-lg'
@@ -186,6 +176,65 @@ function ShopPageInner() {
                                     {cat}
                                 </button>
                             ))}
+
+                            {categories.length > 10 && (
+                                <div className="relative shrink-0">
+                                    {(() => {
+                                        const isSelectedInDropdown = category !== "All" && !categories.slice(0, 10).includes(category);
+                                        return (
+                                            <button
+                                                onClick={() => setShowMoreCategories(!showMoreCategories)}
+                                                className={`whitespace-nowrap px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-all duration-200 flex items-center gap-1.5 border border-gray-150 ${
+                                                    isSelectedInDropdown
+                                                        ? 'bg-gray-950 text-white shadow-lg'
+                                                        : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {isSelectedInDropdown ? `+ ${category}` : `+ More Categories (${categories.length - 10})`}
+                                                <ChevronDown size={12} className={`transition-transform duration-200 ${showMoreCategories ? 'rotate-180' : ''}`} />
+                                            </button>
+                                        );
+                                    })()}
+
+                                    <AnimatePresence>
+                                        {showMoreCategories && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 8 }}
+                                                className="absolute left-0 mt-2 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl p-3 space-y-3 z-50"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search Categories..."
+                                                    value={categorySearchQuery}
+                                                    onChange={(e) => setCategorySearchQuery(e.target.value)}
+                                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 placeholder-gray-400 outline-none"
+                                                />
+                                                <div className="max-h-60 overflow-y-auto space-y-1 pr-1">
+                                                    {categories.slice(10).filter(cat => cat.toLowerCase().includes(categorySearchQuery.toLowerCase())).map((cat) => (
+                                                        <button
+                                                            key={cat}
+                                                            onClick={() => {
+                                                                setCategory(cat);
+                                                                setShowMoreCategories(false);
+                                                                setCategorySearchQuery("");
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                                                                category === cat
+                                                                    ? 'bg-emerald-500 text-white'
+                                                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-950'
+                                                            }`}
+                                                        >
+                                                            {cat}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )}
                         </div>
 
                         {/* Price + Sort + Clear row */}
@@ -285,26 +334,38 @@ function ShopPageInner() {
                                     initial={{ opacity: 0, y: -8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -8 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-3xl shadow-2xl shadow-gray-200/80 overflow-y-auto max-h-[70vh] p-3 z-50"
+                                    className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-3xl shadow-2xl shadow-gray-200/80 overflow-y-auto max-h-[70vh] p-4 z-50 space-y-3"
                                 >
-                                    <div className="grid grid-cols-3 gap-1.5 mb-3">
-                                        {categories.map((cat) => (
-                                            <button
-                                                key={cat}
-                                                onClick={() => setCategory(cat)}
-                                                className={`px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-center ${
-                                                    category === cat
-                                                        ? 'bg-gray-950 text-white'
-                                                        : 'bg-gray-50 text-gray-500 active:bg-gray-100'
-                                                }`}
-                                            >
-                                                {cat}
-                                            </button>
-                                        ))}
+                                    <input
+                                        type="text"
+                                        placeholder="Search Categories..."
+                                        value={categorySearchQuery}
+                                        onChange={(e) => setCategorySearchQuery(e.target.value)}
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-xs font-bold text-gray-950 placeholder-gray-400 outline-none"
+                                    />
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-[40vh] overflow-y-auto pr-1">
+                                        {categories
+                                            .filter(cat => cat.toLowerCase().includes(categorySearchQuery.toLowerCase()))
+                                            .map((cat) => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={() => setCategory(cat)}
+                                                    className={`px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all text-center truncate ${
+                                                        category === cat
+                                                            ? 'bg-gray-950 text-white'
+                                                            : 'bg-gray-50 text-gray-500 active:bg-gray-100'
+                                                    }`}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
                                     </div>
                                     <button 
-                                        onClick={() => setShowFilter(false)}
-                                        className="w-full py-3 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+                                        onClick={() => {
+                                            setShowFilter(false);
+                                            setCategorySearchQuery("");
+                                        }}
+                                        className="w-full py-4 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
                                     >
                                         Done
                                     </button>

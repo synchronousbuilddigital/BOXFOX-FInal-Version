@@ -18,7 +18,9 @@ import {
     Star,
     FileText,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    SlidersHorizontal,
+    Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { runBoxEngine, calculateTiersFromBase } from '@/lib/boxEngine';
@@ -141,6 +143,27 @@ const ProductRow = React.memo(({ product, onEdit, onDelete, onDuplicate, onRegen
 
 ProductRow.displayName = 'ProductRow';
 
+const DEFAULT_CATEGORIES = [
+    { name: "Pizza Box", index: "01", stats: "HEAT-SAFE", needsBranding: true, image: "/categories/cat_cake.png" },
+    { name: "Cake Box", index: "02", stats: "OIL-SAFE", needsBranding: false, image: "/categories/cat_cake.png" },
+    { name: "Burger Box", index: "03", stats: "DURABLE", needsBranding: true, image: "/categories/cat_cake.png" },
+    { name: "Food Box", index: "04", stats: "FRESH", needsBranding: true, image: "/categories/cat_bento.png" },
+    { name: "Wok Box", index: "05", stats: "LEAK-PROOF", needsBranding: true, image: "/categories/cat_cupcake.png" },
+    { name: "CupCake", index: "06", stats: "DISPLAY", needsBranding: false, image: "/categories/cat_cupcake.png" },
+    { name: "CupCake + Bento", index: "07", stats: "VERSATILE", needsBranding: true, image: "/categories/cat_bento.png" },
+    { name: "Gifting", index: "08", stats: "PREMIUM", needsBranding: false, image: "/categories/cat_gifting.png" },
+    { name: "Hamper Box", index: "09", stats: "DURABLE", needsBranding: false, image: "/categories/cat_hamper.png" },
+    { name: "Platter", index: "10", stats: "PRESENTATION", needsBranding: false, image: "/categories/cat_platter_branded.png" },
+    { name: "Loaf", index: "11", stats: "CLASSIC", needsBranding: false, image: "/categories/cat_loaf_branded.png" },
+    { name: "Pastry", index: "12", stats: "DELICATE", needsBranding: true, image: "/categories/cat_pastry.png" },
+    { name: "Chocolate Box", index: "13", stats: "ARTISANAL", needsBranding: true, image: "/categories/cat_chocolate_box.png" },
+    { name: "Macaron", index: "14", stats: "STYLISH", needsBranding: true, image: "/categories/cat_macaron.png" },
+    { name: "Brownie", index: "15", stats: "COMPACT", needsBranding: true, image: "/categories/cat_brownie.png" },
+    { name: "Wrap Box", index: "16", stats: "CONVENIENT", needsBranding: true, image: "/categories/cat_loaf_branded.png" },
+    { name: "Popcorn", index: "17", stats: "CLASSIC", needsBranding: true, image: "/categories/cat_brownie.png" },
+    { name: "Carry Bag", index: "18", stats: "PREMIUM", needsBranding: true, image: "/categories/cat_gifting.png" }
+];
+
 export default function ProductsManager() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -160,6 +183,19 @@ export default function ProductsManager() {
     const [showNewCatInput, setShowNewCatInput] = useState(false);
     const [newCatName, setNewCatName] = useState('');
     const [isCreatingCat, setIsCreatingCat] = useState(false);
+
+    // New Category Manager States
+    const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+    const [isUploadingCatImage, setIsUploadingCatImage] = useState(false);
+    const [newCatData, setNewCatData] = useState({
+        name: '',
+        image: '',
+        stats: 'DURABLE',
+        needsBranding: false,
+        index: ''
+    });
+    const [editingCatId, setEditingCatId] = useState(null);
+    const [editingCatData, setEditingCatData] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -192,7 +228,8 @@ export default function ProductsManager() {
         pacdoraId: '',
         isActive: true,
         isFeatured: false,
-        pageVisibility: 'shop'
+        pageVisibility: 'shop',
+        colors: []
     });
 
     const fetchProducts = (preservePage = false) => {
@@ -220,24 +257,21 @@ export default function ProductsManager() {
             const res = await fetch('/api/admin/box-categories');
             const json = await res.json();
             if (res.ok && json.success && Array.isArray(json.data)) {
-                const list = json.data.map(item => ({ _id: item._id, name: item.name }));
+                const list = json.data.map(item => ({
+                    _id: item._id,
+                    name: item.name,
+                    image: item.image || '/categories/cat_cake.png',
+                    stats: item.stats || 'DURABLE',
+                    needsBranding: !!item.needsBranding,
+                    index: item.index || '00'
+                }));
                 setCategoriesList(list);
             } else {
-                setCategoriesList([
-                    "CupCake", "Brownie", "Hamper Box", "Macaron", "Chocolate Box",
-                    "Pastry", "Gifting", "Loaf", "Platter", "Cake Box",
-                    "Burger Box", "Food Box", "Pizza Box", "Wok Box", "Wrap Box",
-                    "Popcorn", "Carry Bag"
-                ].map((name, idx) => ({ _id: `fallback-${idx}`, name })));
+                setCategoriesList(DEFAULT_CATEGORIES.map((c, idx) => ({ ...c, _id: `fallback-${idx}` })));
             }
         } catch (err) {
             console.error("Failed to fetch categories:", err);
-            setCategoriesList([
-                "CupCake", "Brownie", "Hamper Box", "Macaron", "Chocolate Box",
-                "Pastry", "Gifting", "Loaf", "Platter", "Cake Box",
-                "Burger Box", "Food Box", "Pizza Box", "Wok Box", "Wrap Box",
-                "Popcorn", "Carry Bag"
-            ].map((name, idx) => ({ _id: `fallback-${idx}`, name })));
+            setCategoriesList(DEFAULT_CATEGORIES.map((c, idx) => ({ ...c, _id: `fallback-${idx}` })));
         }
     };
 
@@ -248,11 +282,24 @@ export default function ProductsManager() {
             const res = await fetch('/api/admin/box-categories', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newCatName.trim() })
+                body: JSON.stringify({
+                    name: newCatName.trim(),
+                    image: '/categories/cat_cake.png',
+                    stats: 'DURABLE',
+                    needsBranding: false,
+                    index: String(categoriesList.length + 1).padStart(2, '0')
+                })
             });
             const json = await res.json();
             if (res.ok && json.success) {
-                const newCat = { _id: json.data._id, name: json.data.name };
+                const newCat = {
+                    _id: json.data._id,
+                    name: json.data.name,
+                    image: json.data.image || '/categories/cat_cake.png',
+                    stats: json.data.stats || 'DURABLE',
+                    needsBranding: !!json.data.needsBranding,
+                    index: json.data.index || '00'
+                };
                 setCategoriesList(prev => [...prev, newCat]);
                 setFormData(prev => ({ ...prev, category: newCat.name }));
                 setNewCatName('');
@@ -296,6 +343,128 @@ export default function ProductsManager() {
         } catch (err) {
             console.error(err);
             alert("Connection error while deleting category");
+        }
+    };
+
+    const handleCatImageUpload = async (e, isEditing) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setIsUploadingCatImage(true);
+        try {
+            const formDataObj = new FormData();
+            formDataObj.append('image', file);
+            formDataObj.append('type', 'product');
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formDataObj
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (isEditing) {
+                    setEditingCatData(prev => ({ ...prev, image: data.url }));
+                } else {
+                    setNewCatData(prev => ({ ...prev, image: data.url }));
+                }
+            } else {
+                alert('Upload failed');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Upload failed: ' + err.message);
+        } finally {
+            setIsUploadingCatImage(false);
+        }
+    };
+
+    const handleSaveCategory = async (catObj) => {
+        try {
+            const isFallback = catObj._id.startsWith('fallback-');
+            const url = '/api/admin/box-categories';
+            const method = isFallback ? 'POST' : 'PUT';
+            const payload = { ...catObj };
+            if (isFallback) {
+                delete payload._id;
+            }
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                alert('Category saved successfully!');
+                setEditingCatId(null);
+                setEditingCatData(null);
+                fetchCategories();
+            } else {
+                alert(json.error || 'Failed to save category');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error saving category');
+        }
+    };
+
+    const handleDeleteCategoryById = async (id, name) => {
+        if (id.startsWith('fallback-')) {
+            alert('Cannot delete standard fallback categories. They are default templates.');
+            return;
+        }
+        if (!confirm(`Are you sure you want to delete the category "${name}"? This will not delete the products under it.`)) {
+            return;
+        }
+        try {
+            const res = await fetch(`/api/admin/box-categories?id=${id}`, {
+                method: 'DELETE'
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                fetchCategories();
+            } else {
+                alert(json.error || 'Failed to delete category');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error deleting category');
+        }
+    };
+
+    const handleAddNewCategory = async () => {
+        if (!newCatData.name.trim()) {
+            alert('Please enter a category name');
+            return;
+        }
+        try {
+            const indexValue = newCatData.index.trim() || String(categoriesList.length + 1).padStart(2, '0');
+            const payload = {
+                name: newCatData.name.trim(),
+                image: newCatData.image || '/categories/cat_cake.png',
+                stats: newCatData.stats.trim() || 'DURABLE',
+                needsBranding: !!newCatData.needsBranding,
+                index: indexValue
+            };
+            const res = await fetch('/api/admin/box-categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json();
+            if (res.ok && json.success) {
+                alert('Category created!');
+                setNewCatData({
+                    name: '',
+                    image: '',
+                    stats: 'DURABLE',
+                    needsBranding: false,
+                    index: ''
+                });
+                fetchCategories();
+            } else {
+                alert(json.error || 'Failed to create category');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error creating category');
         }
     };
 
@@ -532,7 +701,8 @@ export default function ProductsManager() {
                         priceAt50: '',
                         priceAt100: '',
                         isActive: true,
-                        pageVisibility: 'shop'
+                        pageVisibility: 'shop',
+                        colors: []
                     });
                 }, 1500);
             }
@@ -763,8 +933,8 @@ export default function ProductsManager() {
             pacdoraId: product.pacdoraId || '',
             isActive: product.isActive !== false,
             isFeatured: product.isFeatured || false,
-            pageVisibility: product.pageVisibility || 'shop'
-            ,
+            pageVisibility: product.pageVisibility || 'shop',
+            colors: product.colors || [],
             priceAt1: product.priceAt1 || '',
             priceAt50: product.priceAt50 || '',
             priceAt100: product.priceAt100 || ''
@@ -817,6 +987,7 @@ export default function ProductsManager() {
             isActive: product.isActive !== false,
             isFeatured: false,
             pageVisibility: product.pageVisibility || 'shop',
+            colors: product.colors || [],
             priceAt1: product.priceAt1 || '',
             priceAt50: product.priceAt50 || '',
             priceAt100: product.priceAt100 || ''
@@ -906,9 +1077,9 @@ export default function ProductsManager() {
         });
         setFormData({
             ...formData,
-            priceAt1: prices[1],
-            priceAt50: prices[50],
-            priceAt100: prices[100]
+            priceAt1: prices.priceAt1,
+            priceAt50: prices.priceAt50,
+            priceAt100: prices.priceAt100
         });
         alert('Bulk prices updated based on Price @1 and manufacturing ratios.');
     };
@@ -1057,6 +1228,13 @@ export default function ProductsManager() {
                         <RefreshCw size={16} /> <span className="hidden sm:inline">Clean SKUs</span>
                     </button>
                     <button
+                        onClick={() => setIsCatModalOpen(true)}
+                        className="px-4 md:px-6 py-3 md:py-4 bg-white border border-gray-100 text-emerald-600 rounded-xl md:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center gap-2 shadow-sm"
+                        title="Manage Categories"
+                    >
+                        <SlidersHorizontal size={16} /> <span className="hidden sm:inline">Categories</span>
+                    </button>
+                    <button
                         onClick={() => setIsModalOpen(true)}
                         className="w-full sm:w-auto mt-2 sm:mt-0 flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-emerald-500 text-white rounded-xl md:rounded-2xl font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-emerald-500/20 hover:bg-emerald-600"
                     >
@@ -1183,7 +1361,7 @@ export default function ProductsManager() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                
+
                                                 <div className="mt-2 flex flex-wrap gap-1.5">
                                                     <span className="text-[9px] font-black text-gray-950 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 truncate max-w-[120px]">
                                                         {product.sku || 'PENDING'}
@@ -1534,6 +1712,111 @@ export default function ProductsManager() {
                                                 />
                                             </div>
 
+                                            {/* Colors Selection Component */}
+                                            <div className="space-y-4 bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
+                                                <div>
+                                                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-1">Available Colors</label>
+                                                    <p className="text-[10px] text-gray-400 font-medium italic">Define color variants available for this product</p>
+                                                </div>
+
+                                                {/* Selected Colors Swatches */}
+                                                <div className="flex flex-wrap gap-2">
+                                                    {(formData.colors || []).map((colorHex, idx) => (
+                                                        <div key={idx} className="flex items-center gap-2 bg-white border border-gray-100 rounded-xl pl-2 pr-3 py-1.5 shadow-sm text-xs font-bold text-gray-800">
+                                                            <span className="w-5 h-5 rounded-full border border-gray-200 shrink-0" style={{ backgroundColor: colorHex }} />
+                                                            <span>{colorHex.toUpperCase()}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const updatedColors = formData.colors.filter((_, i) => i !== idx);
+                                                                    setFormData({ ...formData, colors: updatedColors });
+                                                                }}
+                                                                className="text-red-500 hover:text-red-700 transition-colors ml-1"
+                                                            >
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                    {(formData.colors || []).length === 0 && (
+                                                        <p className="text-xs font-bold text-gray-400 italic">No colors selected (default options will apply).</p>
+                                                    )}
+                                                </div>
+
+                                                {/* Preset Colors Grid */}
+                                                <div className="space-y-2">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Quick Select Presets</p>
+                                                    <div className="grid grid-cols-5 sm:grid-cols-10 gap-3">
+                                                        {[
+                                                            { name: "Mint Green", hex: "#a3e635" },
+                                                            { name: "Kraft Brown", hex: "#c2a688" },
+                                                            { name: "Luxury White", hex: "#ffffff" },
+                                                            { name: "Elegant Black", hex: "#111827" },
+                                                            { name: "Royal Blue", hex: "#1d4ed8" },
+                                                            { name: "Luxury Gold", hex: "#eab308" },
+                                                            { name: "Rose Pink", hex: "#f472b6" },
+                                                            { name: "Lavender", hex: "#c084fc" },
+                                                            { name: "Soft Ivory", hex: "#fef08a" },
+                                                            { name: "Chocolate Brown", hex: "#78350f" }
+                                                        ].map((preset) => {
+                                                            const isSelected = (formData.colors || []).includes(preset.hex.toLowerCase());
+                                                            return (
+                                                                <button
+                                                                    key={preset.name}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const lowercaseHex = preset.hex.toLowerCase();
+                                                                        let updatedColors = [...(formData.colors || [])];
+                                                                        if (isSelected) {
+                                                                            updatedColors = updatedColors.filter(c => c !== lowercaseHex);
+                                                                        } else {
+                                                                            updatedColors.push(lowercaseHex);
+                                                                        }
+                                                                        setFormData({ ...formData, colors: updatedColors });
+                                                                    }}
+                                                                    title={preset.name}
+                                                                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'border-emerald-500 scale-110 shadow-md shadow-emerald-500/20' : 'border-gray-200 hover:scale-105'}`}
+                                                                    style={{ backgroundColor: preset.hex }}
+                                                                >
+                                                                    {isSelected && (
+                                                                        <Check size={16} className={preset.hex === "#ffffff" || preset.hex === "#fef08a" ? "text-gray-900" : "text-white"} />
+                                                                    )}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+
+                                                {/* Custom Color Input */}
+                                                <div className="flex gap-3 items-end">
+                                                    <div className="space-y-1">
+                                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Custom Color</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="color"
+                                                                id="custom-color-picker"
+                                                                defaultValue="#10b981"
+                                                                className="w-10 h-10 p-0 border-0 rounded-lg cursor-pointer bg-transparent"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const picker = document.getElementById("custom-color-picker");
+                                                                    if (picker) {
+                                                                        const customHex = picker.value.toLowerCase();
+                                                                        if (!(formData.colors || []).includes(customHex)) {
+                                                                            setFormData({ ...formData, colors: [...(formData.colors || []), customHex] });
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="px-4 py-2 bg-emerald-500 text-white rounded-xl font-black text-xs uppercase hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/10 active:scale-95"
+                                                            >
+                                                                Add Color
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div className="space-y-2">
                                                 <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">Pacdora ID / URL (For 3D View)</label>
                                                 <input
@@ -1673,6 +1956,22 @@ export default function ProductsManager() {
                                                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 block mb-1">Standardized Pricing</label>
                                                         <p className="text-[10px] text-gray-400 font-medium italic">Auto-calculate tiers based on manufacturing specs</p>
                                                     </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleRunBoxEngine}
+                                                            className="px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100 rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                                                        >
+                                                            Run Box Engine
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleSyncBulkPrices}
+                                                            className="px-3 py-1.5 bg-gray-950 text-white hover:bg-gray-900 rounded-xl text-xs font-black uppercase tracking-wider transition-all"
+                                                        >
+                                                            Sync from Price @ 1
+                                                        </button>
+                                                    </div>
                                                 </div>
 
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -1768,7 +2067,7 @@ export default function ProductsManager() {
                                                                     {/* Image Container */}
                                                                     <div className="aspect-square rounded-xl md:rounded-[1.5rem] overflow-hidden relative bg-gray-50 flex items-center justify-center border border-gray-50">
                                                                         <img src={trimmedUrl} className="w-full h-full object-contain p-2" alt={`Product ${i + 1}`} />
-                                                                        
+
                                                                         {/* Download Icon on Hover */}
                                                                         <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                                                             <button
@@ -2057,6 +2356,319 @@ export default function ProductsManager() {
                                     </div>
                                 </form>
                             )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Category Manager Modal */}
+            <AnimatePresence>
+                {isCatModalOpen && (
+                    <div className="fixed inset-0 z-100 flex items-center justify-end">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => {
+                                setIsCatModalOpen(false);
+                                setEditingCatId(null);
+                                setEditingCatData(null);
+                            }}
+                            className="absolute inset-0 bg-gray-950/40 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="relative w-full max-w-4xl h-full bg-white shadow-2xl p-6 md:p-10 overflow-y-auto flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between mb-8">
+                                <div>
+                                    <h2 className="text-3xl font-black text-gray-950 tracking-tighter">Manage Categories</h2>
+                                    <p className="text-gray-400 font-medium">Modify home/shop page categories, badges, and upload images.</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setIsCatModalOpen(false);
+                                        setEditingCatId(null);
+                                        setEditingCatData(null);
+                                    }}
+                                    className="p-3 hover:bg-gray-100 rounded-2xl transition-all"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            {/* Main Body Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
+                                {/* Left Panel: Add New Category */}
+                                <div className="space-y-6 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 h-fit">
+                                    <h3 className="text-lg font-black text-gray-950 uppercase tracking-tight">Add New Category</h3>
+
+                                    <div className="space-y-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Category Name</label>
+                                            <input
+                                                type="text"
+                                                value={newCatData.name}
+                                                onChange={e => setNewCatData({ ...newCatData, name: e.target.value })}
+                                                placeholder="e.g. Bento Box"
+                                                className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-950 outline-none shadow-sm focus:ring-2 focus:ring-emerald-500/20"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Index/Order (e.g. 01)</label>
+                                                <input
+                                                    type="text"
+                                                    value={newCatData.index}
+                                                    onChange={e => setNewCatData({ ...newCatData, index: e.target.value })}
+                                                    placeholder="e.g. 19"
+                                                    className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-950 outline-none shadow-sm focus:ring-2 focus:ring-emerald-500/20"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Badge/Stats (e.g. FRESH)</label>
+                                                <input
+                                                    type="text"
+                                                    value={newCatData.stats}
+                                                    onChange={e => setNewCatData({ ...newCatData, stats: e.target.value })}
+                                                    placeholder="e.g. OIL-SAFE"
+                                                    className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-950 outline-none shadow-sm focus:ring-2 focus:ring-emerald-500/20"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Category Image</label>
+                                            <div className="flex items-center gap-3">
+                                                {newCatData.image ? (
+                                                    <div className="w-16 h-16 rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm flex items-center justify-center shrink-0">
+                                                        <img src={newCatData.image} alt="" className="w-full h-full object-cover" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-16 h-16 rounded-xl bg-gray-100 border border-dashed border-gray-200 flex items-center justify-center shrink-0">
+                                                        <ImageIcon className="text-gray-300" size={20} />
+                                                    </div>
+                                                )}
+                                                <div className="flex-grow flex flex-col gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={newCatData.image}
+                                                        onChange={e => setNewCatData({ ...newCatData, image: e.target.value })}
+                                                        placeholder="Image URL or upload"
+                                                        className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2 text-xs font-bold text-gray-950 outline-none shadow-sm focus:ring-2 focus:ring-emerald-500/20"
+                                                    />
+                                                    <label className="w-full py-2 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-emerald-100 active:scale-95 transition-all">
+                                                        {isUploadingCatImage ? 'Uploading...' : 'Upload Image File'}
+                                                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleCatImageUpload(e, false)} />
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-2 border-t border-b border-gray-100">
+                                            <div>
+                                                <p className="text-xs font-black text-gray-950 uppercase tracking-tighter">Needs BOXFOX Branding</p>
+                                                <p className="text-[9px] font-medium text-gray-400">Shows gold logo overlay on card</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewCatData({ ...newCatData, needsBranding: !newCatData.needsBranding })}
+                                                className={`w-10 h-5 rounded-full transition-all duration-300 relative shrink-0 ${newCatData.needsBranding ? 'bg-emerald-500 shadow-lg' : 'bg-gray-200'}`}
+                                            >
+                                                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm ${newCatData.needsBranding ? 'right-0.5' : 'left-0.5'}`} />
+                                            </button>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleAddNewCategory}
+                                            className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-emerald-500/10 active:scale-95"
+                                        >
+                                            Create Category
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Right Panel: Category List */}
+                                <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2">
+                                    <h3 className="text-lg font-black text-gray-950 uppercase tracking-tight">Active Categories ({categoriesList.length})</h3>
+
+                                    <div className="space-y-3">
+                                        {categoriesList.map(cat => {
+                                            const isEditing = editingCatId === cat._id;
+                                            const isFallback = cat._id.startsWith('fallback-');
+
+                                            return (
+                                                <div key={cat._id} className="bg-white border border-gray-100 rounded-3xl p-4 shadow-sm hover:shadow-md transition-all space-y-4">
+                                                    {isEditing && editingCatData ? (
+                                                        // Editing Mode UI
+                                                        <div className="space-y-3">
+                                                            <div className="flex items-center justify-between">
+                                                                <span className="text-[10px] font-black text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-widest">Editing Category</span>
+                                                                {isFallback && <span className="text-[8px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full uppercase tracking-widest">Seeding to Database</span>}
+                                                            </div>
+
+                                                            <div className="space-y-3">
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[9px] font-black uppercase text-gray-400">Category Name</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={editingCatData.name}
+                                                                        onChange={e => setEditingCatData({ ...editingCatData, name: e.target.value })}
+                                                                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 outline-none"
+                                                                    />
+                                                                </div>
+
+                                                                <div className="grid grid-cols-2 gap-3">
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[9px] font-black uppercase text-gray-400">Index</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={editingCatData.index}
+                                                                            onChange={e => setEditingCatData({ ...editingCatData, index: e.target.value })}
+                                                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 outline-none"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-1">
+                                                                        <label className="text-[9px] font-black uppercase text-gray-400">Stats/Badge</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={editingCatData.stats}
+                                                                            onChange={e => setEditingCatData({ ...editingCatData, stats: e.target.value })}
+                                                                            className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 outline-none"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[9px] font-black uppercase text-gray-400">Image</label>
+                                                                    <div className="flex items-center gap-3">
+                                                                        {editingCatData.image && (
+                                                                            <img src={editingCatData.image} alt="" className="w-10 h-10 rounded-lg object-cover border border-gray-200" />
+                                                                        )}
+                                                                        <div className="flex-1 flex flex-col gap-1.5">
+                                                                            <input
+                                                                                type="text"
+                                                                                value={editingCatData.image}
+                                                                                onChange={e => setEditingCatData({ ...editingCatData, image: e.target.value })}
+                                                                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-1.5 text-[10px] font-bold text-gray-950 outline-none"
+                                                                            />
+                                                                            <label className="w-full py-1 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-emerald-100">
+                                                                                {isUploadingCatImage ? 'Uploading...' : 'Upload Image File'}
+                                                                                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleCatImageUpload(e, true)} />
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex items-center justify-between py-1.5 border-t border-b border-gray-100">
+                                                                    <span className="text-xs font-black text-gray-950 uppercase tracking-tighter">Needs BOXFOX Branding</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setEditingCatData({ ...editingCatData, needsBranding: !editingCatData.needsBranding })}
+                                                                        className={`w-8 h-4 rounded-full transition-all duration-300 relative shrink-0 ${editingCatData.needsBranding ? 'bg-emerald-500 shadow-lg' : 'bg-gray-200'}`}
+                                                                    >
+                                                                        <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all duration-300 shadow-sm ${editingCatData.needsBranding ? 'right-0.5' : 'left-0.5'}`} />
+                                                                    </button>
+                                                                </div>
+
+                                                                <div className="flex gap-2 pt-2">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSaveCategory(editingCatData)}
+                                                                        className="flex-1 py-2 bg-gray-950 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all"
+                                                                    >
+                                                                        Save Category
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setEditingCatId(null);
+                                                                            setEditingCatData(null);
+                                                                        }}
+                                                                        className="px-4 py-2 bg-gray-100 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all"
+                                                                    >
+                                                                        Cancel
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        // View Mode UI
+                                                        <div className="flex items-center gap-4">
+                                                            {/* Image */}
+                                                            <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0 relative flex items-center justify-center shadow-inner">
+                                                                <img
+                                                                    src={cat.image || "/categories/cat_cake.png"}
+                                                                    alt={cat.name}
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => {
+                                                                        e.target.src = "/BOXFOX-1.png";
+                                                                        e.target.onerror = null;
+                                                                    }}
+                                                                />
+                                                                {cat.needsBranding && (
+                                                                    <div className="absolute inset-0 bg-yellow-500/10 flex items-center justify-center pointer-events-none">
+                                                                        <span className="text-[6px] font-black text-yellow-600 bg-white/90 border border-yellow-500/20 px-1 rounded-sm tracking-tighter uppercase scale-90">BFX</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Info */}
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] font-bold text-gray-400">{cat.index || '00'}</span>
+                                                                    <h4 className="text-sm font-black text-gray-950 truncate">{cat.name}</h4>
+                                                                </div>
+                                                                <div className="flex gap-1.5 mt-1">
+                                                                    <span className="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md uppercase tracking-widest">
+                                                                        {cat.stats || 'DURABLE'}
+                                                                    </span>
+                                                                    {isFallback && (
+                                                                        <span className="text-[8px] font-black text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded-md uppercase tracking-widest">
+                                                                            Default Template
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Actions */}
+                                                            <div className="flex gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setEditingCatId(cat._id);
+                                                                        setEditingCatData({ ...cat });
+                                                                    }}
+                                                                    className="p-2 text-gray-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all"
+                                                                    title="Edit"
+                                                                >
+                                                                    <Edit size={14} />
+                                                                </button>
+                                                                {!isFallback && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleDeleteCategoryById(cat._id, cat.name)}
+                                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                                                        title="Delete"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     </div>
                 )}

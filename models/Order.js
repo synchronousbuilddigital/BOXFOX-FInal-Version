@@ -26,6 +26,7 @@ const OrderSchema = new mongoose.Schema({
             quantity: Number,
             price: String,
             variant: String,
+            color: String,
             image: String,
             customDesign: mongoose.Schema.Types.Mixed
         }

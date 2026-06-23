@@ -108,10 +108,12 @@ export function CartProvider({ children }) {
     const addToCart = (product, quantity) => {
         let isUpdate = false;
         // Use consistent ID (prefer MongoDB _id, then WP id)
-        const productId = product._id || product.id || product.wpId;
+        const baseId = product._id || product.id || product.wpId;
+        const colorSuffix = product.selectedColor ? `-${product.selectedColor}` : '';
+        const cartItemId = `${baseId}${colorSuffix}`;
         
         setCart(prev => {
-            const existing = prev.find(item => (item._id || item.id || item.wpId) === productId);
+            const existing = prev.find(item => item.id === cartItemId);
             const minQty = Math.max(10, product.minOrderQuantity || 10);
             const finalQty = Math.max(minQty, quantity);
 
@@ -119,7 +121,7 @@ export function CartProvider({ children }) {
                 isUpdate = true;
                 const newQuantity = existing.quantity + Math.max(0, quantity);
                 const pricing = calculateItemPricing(existing, newQuantity);
-                return prev.map(item => (item._id || item.id || item.wpId) === productId
+                return prev.map(item => item.id === cartItemId
                     ? {
                         ...item,
                         quantity: newQuantity,
@@ -134,7 +136,8 @@ export function CartProvider({ children }) {
             const pricing = calculateItemPricing(product, finalQty);
             return [...prev, {
                 ...product,
-                id: productId, // Ensure it has an id field for consistency
+                id: cartItemId, // Ensure it has a unique cart item id
+                productId: baseId, // Retain raw product database ID
                 quantity: finalQty,
                 price: pricing.unitPrice,
                 oneTimeCharge: pricing.oneTimeCharge,

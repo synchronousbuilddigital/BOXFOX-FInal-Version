@@ -46,6 +46,8 @@ export default function ProductPage() {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [wishlistBusy, setWishlistBusy] = useState(false);
     const [labConfigs, setLabConfigs] = useState(null);
+    const [selectedColor, setSelectedColor] = useState('');
+    const [isDescExpanded, setIsDescExpanded] = useState(false);
 
     // B2B Inquiry form modal state
     const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
@@ -65,6 +67,9 @@ export default function ProductPage() {
             .then(data => {
                 setProduct(data);
                 if (data.minOrderQuantity) setQuantity(data.minOrderQuantity);
+                if (data.colors && data.colors.length > 0) {
+                    setSelectedColor(data.colors[0]);
+                }
                 setLoading(false);
             })
             .catch(() => setLoading(false));
@@ -193,16 +198,40 @@ export default function ProductPage() {
     );
 
     // If admin has supplied explicit tier prices, use the dynamic power-decay curve
-    const hasExplicitTiers = product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000;
+    const p1 = Number(product.priceAt1) || 0;
+    let p10 = Number(product.priceAt10) || 0;
+    let p50 = Number(product.priceAt50) || 0;
+    let p100 = Number(product.priceAt100) || 0;
+    let p500 = Number(product.priceAt500) || 0;
+    let p1000 = Number(product.priceAt1000) || 0;
+
+    // Auto-correct if admin mistakenly entered total price instead of unit price
+    if (p1 > 0) {
+        if (p10 > p1 * 1.5) p10 = p10 / 10;
+        if (p50 > p1 * 1.5) p50 = p50 / 50;
+        if (p100 > p1 * 1.5) p100 = p100 / 100;
+        if (p500 > p1 * 1.5) p500 = p500 / 500;
+        if (p1000 > p1 * 1.5) p1000 = p1000 / 1000;
+
+        // Apply dynamic discount fallback if tier values are identical to p1 (indicating missing discount configuration)
+        if (p50 === 0 || p50 === p1) {
+            p50 = Math.round(p1 * 0.90 * 100) / 100; // 10% off
+        }
+        if (p100 === 0 || p100 === p1) {
+            p100 = Math.round(p1 * 0.80 * 100) / 100; // 20% off
+        }
+    }
+
+    const hasExplicitTiers = p1 || p10 || p50 || p100 || p500 || p1000;
     const tierUnitPrice = hasExplicitTiers
         ? calculateDynamicPrice(
               parseInt(quantity) || 10,
-              product.priceAt1,
-              product.priceAt10,
-              product.priceAt50,
-              product.priceAt100,
-              product.priceAt500,
-              product.priceAt1000
+              p1,
+              p10,
+              p50,
+              p100,
+              p500,
+              p1000
           )
         : null;
 
@@ -224,37 +253,36 @@ export default function ProductPage() {
     const isLargeOrder = quantity >= triggerValue;
 
     const unitPrice = isLargeOrder ? "Contact Us" : pricingResult.finalPerUnit.toFixed(2);
-    const totalPrice = isLargeOrder ? "Contact Us" : pricingResult.finalTotal.toLocaleString('en-IN');
 
     return (
         <div className="min-h-screen bg-white">
 
-            <main className="pt-20 lg:pt-24 pb-8 px-4 md:px-8">
+            <main className="pt-20 lg:pt-24 pb-6 md:pb-8 px-4 md:px-8">
                 <div className="max-w-[1400px] mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
                         {/* Left: Product Media */}
-                        <div className="lg:col-span-5 lg:col-start-2 space-y-4">
+                        <div className="lg:col-span-5 lg:col-start-2 space-y-3 lg:space-y-4">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="relative aspect-square rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-950/10 shadow-xl"
+                                className="relative aspect-square max-h-[300px] sm:max-h-none rounded-2xl lg:rounded-[2rem] overflow-hidden bg-gray-50 border border-gray-950/10 shadow-xl"
                             >
-                                <div className="w-full h-full flex items-center justify-center p-8 md:p-16 text-center">
+                                <div className="w-full h-full flex items-center justify-center p-4 md:p-16 text-center">
                                     <img src={displayImage} className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
                                 </div>
                             </motion.div>
 
-                            <div className="flex gap-4 p-2 bg-gray-50/50 rounded-3xl w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                            <div className="flex gap-2 p-1.5 bg-gray-50/50 rounded-2xl md:gap-4 md:p-2 md:rounded-3xl w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
                                 {images.map((img, i) => (
                                     <button
                                         key={i}
                                         onClick={() => { setActiveImg(i); setViewMode('2D'); }}
-                                        className={`relative w-24 h-24 rounded-2xl transition-all duration-300 shrink-0 ${activeImg === i && viewMode === '2D'
-                                            ? 'ring-2 ring-gray-950 ring-offset-4 ring-offset-white scale-95 shadow-lg'
+                                        className={`relative w-14 h-14 md:w-24 md:h-24 rounded-xl md:rounded-2xl transition-all duration-300 shrink-0 ${activeImg === i && viewMode === '2D'
+                                            ? 'ring-2 ring-gray-950 ring-offset-2 md:ring-offset-4 ring-offset-white scale-95 shadow-lg'
                                             : 'opacity-40 hover:opacity-100 hover:scale-105'
                                             }`}
                                     >
-                                        <div className="w-full h-full rounded-2xl overflow-hidden bg-white border border-gray-100 p-1">
+                                        <div className="w-full h-full rounded-xl md:rounded-2xl overflow-hidden bg-white border border-gray-100 p-1">
                                             <img src={img} className="w-full h-full object-contain" />
                                         </div>
                                     </button>
@@ -263,7 +291,7 @@ export default function ProductPage() {
                         </div>
 
                         {/* Right: Product Details */}
-                        <div className="lg:col-span-5 space-y-5">
+                        <div className="lg:col-span-5 space-y-4 lg:space-y-5">
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[9px] font-black tracking-widest uppercase">
@@ -273,12 +301,7 @@ export default function ProductPage() {
                                 </div>
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <h1 className="text-4xl md:text-5xl font-black text-gray-950 tracking-tighter uppercase">{product.name}</h1>
-                                        {product.brand && (
-                                            <p className="mt-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                                Sold by <span className="text-emerald-600">{product.brand}</span>
-                                            </p>
-                                        )}
+                                        <h1 className="text-xl md:text-4xl lg:text-5xl font-black text-gray-950 tracking-tighter uppercase leading-tight">{product.name}</h1>
                                     </div>
                                     {allowWishlist && (
                                         <button
@@ -310,24 +333,43 @@ export default function ProductPage() {
                                                     setWishlistBusy(false);
                                                 }
                                             }}
-                                            className={`p-4 rounded-full transition-all border border-gray-100 shadow-sm shrink-0 ${isWishlisted ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50'} ${wishlistBusy ? 'opacity-60' : ''}`}
+                                            className={`p-2.5 md:p-4 rounded-full transition-all border border-gray-100 shadow-sm shrink-0 ${isWishlisted ? 'bg-red-50 text-red-500 border-red-100' : 'bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50'} ${wishlistBusy ? 'opacity-60' : ''}`}
                                         >
-                                            <Heart size={24} fill={isWishlisted ? 'currentColor' : 'none'} />
+                                            <Heart size={18} className="md:w-6 md:h-6" fill={isWishlisted ? 'currentColor' : 'none'} />
                                         </button>
                                     )}
                                 </div>
-                                <p className="text-sm text-gray-500 leading-relaxed font-medium">{product.description || "The ultimate professional packaging solution for your premium brand. Structural integrity meets aesthetic perfection."}</p>
+                                <p className="text-sm text-gray-500 leading-relaxed font-medium">
+                                    {(() => {
+                                        const desc = product.description || "The ultimate professional packaging solution for your premium brand. Structural integrity meets aesthetic perfection.";
+                                        if (desc.length > 200) {
+                                            return (
+                                                <>
+                                                    {isDescExpanded ? desc : `${desc.substring(0, 200)}...`}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsDescExpanded(!isDescExpanded)}
+                                                        className="text-emerald-600 hover:text-emerald-700 font-bold ml-1 transition-colors text-xs uppercase tracking-wider focus:outline-none"
+                                                    >
+                                                        {isDescExpanded ? 'Read Less' : 'Read More'}
+                                                    </button>
+                                                </>
+                                            );
+                                        }
+                                        return desc;
+                                    })()}
+                                </p>
                             </div>
 
-                            <div className="p-6 rounded-[2rem] bg-gray-50 border border-gray-950/10 space-y-6">
-                                <div className="flex justify-between items-end">
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{quantity >= 50 ? 'Est. Unit Price' : 'Pricing Starts At'}</p>
-                                        <p className="text-4xl font-black text-gray-950 tracking-tighter">{isLargeOrder ? "" : "₹"}{unitPrice}</p>
+                            <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-gray-50 border border-gray-950/10 space-y-4 md:space-y-6">
+                                <div className="grid grid-cols-3 gap-2 py-1 items-center border-b border-gray-950/5 pb-4">
+                                    <div className="space-y-0.5">
+                                        <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{quantity >= 50 ? 'Est. Unit' : 'Starts At'}</p>
+                                        <p className="text-xl md:text-3xl lg:text-4xl font-black text-gray-950 tracking-tighter">{isLargeOrder ? "" : "₹"}{unitPrice}</p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dimensions</p>
-                                        <p className="text-xs font-black text-gray-950 uppercase">
+                                    <div className="space-y-0.5 text-center border-x border-gray-200 px-1">
+                                        <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Dimensions</p>
+                                        <p className="text-[10px] md:text-xs font-black text-gray-950 uppercase truncate">
                                             {(() => {
                                                 const d = product.dimensions;
                                                 if (d && (d.length > 0 || d.width > 0 || d.height > 0)) {
@@ -341,51 +383,77 @@ export default function ProductPage() {
                                             })()}
                                         </p>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">MOQ</p>
-                                        <p className="text-xl font-black text-gray-950">{Math.max(10, product.minOrderQuantity || 10)} Units</p>
+                                    <div className="space-y-0.5 text-right">
+                                        <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Min Order</p>
+                                        <p className="text-xs md:text-base font-black text-gray-950 whitespace-nowrap">{Math.max(10, product.minOrderQuantity || 10)} Units</p>
                                     </div>
                                 </div>
 
+                                <div className="space-y-4">
+                                    {hasExplicitTiers && (
+                                        <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-2xl p-3 md:p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Volume Savings</p>
+                                                <span className="text-[7px] md:text-[8px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Tiered discounts active</span>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-1.5">
+                                                {[
+                                                    { qty: 1, val: p1 },
+                                                    { qty: 10, val: p10 },
+                                                    { qty: 50, val: p50 },
+                                                    { qty: 100, val: p100 },
+                                                    { qty: 500, val: p500 },
+                                                    { qty: 1000, val: p1000 }
+                                                ].filter(t => t.val > 0).map((tier, index, arr) => {
+                                                    const p1Val = p1 || 0;
+                                                    const unitVal = (p1Val > 0 && tier.val > p1Val * 1.5) ? tier.val / tier.qty : tier.val;
+                                                    return (
+                                                    <div key={tier.qty} className={`text-center p-1.5 md:p-2 rounded-xl border ${
+                                                        index === arr.length - 1 
+                                                            ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/20" 
+                                                            : index === arr.length - 2 
+                                                                ? "bg-emerald-50 border-emerald-100 text-emerald-700" 
+                                                                : "bg-gray-50 border-gray-100"
+                                                    }`}>
+                                                        <p className={`text-[7px] md:text-[8px] font-black uppercase tracking-tighter ${index === arr.length - 1 ? "text-emerald-100" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-400"}`}>{tier.qty} {tier.qty === 1 ? "Unit" : "Units"}</p>
+                                                        <p className={`text-xs md:text-sm font-black tracking-tighter ${index === arr.length - 1 ? "text-white" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-955"}`}>₹{Number(unitVal).toFixed(2)}/u</p>
+                                                    </div>
+                                                )})}
+                                            </div>
+                                        </div>
+                                    )}
+
+
                                     <div className="space-y-4">
-                                        {hasExplicitTiers && (
-                                            <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-2xl p-4 mb-2">
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Volume Savings</p>
-                                                    <span className="text-[8px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full uppercase tracking-widest animate-pulse">Tiered discounts active</span>
-                                                </div>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {[
-                                                        { qty: 1, val: product.priceAt1 },
-                                                        { qty: 10, val: product.priceAt10 },
-                                                        { qty: 50, val: product.priceAt50 },
-                                                        { qty: 100, val: product.priceAt100 },
-                                                        { qty: 500, val: product.priceAt500 },
-                                                        { qty: 1000, val: product.priceAt1000 }
-                                                    ].filter(t => t.val > 0).map((tier, index, arr) => {
-                                                        const p1 = product.priceAt1 || 0;
-                                                        const unitVal = (p1 > 0 && tier.val > p1 * 1.5) ? tier.val / tier.qty : tier.val;
+                                        {product.colors && product.colors.length > 0 && (
+                                            <div className="space-y-1.5">
+                                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Select Color Variant</p>
+                                                <div className="flex flex-wrap gap-1.5 px-1">
+                                                    {product.colors.map((colorHex) => {
+                                                        const isSelected = selectedColor === colorHex;
                                                         return (
-                                                        <div key={tier.qty} className={`text-center p-2 rounded-xl border ${
-                                                            index === arr.length - 1 
-                                                                ? "bg-emerald-650 border-emerald-650 text-white shadow-lg shadow-emerald-500/20" 
-                                                                : index === arr.length - 2 
-                                                                    ? "bg-emerald-50 border-emerald-100 text-emerald-700" 
-                                                                    : "bg-gray-50 border-gray-100"
-                                                        }`}>
-                                                            <p className={`text-[8px] font-black uppercase tracking-tighter ${index === arr.length - 1 ? "text-emerald-100" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-400"}`}>{tier.qty} {tier.qty === 1 ? "Unit" : "Units"}</p>
-                                                            <p className={`text-sm font-black tracking-tighter ${index === arr.length - 1 ? "text-white" : index === arr.length - 2 ? "text-emerald-600" : "text-gray-950"}`}>₹{Number(unitVal).toFixed(2)}/u</p>
-                                                        </div>
-                                                    )})}
+                                                            <button
+                                                                key={colorHex}
+                                                                type="button"
+                                                                onClick={() => setSelectedColor(colorHex)}
+                                                                title={colorHex.toUpperCase()}
+                                                                className={`w-7 h-7 md:w-8 md:h-8 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'border-gray-950 scale-110 shadow' : 'border-gray-200 hover:scale-105'}`}
+                                                                style={{ backgroundColor: colorHex }}
+                                                            >
+                                                                {isSelected && (
+                                                                    <CheckCircle2 size={12} className={colorHex === "#ffffff" || colorHex === "#fef08a" ? "text-gray-900" : "text-white"} />
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
                                             </div>
                                         )}
 
-
-                                        <div className="space-y-4">
-                                            <div className="relative">
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">Specify Units</p>
-                                                <div className="relative group">
+                                        <div className="flex gap-2 items-end">
+                                            <div className="w-24 md:w-28 shrink-0">
+                                                <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 px-1">Units</p>
+                                                <div className="relative">
                                                     <input
                                                         type="number"
                                                         value={quantity}
@@ -401,56 +469,57 @@ export default function ProductPage() {
                                                             const minQ = Math.max(10, product.minOrderQuantity || 10);
                                                             if (!quantity || quantity < minQ) setQuantity(minQ);
                                                         }}
-                                                        className="w-full py-4 px-6 rounded-2xl bg-white border-2 border-gray-100 font-black text-sm text-gray-950 focus:border-emerald-500 focus:bg-emerald-50/10 outline-none transition-all pr-20"
+                                                        className="w-full py-3 px-3 rounded-xl bg-white border-2 border-gray-100 font-black text-xs md:text-sm text-gray-955 focus:border-emerald-500 focus:bg-emerald-50/10 outline-none transition-all"
                                                         min={10}
                                                     />
-                                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest">
-                                                        Min {Math.max(10, product.minOrderQuantity || 10)}
-                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {isLargeOrder ? (
-                                                <button
-                                                    onClick={() => setIsInquiryModalOpen(true)}
-                                                    className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-emerald-650 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/20 group"
-                                                >
-                                                    <Sparkles size={18} className="group-hover:scale-110 transition-transform" /> Request Custom Quote
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => addToCart(product, quantity)}
-                                                    className="w-full py-5 bg-gray-950 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-emerald-600 transition-all flex items-center justify-center gap-3 shadow-xl shadow-gray-200 group"
-                                                >
-                                                    <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" /> Add to Basket
-                                                </button>
-                                            )}
-
+                                            <div className="flex-1">
+                                                {isLargeOrder ? (
+                                                    <button
+                                                        onClick={() => setIsInquiryModalOpen(true)}
+                                                        className="w-full py-3 bg-emerald-500 text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.15em] hover:bg-emerald-600 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 group"
+                                                    >
+                                                        <Sparkles size={14} className="group-hover:scale-110 transition-transform shrink-0" />
+                                                        <span className="truncate">Request <span className="hidden sm:inline">Custom </span>Quote</span>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => addToCart({ ...product, selectedColor }, quantity)}
+                                                        className="w-full py-3 bg-gray-950 text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] tracking-[0.15em] hover:bg-emerald-600 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-gray-200 group"
+                                                    >
+                                                        <ShoppingCart size={14} className="group-hover:scale-110 transition-transform shrink-0" />
+                                                        <span className="truncate">Add <span className="hidden sm:inline">to Basket</span></span>
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                            </div>
 
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t border-gray-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center"><Truck size={18} className="text-emerald-500" /></div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-950">Express Shipping</p>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">Pan India Delivery</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center"><ShieldCheck size={18} className="text-emerald-500" /></div>
-                                    <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-950">Secure Payment</p>
-                                        <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">100% Secured</p>
-                                    </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0"><Truck size={14} className="text-emerald-500" /></div>
+                                <div>
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-955 leading-tight">Express Shipping</p>
+                                    <p className="text-[7px] md:text-[8px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Pan India Delivery</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0"><ShieldCheck size={14} className="text-emerald-500" /></div>
+                                <div>
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-955 leading-tight">Secure Payment</p>
+                                    <p className="text-[7px] md:text-[8px] font-bold text-gray-400 uppercase tracking-tighter leading-none">100% Secured</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
+        </main>
 
             {/* B2B INQUIRY FORM MODAL */}
             <AnimatePresence>

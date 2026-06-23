@@ -115,6 +115,18 @@ export default function OrderInfoPage() {
                         <InfoRow icon={<Package size={13} />} label="Product" value={item.name} />
                         <InfoRow icon={<Hash size={13} />} label="Quantity" value={item.quantity} />
                         <InfoRow icon={<Hash size={13} />} label="Price" value={`₹${(item.price * item.quantity).toLocaleString("en-IN")}`} />
+                        {item.color && (
+                            <div className="flex items-start gap-2.5">
+                                <div className="text-gray-300 mt-0.5 shrink-0"><Palette size={13} /></div>
+                                <div className="flex-1 min-w-0">
+                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block leading-none mb-1">Color Variant</span>
+                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-md px-2 py-0.5 w-fit">
+                                        <span className="w-2.5 h-2.5 rounded-full border border-gray-350 shrink-0" style={{ backgroundColor: item.color }} />
+                                        <span className="text-xs font-bold text-gray-700 uppercase tracking-tight">{item.color.toUpperCase()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {item.customDesign && (() => {
                             const cd = item.customDesign;

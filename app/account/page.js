@@ -329,7 +329,15 @@ function AccountManagementContent() {
                                                 </div>
                                                 <div>
                                                     <h4 className="text-sm font-black text-gray-950 uppercase">{item.name}</h4>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase">Qty: {item.quantity}</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase">Qty: {item.quantity}</p>
+                                                        {item.color && (
+                                                            <div className="flex items-center gap-1.5 bg-white border border-gray-100 rounded-md px-1.5 py-0.5 shrink-0">
+                                                                <span className="w-2 h-2 rounded-full border border-gray-200 shrink-0" style={{ backgroundColor: item.color }} />
+                                                                <span className="text-[8px] font-black text-gray-500 uppercase tracking-wider">{item.color.toUpperCase()}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <p className="text-sm font-black text-gray-950">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>

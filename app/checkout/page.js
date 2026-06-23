@@ -9,7 +9,8 @@ import {
     CreditCard,
     Truck,
     CheckCircle2,
-    Lock
+    Lock,
+    ShoppingCart
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
@@ -61,6 +62,7 @@ export default function CheckoutPage() {
         senderName: ''
     });
     const [isPaymentSubmitted, setIsPaymentSubmitted] = useState(false);
+    const [showMobileSummary, setShowMobileSummary] = useState(false);
 
     React.useEffect(() => {
         const query = new URLSearchParams(window.location.search);
@@ -239,11 +241,12 @@ export default function CheckoutPage() {
                         phone: formData.phone
                     },
                     items: cart.map(item => ({
-                        productId: item.id,
+                        productId: item.productId || item.id,
                         name: item.name,
                         quantity: item.quantity,
                         price: typeof item.price === 'number' ? item.price : parseFloat(String(item.price || 0).replace(/[^0-9.]/g, '')) || 0,
-                        variant: item.variant,
+                        variant: item.selectedColor || item.variant,
+                        color: item.selectedColor || null,
                         image: item.img || item.image,
                         customDesign: item.customDesign
                     })),
@@ -337,8 +340,8 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <main className="pt-28 md:pt-36 pb-24 px-4 sm:px-8 lg:px-16 max-w-[1700px] mx-auto">
+        <div className="min-h-screen bg-mesh relative overflow-hidden">
+            <main className="pt-20 md:pt-36 pb-24 px-4 sm:px-8 lg:px-16 max-w-[1700px] mx-auto relative z-10">
                 {/* Dynamic Hero Header */}
                 <header className="relative mb-12 md:mb-20">
                     <div className="absolute -left-12 top-0 w-24 h-24 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -352,13 +355,13 @@ export default function CheckoutPage() {
                                 <div className="w-8 h-[2px] bg-emerald-500" />
                                 <span className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.4em]">Checkout_Protocol_v2.1</span>
                             </div>
-                            <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black text-gray-950 tracking-tighter uppercase leading-[0.9] sm:leading-[0.8] mb-2">
+                            <h1 className="text-4xl sm:text-7xl lg:text-8xl font-black text-gray-950 tracking-tighter uppercase leading-[0.9] sm:leading-[0.8] mb-2">
                                 Confirm<br /><span className="text-emerald-500 italic">Shipping.</span>
                             </h1>
                         </motion.div>
 
                         <div className="flex flex-wrap gap-4">
-                            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-5 py-3 rounded-2xl shadow-sm">
+                            <div className="flex items-center gap-3 bg-white/70 backdrop-blur-md border border-gray-100 px-5 py-3 rounded-2xl shadow-sm">
                                 <Lock size={14} className="text-emerald-500" />
                                 <div className="flex flex-col">
                                     <span className="text-[8px] font-black uppercase text-gray-400 tracking-widest leading-none mb-1">Security_Status</span>
@@ -391,6 +394,112 @@ export default function CheckoutPage() {
                         </div>
                     </motion.div>
                 )}
+
+                {/* Mobile Collapsible Order Summary Accordion */}
+                <div className="block lg:hidden mb-8">
+                    <button
+                        onClick={() => setShowMobileSummary(!showMobileSummary)}
+                        className="w-full flex items-center justify-between p-5 bg-white border border-gray-200 rounded-[2rem] hover:bg-gray-50 transition-all duration-300 shadow-sm"
+                    >
+                        <div className="flex items-center gap-3 text-gray-950 font-black uppercase text-xs tracking-wider">
+                            <ShoppingCart size={18} className="text-emerald-500" />
+                            <span>{showMobileSummary ? "Hide Order Summary" : "Show Order Summary"}</span>
+                            <ChevronLeft size={16} className={`text-gray-400 transition-transform duration-300 ${showMobileSummary ? 'rotate-[270deg]' : '-rotate-90'}`} />
+                        </div>
+                        <span className="text-sm font-black text-gray-950">
+                            ₹{finalTotal.toLocaleString('en-IN')}
+                        </span>
+                    </button>
+
+                    <AnimatePresence>
+                        {showMobileSummary && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="overflow-hidden mt-3"
+                            >
+                                <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-[2rem] p-6 shadow-xl space-y-6">
+                                    {/* Cart Items List */}
+                                    <div className="space-y-6 max-h-[30vh] overflow-y-auto pr-2 custom-scrollbar-white">
+                                        {cart.map(item => (
+                                            <div key={item.id} className="flex gap-4 items-center group">
+                                                <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-100 p-1">
+                                                    <img
+                                                        src={item.customDesign?.textures?.front || item.customDesign?.textures?.top || Object.values(item.customDesign?.textures || {}).find(t => t) || item.img || item.image}
+                                                        className="w-full h-full object-contain"
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-[10px] font-black text-gray-955 uppercase truncate tracking-tight mb-0.5">{item.name}</h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[8px] font-black uppercase text-emerald-600/80">QTY: {item.quantity}</span>
+                                                        <div className="w-1 h-1 bg-gray-205 rounded-full" />
+                                                        <span className="text-[8px] font-black uppercase text-gray-400 truncate">REF_{String(item.id || '').slice(-6)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right shrink-0">
+                                                    <span className="text-xs font-black text-gray-955">₹{(parseFloat(String(typeof item.price === 'number' ? item.price : item.price || 0).replace(/[^0-9.]/g, '')) * item.quantity).toLocaleString('en-IN')}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Promo Code Input */}
+                                    <div className="space-y-3 p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
+                                        <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 ml-2">Coupon code</p>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                placeholder="ENTER_CODE"
+                                                value={couponInput}
+                                                onChange={(e) => setCouponInput(e.target.value)}
+                                                className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-[10px] font-black tracking-widest outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-gray-300 text-gray-950"
+                                            />
+                                            <button
+                                                onClick={applyCoupon}
+                                                disabled={isValidating || !couponInput}
+                                                className="px-6 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-30 active:scale-95 shadow-md shadow-emerald-500/10"
+                                            >
+                                                {isValidating ? '...' : 'Unlock'}
+                                            </button>
+                                        </div>
+                                        {couponError && <p className="text-[8px] font-bold text-red-500 uppercase tracking-widest ml-2">{couponError}</p>}
+                                        {appliedCoupon && (
+                                            <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                                                <div className="flex items-center gap-2">
+                                                    <CheckCircle2 size={12} className="text-emerald-500" />
+                                                    <span className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">{appliedCoupon.code}_VERIFIED</span>
+                                                </div>
+                                                <button onClick={() => setAppliedCoupon(null)} className="text-[8px] font-black text-gray-400 hover:text-red-500 uppercase tracking-widest">WIPE</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Financial Data Grid */}
+                                    <div className="space-y-3 pt-4 border-t border-gray-100">
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-900 uppercase tracking-widest">
+                                            <span className="text-gray-500">Base_Valuation</span>
+                                            <span>₹{cartTotal.toLocaleString('en-IN')}</span>
+                                        </div>
+                                        {appliedCoupon && (
+                                            <div className="flex items-center justify-between text-[9px] font-black text-emerald-600 uppercase tracking-widest">
+                                                <span>Vault_Reduction</span>
+                                                <span className="font-black">- ₹{appliedCoupon.discount.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-900 uppercase tracking-widest">
+                                            <span className="text-gray-500">Global_Transit</span>
+                                            <span className="text-emerald-600 font-black italic">WAVIED_FOC</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 xl:gap-24">
                     {/* Main Form Area */}
@@ -432,7 +541,7 @@ export default function CheckoutPage() {
                                     exit={{ opacity: 0, y: -20 }}
                                     className="space-y-12"
                                 >
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                                    <div className="bg-white/80 border border-gray-200/60 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-12 backdrop-blur-xl grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                         <div className="space-y-3 group">
                                             <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4 group-focus-within:text-emerald-500 transition-colors">
                                                 <div className="w-1.5 h-1.5 bg-current rounded-full" /> Full Name <span className="text-red-500">*</span>
@@ -441,7 +550,7 @@ export default function CheckoutPage() {
                                                 name="name" value={formData.name || ''} onChange={handleFormChange}
                                                 placeholder="AUTHORIZED PERSONNEL ONLY"
                                                 required
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
                                             />
                                         </div>
                                         <div className="space-y-3 group">
@@ -452,7 +561,7 @@ export default function CheckoutPage() {
                                                 type="email" name="email" value={formData.email || ''} onChange={handleFormChange}
                                                 placeholder="SYSTEM_ACCESS@NODE.COM"
                                                 required
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
                                             />
                                         </div>
                                         <div className="space-y-3 group md:col-span-2">
@@ -466,7 +575,7 @@ export default function CheckoutPage() {
                                                 }}
                                                 placeholder="10 DIGIT MOBILE NUMBER"
                                                 required
-                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
+                                                className="w-full bg-gray-50 border border-gray-100 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:bg-white focus:border-emerald-500 hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest placeholder:text-gray-300"
                                             />
                                         </div>
                                     </div>
@@ -521,7 +630,7 @@ export default function CheckoutPage() {
                                         </div>
                                     )}
 
-                                    <div className="bg-gray-50/50 p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-gray-100 space-y-6 sm:space-y-10">
+                                    <div className="bg-white/80 border border-gray-200/60 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-12 backdrop-blur-xl space-y-6 sm:space-y-10">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div className="space-y-4 group">
                                                 <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4 group-focus-within:text-emerald-500 transition-colors">Street Mapping <span className="text-red-500">*</span></label>
@@ -529,7 +638,7 @@ export default function CheckoutPage() {
                                                     name="shippingAddress.street" value={formData.shippingAddress.street || ''} onChange={handleFormChange}
                                                     placeholder="Primary Street Access"
                                                     required
-                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
                                                 />
                                             </div>
                                             <div className="space-y-4 group">
@@ -537,7 +646,7 @@ export default function CheckoutPage() {
                                                 <input
                                                     name="shippingAddress.apartment" value={formData.shippingAddress.apartment || ''} onChange={handleFormChange}
                                                     placeholder="Unit / Floor / Landmark"
-                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                                    className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
                                                 />
                                             </div>
                                         </div>
@@ -549,7 +658,7 @@ export default function CheckoutPage() {
                                                         name="shippingAddress.zipCode" value={formData.shippingAddress.zipCode || ''} onChange={handleFormChange}
                                                         placeholder="000 000"
                                                         required
-                                                        className={`w-full bg-white border ${isPincodeLoading ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'border-gray-200'} rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all tracking-widest`}
+                                                        className={`w-full bg-white border ${isPincodeLoading ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'border-gray-200'} rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all tracking-widest`}
                                                     />
                                                     {isPincodeLoading && (
                                                         <div className="absolute right-6 top-1/2 -translate-y-1/2">
@@ -564,7 +673,7 @@ export default function CheckoutPage() {
                                                     {fetchedCities.length > 0 ? (
                                                         <select
                                                             name="shippingAddress.city" value={formData.shippingAddress.city || ''} onChange={handleFormChange}
-                                                            className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase appearance-none cursor-pointer"
+                                                            className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase appearance-none cursor-pointer"
                                                         >
                                                             <option value="">Select City</option>
                                                             {fetchedCities.map(city => (
@@ -575,7 +684,7 @@ export default function CheckoutPage() {
                                                         <input
                                                             name="shippingAddress.city" value={formData.shippingAddress.city || ''} onChange={handleFormChange}
                                                             placeholder="City"
-                                                            className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                                            className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
                                                         />
                                                     )}
                                                     {fetchedCities.length > 0 && <ChevronLeft className="absolute right-8 top-1/2 -translate-y-1/2 rotate-[270deg] text-gray-400 pointer-events-none" size={16} />}
@@ -589,7 +698,7 @@ export default function CheckoutPage() {
                                                 <div className="relative">
                                                     <select
                                                         name="shippingAddress.state" value={formData.shippingAddress.state || ''} onChange={handleFormChange}
-                                                        className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase appearance-none cursor-pointer"
+                                                        className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase appearance-none cursor-pointer"
                                                     >
                                                         <option value="">Select State</option>
                                                         {INDIAN_STATES.map(state => (
@@ -604,7 +713,7 @@ export default function CheckoutPage() {
                                                 <div className="relative">
                                                     <select
                                                         name="shippingAddress.country" value="India" readOnly
-                                                        className="w-full bg-gray-100 border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none cursor-not-allowed uppercase appearance-none"
+                                                        className="w-full bg-gray-100 border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none cursor-not-allowed uppercase appearance-none"
                                                     >
                                                         <option value="India">IND - India</option>
                                                     </select>
@@ -618,7 +727,7 @@ export default function CheckoutPage() {
                                             <input
                                                 name="shippingAddress.addressNickname" value={formData.shippingAddress.addressNickname || ''} onChange={handleFormChange}
                                                 placeholder="HOME / OFFICE / WAREHOUSE"
-                                                className="w-full bg-white border border-gray-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
+                                                className="w-full bg-white border border-gray-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-gray-100 transition-all uppercase tracking-widest"
                                             />
                                         </div>
 
@@ -641,11 +750,11 @@ export default function CheckoutPage() {
                                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-8 overflow-hidden pt-4">
                                                         <div className="space-y-4 group">
                                                             <label className="text-[10px] font-black uppercase tracking-widest text-emerald-700 ml-4 italic">Company Name <span className="text-red-500">*</span></label>
-                                                            <input name="billingDetails.companyName" value={formData.billingDetails?.companyName || ''} onChange={handleFormChange} placeholder="Company Pvt Ltd" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
+                                                            <input name="billingDetails.companyName" value={formData.billingDetails?.companyName || ''} onChange={handleFormChange} placeholder="Company Pvt Ltd" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
                                                         </div>
                                                         <div className="space-y-4 group">
                                                             <label className="text-[10px] font-black uppercase tracking-widest text-emerald-700 ml-4 italic">GST Number <span className="text-red-500">*</span></label>
-                                                            <input name="billingDetails.gstNumber" value={formData.billingDetails?.gstNumber || ''} onChange={handleFormChange} placeholder="00AAAAA0000A1Z0" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-8 py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
+                                                            <input name="billingDetails.gstNumber" value={formData.billingDetails?.gstNumber || ''} onChange={handleFormChange} placeholder="00AAAAA0000A1Z0" className="w-full bg-white border border-emerald-200 rounded-[2rem] px-6 py-4 md:px-8 md:py-6 font-black text-sm outline-none focus:border-emerald-500 hover:shadow-xl hover:shadow-emerald-100 transition-all uppercase tracking-widest" />
                                                         </div>
                                                     </motion.div>
                                                 )}
@@ -680,7 +789,7 @@ export default function CheckoutPage() {
                                     exit={{ opacity: 0, y: -20 }}
                                     className="space-y-12"
                                 >
-                                    <div className="bg-gray-50 rounded-[3rem] p-10 border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    <div className="bg-white/85 border border-gray-200/60 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] rounded-[3rem] p-6 md:p-10 backdrop-blur-xl grid grid-cols-1 md:grid-cols-2 gap-10">
                                         <div className="space-y-8">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Authorized QR Gateway</span>
@@ -756,12 +865,12 @@ export default function CheckoutPage() {
                         </AnimatePresence>
                     </div>
 
-                    {/* Industrial Order Manifest (Summary) */}
-                    <div className="lg:col-span-5">
+                    {/* Industrial Order Manifest (Summary) - Desktop Only */}
+                    <div className="hidden lg:block lg:col-span-5">
                         <div className="sticky top-32">
-                            <div className="bg-gray-950 rounded-[3.5rem] p-8 md:p-12 text-white shadow-2xl shadow-gray-950/20 overflow-hidden relative">
+                            <div className="bg-white/70 backdrop-blur-xl rounded-[3.5rem] p-8 md:p-12 text-gray-955 border border-gray-200/60 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.05)] overflow-hidden relative">
                                 {/* Decorative Industrial Elements */}
-                                <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] pointer-events-none select-none overflow-hidden">
+                                <div className="absolute top-0 right-0 w-full h-full opacity-[0.02] pointer-events-none select-none overflow-hidden text-gray-950">
                                     {[...Array(20)].map((_, i) => (
                                         <div key={i} className="whitespace-nowrap text-[8px] font-mono leading-none tracking-tighter uppercase">
                                             BOXFOX_LOGISTICS_MANIFEST_ID_00{i}_CONFIDENTIAL_REPORT_SCANNED_OK_STATUS_READY
@@ -770,90 +879,90 @@ export default function CheckoutPage() {
                                 </div>
 
                                 <div className="relative z-10">
-                                    <div className="flex items-center justify-between mb-10 pb-8 border-b border-white/10">
-                                        <h3 className="text-3xl font-black tracking-tighter uppercase italic text-white">Manifest.</h3>
-                                        <div className="px-3 py-1 bg-emerald-500 text-[8px] font-black uppercase tracking-widest rounded-lg animate-pulse">Live_Sync</div>
+                                    <div className="flex items-center justify-between mb-10 pb-8 border-b border-gray-100">
+                                        <h3 className="text-3xl font-black tracking-tighter uppercase italic text-gray-955">Manifest.</h3>
+                                        <div className="px-3 py-1 bg-emerald-500 text-[8px] font-black uppercase tracking-widest text-white rounded-lg animate-pulse">Live_Sync</div>
                                     </div>
 
                                     {/* Cart Items List */}
                                     <div className="space-y-8 mb-12 max-h-[40vh] overflow-y-auto pr-4 custom-scrollbar-white">
                                         {cart.map(item => (
                                             <div key={item.id} className="flex gap-6 items-center group">
-                                                <div className="w-20 h-20 bg-white/5 rounded-3xl overflow-hidden shrink-0 border border-white/10 p-2 group-hover:border-emerald-500/50 transition-all duration-500">
+                                                <div className="w-20 h-20 bg-gray-50 rounded-3xl overflow-hidden shrink-0 border border-gray-100 p-2 group-hover:border-emerald-500/50 transition-all duration-500">
                                                     <img
                                                         src={item.customDesign?.textures?.front || item.customDesign?.textures?.top || Object.values(item.customDesign?.textures || {}).find(t => t) || item.img || item.image}
-                                                        className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-700"
+                                                        className="w-full h-full object-contain group-hover:scale-105 transition-all duration-700"
                                                         alt=""
                                                     />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-[10px] font-black text-white uppercase truncate tracking-tight mb-1">{item.name}</h4>
+                                                    <h4 className="text-[10px] font-black text-gray-955 uppercase truncate tracking-tight mb-1">{item.name}</h4>
                                                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                                        <span className="text-[8px] font-black uppercase text-emerald-500/70">QTY: {item.quantity}</span>
-                                                        <div className="w-1 h-1 bg-white/20 rounded-full" />
-                                                        <span className="text-[8px] font-black uppercase text-white/90 truncate">REF_{String(item.id || '').slice(-6)}</span>
+                                                        <span className="text-[8px] font-black uppercase text-emerald-600/80">QTY: {item.quantity}</span>
+                                                        <div className="w-1 h-1 bg-gray-200 rounded-full" />
+                                                        <span className="text-[8px] font-black uppercase text-gray-400 truncate">REF_{String(item.id || '').slice(-6)}</span>
                                                     </div>
                                                 </div>
                                                 <div className="text-right shrink-0">
-                                                    <span className="text-xs font-black text-white">₹{(parseFloat(String(typeof item.price === 'number' ? item.price : item.price || 0).replace(/[^0-9.]/g, '')) * item.quantity).toLocaleString('en-IN')}</span>
+                                                    <span className="text-xs font-black text-gray-955">₹{(parseFloat(String(typeof item.price === 'number' ? item.price : item.price || 0).replace(/[^0-9.]/g, '')) * item.quantity).toLocaleString('en-IN')}</span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
 
                                     {/* Promo Code Input */}
-                                    <div className="space-y-4 mb-10 p-6 bg-white/5 rounded-[2rem] border border-white/5">
-                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30 ml-2">Coupon code</p>
+                                    <div className="space-y-4 mb-10 p-6 bg-gray-50/50 rounded-[2rem] border border-gray-100">
+                                        <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400 ml-2">Coupon code</p>
                                         <div className="flex gap-3">
                                             <input
                                                 type="text"
                                                 placeholder="ENTER_CODE"
                                                 value={couponInput}
                                                 onChange={(e) => setCouponInput(e.target.value)}
-                                                className="flex-1 bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-[10px] font-black tracking-[0.2em] outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-white/10"
+                                                className="flex-1 bg-white border border-gray-200 rounded-2xl px-6 py-4 text-[10px] font-black tracking-[0.2em] outline-none focus:border-emerald-500 transition-all uppercase placeholder:text-gray-300 text-gray-955"
                                             />
                                             <button
                                                 onClick={applyCoupon}
                                                 disabled={isValidating || !couponInput}
-                                                className="px-8 bg-emerald-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all disabled:opacity-30 active:scale-95 shadow-lg shadow-emerald-500/20"
+                                                className="px-8 bg-emerald-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-30 active:scale-95 shadow-lg shadow-emerald-500/20"
                                             >
                                                 {isValidating ? '...' : 'Unlock'}
                                             </button>
                                         </div>
-                                        {couponError && <p className="text-[8px] font-bold text-red-400 uppercase tracking-widest ml-4">{couponError}</p>}
+                                        {couponError && <p className="text-[8px] font-bold text-red-500 uppercase tracking-widest ml-4">{couponError}</p>}
                                         {appliedCoupon && (
-                                            <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl">
+                                            <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
                                                 <div className="flex items-center gap-3">
                                                     <CheckCircle2 size={14} className="text-emerald-500" />
-                                                    <span className="text-[9px] font-black uppercase text-emerald-500 tracking-widest">{appliedCoupon.code}_VERIFIED</span>
+                                                    <span className="text-[9px] font-black uppercase text-emerald-600 tracking-widest">{appliedCoupon.code}_VERIFIED</span>
                                                 </div>
-                                                <button onClick={() => setAppliedCoupon(null)} className="text-[8px] font-black text-white/30 hover:text-red-400 uppercase tracking-widest">WIPE</button>
+                                                <button onClick={() => setAppliedCoupon(null)} className="text-[8px] font-black text-gray-400 hover:text-red-500 uppercase tracking-widest">WIPE</button>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Financial Data Grid */}
-                                    <div className="space-y-4 pt-8 border-t border-white/10">
-                                        <div className="flex items-center justify-between text-[9px] font-black text-white/90 uppercase tracking-[0.3em]">
-                                            <span className="text-white/70">Base_Valuation</span>
-                                            <span className="text-white">₹{cartTotal.toLocaleString('en-IN')}</span>
+                                    <div className="space-y-4 pt-8 border-t border-gray-100">
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-955 uppercase tracking-[0.3em]">
+                                            <span className="text-gray-500">Base_Valuation</span>
+                                            <span>₹{cartTotal.toLocaleString('en-IN')}</span>
                                         </div>
                                         {appliedCoupon && (
-                                            <div className="flex items-center justify-between text-[9px] font-black text-emerald-500 uppercase tracking-[0.3em]">
+                                            <div className="flex items-center justify-between text-[9px] font-black text-emerald-600 uppercase tracking-[0.3em]">
                                                 <span>Vault_Reduction</span>
                                                 <span className="font-black">- ₹{appliedCoupon.discount.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
-                                        <div className="flex items-center justify-between text-[9px] font-black text-white/90 uppercase tracking-[0.3em]">
-                                            <span className="text-white/70">Global_Transit</span>
-                                            <span className="text-emerald-500 font-black italic">WAVIED_FOC</span>
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-955 uppercase tracking-[0.3em]">
+                                            <span className="text-gray-500">Global_Transit</span>
+                                            <span className="text-emerald-600 font-black italic">WAVIED_FOC</span>
                                         </div>
                                     </div>
 
                                     <div className="pt-8 flex items-end justify-between">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-black uppercase text-emerald-500 tracking-[0.4em]">Final_Authorized_Total</p>
-                                            <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none italic">
+                                            <p className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.4em]">Final_Authorized_Total</p>
+                                            <h2 className="text-5xl md:text-6xl font-black text-gray-955 tracking-tighter leading-none italic">
                                                 ₹{finalTotal.toLocaleString('en-IN')}
                                             </h2>
                                         </div>

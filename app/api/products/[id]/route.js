@@ -53,6 +53,28 @@ export async function GET(req, { params }) {
             return NextResponse.json({ error: "Product is pending approval", reason: "unapproved", id }, { status: 404 });
         }
 
+        const p1 = Number(product.priceAt1) || null;
+        let p10 = Number(product.priceAt10) || null;
+        let p50 = Number(product.priceAt50) || null;
+        let p100 = Number(product.priceAt100) || null;
+        let p500 = Number(product.priceAt500) || null;
+        let p1000 = Number(product.priceAt1000) || null;
+
+        if (p1 > 0) {
+            if (p10 && p10 > p1 * 1.5) p10 = p10 / 10;
+            if (p50 && p50 > p1 * 1.5) p50 = p50 / 50;
+            if (p100 && p100 > p1 * 1.5) p100 = p100 / 100;
+            if (p500 && p500 > p1 * 1.5) p500 = p500 / 500;
+            if (p1000 && p1000 > p1 * 1.5) p1000 = p1000 / 1000;
+
+            if (!p50 || p50 === p1) {
+                p50 = Math.round(p1 * 0.90 * 100) / 100;
+            }
+            if (!p100 || p100 === p1) {
+                p100 = Math.round(p1 * 0.80 * 100) / 100;
+            }
+        }
+
         const result = {
             id: product.wpId,
             _id: product._id,
@@ -60,12 +82,12 @@ export async function GET(req, { params }) {
             allowWishlist: true,
             name: product.name,
             price: (product.minPrice && !isNaN(product.minPrice)) ? Number(product.minPrice) : (product.price && !isNaN(product.price) ? Number(product.price) : 0),
-            priceAt1: product.priceAt1 || null,
-            priceAt10: product.priceAt10 || null,
-            priceAt50: product.priceAt50 || null,
-            priceAt100: product.priceAt100 || null,
-            priceAt500: product.priceAt500 || null,
-            priceAt1000: product.priceAt1000 || null,
+            priceAt1: p1,
+            priceAt10: p10,
+            priceAt50: p50,
+            priceAt100: p100,
+            priceAt500: p500,
+            priceAt1000: p1000,
             triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
             stock_quantity: product.stock_quantity,
             badge: product.badge,
@@ -86,6 +108,7 @@ export async function GET(req, { params }) {
             minPrice: product.minPrice,
             maxPrice: product.maxPrice,
             tags: product.tags || [],
+            colors: product.colors || [],
             specifications: product.specifications || [],
             meta: product.meta,
             pacdoraId: product.pacdoraId,

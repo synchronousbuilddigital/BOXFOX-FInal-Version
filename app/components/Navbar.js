@@ -511,7 +511,15 @@ export default function Navbar() {
                       </div>
                       <div className="flex-1">
                         <h4 className="text-[11px] font-black text-gray-950 uppercase tracking-tight line-clamp-1">{item.name}</h4>
-                        <p className="text-[10px] font-black text-gray-400 mt-1 uppercase tracking-widest">QTY: {item.quantity}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">QTY: {item.quantity}</p>
+                          {item.selectedColor && (
+                            <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-md px-1.5 py-0.5 shrink-0">
+                              <span className="w-2 h-2 rounded-full border border-gray-200 shrink-0" style={{ backgroundColor: item.selectedColor }} />
+                              <span className="text-[8px] font-black text-gray-500 uppercase tracking-wider">{item.selectedColor.toUpperCase()}</span>
+                            </div>
+                          )}
+                        </div>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center bg-gray-50 rounded-lg p-1">
                             <button

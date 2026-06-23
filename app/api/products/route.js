@@ -48,6 +48,28 @@ function toStoreProduct(product, source = 'core') {
   const optimizedImages = (Array.isArray(product.images) ? product.images : []).map(getOptimizedImageUrl);
   const primaryImg = (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : product.img) || "/BOXFOX-1.png";
 
+  const p1 = product.priceAt1 || null;
+  let p10 = product.priceAt10 || null;
+  let p50 = product.priceAt50 || null;
+  let p100 = product.priceAt100 || null;
+  let p500 = product.priceAt500 || null;
+  let p1000 = product.priceAt1000 || null;
+
+  if (p1 > 0) {
+    if (p10 && p10 > p1 * 1.5) p10 = p10 / 10;
+    if (p50 && p50 > p1 * 1.5) p50 = p50 / 50;
+    if (p100 && p100 > p1 * 1.5) p100 = p100 / 100;
+    if (p500 && p500 > p1 * 1.5) p500 = p500 / 500;
+    if (p1000 && p1000 > p1 * 1.5) p1000 = p1000 / 1000;
+
+    if (!p50 || p50 === p1) {
+      p50 = Math.round(p1 * 0.90 * 100) / 100;
+    }
+    if (!p100 || p100 === p1) {
+      p100 = Math.round(p1 * 0.80 * 100) / 100;
+    }
+  }
+
   return {
     _id: product._id,
     id: product._id || product.wpId,
@@ -58,12 +80,12 @@ function toStoreProduct(product, source = 'core') {
     price: numericPrice || 0, // Always return a number, even if 0
     minPrice: product.minPrice || null,
     maxPrice: product.maxPrice || null,
-    priceAt1: product.priceAt1 || null,
-    priceAt10: product.priceAt10 || null,
-    priceAt50: product.priceAt50 || null,
-    priceAt100: product.priceAt100 || null,
-    priceAt500: product.priceAt500 || null,
-    priceAt1000: product.priceAt1000 || null,
+    priceAt1: p1,
+    priceAt10: p10,
+    priceAt50: p50,
+    priceAt100: p100,
+    priceAt500: p500,
+    priceAt1000: p1000,
     triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
     stock_quantity: product.stock_quantity,
     originalPrice: product.regular_price || null,
@@ -79,6 +101,7 @@ function toStoreProduct(product, source = 'core') {
     brand: product.brand || 'BoxFox',
     minOrderQuantity: product.minOrderQuantity || 10,
     tags: Array.isArray(product.tags) ? product.tags : [],
+    colors: Array.isArray(product.colors) ? product.colors : [],
     specifications: Array.isArray(product.specifications) ? product.specifications : [],
     dimensions: product.dimensions || null,
     pacdoraId: product.pacdoraId || null,
@@ -153,7 +176,7 @@ export async function GET(req) {
           dimensions: 1, pacdoraId: 1, badge: 1, isFeatured: 1, categories: 1, category: 1,
           minOrderQuantity: 1, brand: 1, description: 1, short_description: 1,
           tags: 1, specifications: 1, dielineImg: 1, patternImg: 1, dielineFormat: 1, patternFormat: 1,
-          isActive: 1, parent_id: 1, pageVisibility: 1
+          isActive: 1, parent_id: 1, pageVisibility: 1, colors: 1
         });
 
       let cursor = Product.find(query, projection).sort({ createdAt: -1 });
@@ -207,6 +230,12 @@ export async function GET(req) {
           items: s.items.slice(0, 8), // Default: show 8 per category
         }));
     };
+
+    // Use Redis Cache only for non-admin requests
+    if (isAdmin) {
+      const data = await fetchProducts();
+      return NextResponse.json(data);
+    }
 
     // Use Redis Cache with 30-minute expiry (1800s)
     // We stringify/parse because getOrSetCache handles JSON.stringify
@@ -287,8 +316,11 @@ export async function POST(req) {
       const existingProduct = await Product.findById(data._id);
       const sku = data.generateSku ? await generateSKU(data.category) : (data.sku || existingProduct?.sku || await generateSKU(data.category));
 
+      // Destructure read-only/immutable properties to prevent conflicts in update payload
+      const { _id, id, createdAt, updatedAt, __v, ...updateData } = data;
+
       const updatedProduct = await Product.findByIdAndUpdate(data._id, {
-        ...data,
+        ...updateData,
         sku,
         price: data.minPrice ? String(data.minPrice) : undefined, // fallback for legacy
         minPrice: data.minPrice,
@@ -307,13 +339,14 @@ export async function POST(req) {
         brand: data.brand,
         minOrderQuantity: parseInt(data.minOrderQuantity) || 10,
         tags: typeof data.tags === 'string' ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : data.tags,
+        colors: Array.isArray(data.colors) ? data.colors : [],
         specifications: data.specifications,
         description: data.description,
         short_description: data.short_description,
         pacdoraId: data.pacdoraId,
         isActive: data.isActive !== undefined ? data.isActive : true,
         pageVisibility: data.pageVisibility || 'shop'
-      }, { returnDocument: 'after' });
+      }, { new: true });
       await invalidateProductCache();
 
       // Finalize images to prevent them from being deleted by cleanup script
@@ -345,6 +378,7 @@ export async function POST(req) {
       brand: data.brand || 'BoxFox',
       minOrderQuantity: parseInt(data.minOrderQuantity) || 10,
       tags: typeof data.tags === 'string' ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : data.tags,
+      colors: Array.isArray(data.colors) ? data.colors : [],
       specifications: data.specifications,
       description: data.description,
       short_description: data.short_description,

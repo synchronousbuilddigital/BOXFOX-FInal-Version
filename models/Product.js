@@ -65,6 +65,7 @@ const productSchema = new mongoose.Schema({
 
     isActive: { type: Boolean, default: true },
     pageVisibility: { type: String, enum: ['shop', 'gift', 'both'], default: 'shop' },
+    colors: [String],
     lastSynced: { type: Date, default: Date.now }
 }, {
     timestamps: true
@@ -95,4 +96,9 @@ productSchema.index({
     name: "ProductSearchIndex"
 });
 
+if (mongoose.models.Product && !mongoose.models.Product.schema.paths.colors) {
+    delete mongoose.models.Product;
+}
+
 export default mongoose.models.Product || mongoose.model('Product', productSchema);
+
