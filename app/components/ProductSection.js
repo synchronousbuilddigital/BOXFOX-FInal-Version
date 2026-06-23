@@ -144,9 +144,9 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
               />
             ))}
           </div>
-          <div className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-5'} gap-8`}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(j => (
-              <div key={j} className="animate-pulse aspect-square bg-gray-50 rounded-[2rem]" />
+          <div className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-4'} gap-4 sm:gap-6 md:gap-8`}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(j => (
+              <div key={j} className="animate-pulse aspect-[4/5] bg-gray-50 rounded-2xl sm:rounded-[2rem] border border-gray-100" />
             ))}
           </div>
           <div className="flex justify-center mt-12">
@@ -187,7 +187,7 @@ export default function ProductSection({ searchQuery = "", category = "All", pri
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-5'} gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0`}
+              className={`grid grid-cols-2 ${gridCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4 xl:grid-cols-4'} gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-8 sm:gap-y-12 px-2 sm:px-0`}
             >
               {pageProducts.map((product, index) => (
                 <div key={product._id || product.id || `product-${index}`} className="h-full">
