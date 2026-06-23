@@ -62,10 +62,27 @@ export const POST = async (req) => {
             }
         }
 
-        const result = await cloudinary.uploader.upload(image, {
+        // Determine if it is a standard image (not a PDF or other document) to convert to WebP
+        let isImage = false;
+        if (typeof image === 'string') {
+            if (image.startsWith('data:')) {
+                isImage = image.startsWith('data:image/');
+            } else {
+                isImage = !image.toLowerCase().endsWith('.pdf');
+            }
+        }
+
+        const uploadOptions = {
             folder: 'boxfox_customizations',
             resource_type: 'auto',
-        });
+        };
+
+        if (isImage) {
+            uploadOptions.format = 'webp';
+            uploadOptions.transformation = [{ flags: 'force_strip' }];
+        }
+
+        const result = await cloudinary.uploader.upload(image, uploadOptions);
 
         const fileFormat = result.format || (result.url.endsWith('.pdf') ? 'pdf' : 'unknown');
         const finalType = normalizeImageType(type, fileFormat);

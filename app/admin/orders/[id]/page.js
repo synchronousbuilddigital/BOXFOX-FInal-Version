@@ -185,6 +185,13 @@ export default function OrderDetails() {
                             <Truck size={18} /> Dispatch Order
                         </button>
                     )}
+                    <a 
+                        href={`/api/admin/orders/invoice?id=${order.orderId}`}
+                        download
+                        className="flex items-center gap-2 px-6 py-4 bg-white border border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all"
+                    >
+                        <Download size={18} /> Download Invoice
+                    </a>
                     <button onClick={() => window.print()} className="flex items-center gap-2 px-6 py-4 bg-white border border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all">
                         <Printer size={18} /> Print Order
                     </button>
