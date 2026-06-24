@@ -42,6 +42,11 @@ const productSchema = new mongoose.Schema({
     priceAt100: { type: Number },
     priceAt500: { type: Number },
     priceAt1000: { type: Number },
+    discountAt10: { type: Number },
+    discountAt50: { type: Number },
+    discountAt100: { type: Number },
+    discountAt500: { type: Number },
+    discountAt1000: { type: Number },
     triggerValue: { type: Number, default: 500 },
     priceSlabs: [{
         minQty: { type: Number, required: true },

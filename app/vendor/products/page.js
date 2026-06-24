@@ -41,6 +41,11 @@ export default function VendorProductsDashboard() {
         priceAt100: "",
         priceAt500: "",
         priceAt1000: "",
+        discountAt10: "",
+        discountAt50: "",
+        discountAt100: "",
+        discountAt500: "",
+        discountAt1000: "",
         triggerValue: 500,
         stock_quantity: 0,
         images: "",
@@ -148,11 +153,35 @@ export default function VendorProductsDashboard() {
 
                     // pricing tiers
                     const priceAt1 = parseFloat(row['Price At 1'] || row['priceAt1'] || 0);
-                    const priceAt10 = parseFloat(row['Price At 10'] || row['priceAt10'] || 0);
-                    const priceAt50 = parseFloat(row['Price At 50'] || row['priceAt50'] || 0);
-                    const priceAt100 = parseFloat(row['Price At 100'] || row['priceAt100'] || 0);
-                    const priceAt500 = parseFloat(row['Price At 500'] || row['priceAt500'] || 0);
-                    const priceAt1000 = parseFloat(row['Price At 1000'] || row['priceAt1000'] || 0);
+                    let priceAt10 = parseFloat(row['Price At 10'] || row['priceAt10'] || 0);
+                    let priceAt50 = parseFloat(row['Price At 50'] || row['priceAt50'] || 0);
+                    let priceAt100 = parseFloat(row['Price At 100'] || row['priceAt100'] || 0);
+                    let priceAt500 = parseFloat(row['Price At 500'] || row['priceAt500'] || 0);
+                    let priceAt1000 = parseFloat(row['Price At 1000'] || row['priceAt1000'] || 0);
+
+                    let discountAt10 = parseFloat(row['Discount At 10'] || row['discountAt10'] || 0);
+                    let discountAt50 = parseFloat(row['Discount At 50'] || row['discountAt50'] || 0);
+                    let discountAt100 = parseFloat(row['Discount At 100'] || row['discountAt100'] || 0);
+                    let discountAt500 = parseFloat(row['Discount At 500'] || row['discountAt500'] || 0);
+                    let discountAt1000 = parseFloat(row['Discount At 1000'] || row['discountAt1000'] || 0);
+
+                    // Sync logic
+                    if (priceAt1 > 0) {
+                        // 1. Sync Price to Discount
+                        if (priceAt10 > 0 && !discountAt10) discountAt10 = Math.round(((priceAt1 - priceAt10) / priceAt1) * 100 * 10) / 10;
+                        if (priceAt50 > 0 && !discountAt50) discountAt50 = Math.round(((priceAt1 - priceAt50) / priceAt1) * 100 * 10) / 10;
+                        if (priceAt100 > 0 && !discountAt100) discountAt100 = Math.round(((priceAt1 - priceAt100) / priceAt1) * 100 * 10) / 10;
+                        if (priceAt500 > 0 && !discountAt500) discountAt500 = Math.round(((priceAt1 - priceAt500) / priceAt1) * 100 * 10) / 10;
+                        if (priceAt1000 > 0 && !discountAt1000) discountAt1000 = Math.round(((priceAt1 - priceAt1000) / priceAt1) * 100 * 10) / 10;
+
+                        // 2. Sync Discount to Price
+                        if (discountAt10 > 0 && !priceAt10) priceAt10 = Math.round(priceAt1 * (1 - discountAt10 / 100) * 100) / 100;
+                        if (discountAt50 > 0 && !priceAt50) priceAt50 = Math.round(priceAt1 * (1 - discountAt50 / 100) * 100) / 100;
+                        if (discountAt100 > 0 && !priceAt100) priceAt100 = Math.round(priceAt1 * (1 - discountAt100 / 100) * 100) / 100;
+                        if (discountAt500 > 0 && !priceAt500) priceAt500 = Math.round(priceAt1 * (1 - discountAt500 / 100) * 100) / 100;
+                        if (discountAt1000 > 0 && !priceAt1000) priceAt1000 = Math.round(priceAt1 * (1 - discountAt1000 / 100) * 100) / 100;
+                    }
+
                     const triggerValue = parseInt(row['Trigger Value'] || row['triggerValue'] || 500);
                     const stock_quantity = parseInt(row['Stock Quantity'] || row['stock_quantity'] || 0);
 
@@ -186,6 +215,11 @@ export default function VendorProductsDashboard() {
                         priceAt100,
                         priceAt500,
                         priceAt1000,
+                        discountAt10,
+                        discountAt50,
+                        discountAt100,
+                        discountAt500,
+                        discountAt1000,
                         triggerValue,
                         stock_quantity,
                         isValid: errors.length === 0,
@@ -234,6 +268,11 @@ export default function VendorProductsDashboard() {
                         priceAt100: p.priceAt100 || undefined,
                         priceAt500: p.priceAt500 || undefined,
                         priceAt1000: p.priceAt1000 || undefined,
+                        discountAt10: p.discountAt10 || undefined,
+                        discountAt50: p.discountAt50 || undefined,
+                        discountAt100: p.discountAt100 || undefined,
+                        discountAt500: p.discountAt500 || undefined,
+                        discountAt1000: p.discountAt1000 || undefined,
                         triggerValue: p.triggerValue || 500,
                         stock_quantity: p.stock_quantity || 0,
                         minOrderQuantity: p.minOrderQuantity,
@@ -345,6 +384,11 @@ export default function VendorProductsDashboard() {
                     priceAt100: formData.priceAt100 !== "" ? parseFloat(formData.priceAt100) : undefined,
                     priceAt500: formData.priceAt500 !== "" ? parseFloat(formData.priceAt500) : undefined,
                     priceAt1000: formData.priceAt1000 !== "" ? parseFloat(formData.priceAt1000) : undefined,
+                    discountAt10: formData.discountAt10 !== "" ? parseFloat(formData.discountAt10) : undefined,
+                    discountAt50: formData.discountAt50 !== "" ? parseFloat(formData.discountAt50) : undefined,
+                    discountAt100: formData.discountAt100 !== "" ? parseFloat(formData.discountAt100) : undefined,
+                    discountAt500: formData.discountAt500 !== "" ? parseFloat(formData.discountAt500) : undefined,
+                    discountAt1000: formData.discountAt1000 !== "" ? parseFloat(formData.discountAt1000) : undefined,
                     triggerValue: formData.triggerValue !== "" ? parseInt(formData.triggerValue) : 500,
                     stock_quantity: formData.stock_quantity !== "" ? parseInt(formData.stock_quantity) : 0
                 })
@@ -370,6 +414,11 @@ export default function VendorProductsDashboard() {
                         priceAt100: "",
                         priceAt500: "",
                         priceAt1000: "",
+                        discountAt10: "",
+                        discountAt50: "",
+                        discountAt100: "",
+                        discountAt500: "",
+                        discountAt1000: "",
                         triggerValue: 500,
                         stock_quantity: 0,
                         images: "",
@@ -399,9 +448,10 @@ export default function VendorProductsDashboard() {
             setIsSaving(false);
         }
     };
-
+ 
     const handleEdit = (product) => {
         setFormData({
+            ...product,
             _id: product._id,
             name: product.name,
             sku: product.sku || "",
@@ -416,6 +466,11 @@ export default function VendorProductsDashboard() {
             priceAt100: product.priceAt100 !== undefined ? product.priceAt100 : "",
             priceAt500: product.priceAt500 !== undefined ? product.priceAt500 : "",
             priceAt1000: product.priceAt1000 !== undefined ? product.priceAt1000 : "",
+            discountAt10: product.discountAt10 !== undefined ? product.discountAt10 : "",
+            discountAt50: product.discountAt50 !== undefined ? product.discountAt50 : "",
+            discountAt100: product.discountAt100 !== undefined ? product.discountAt100 : "",
+            discountAt500: product.discountAt500 !== undefined ? product.discountAt500 : "",
+            discountAt1000: product.discountAt1000 !== undefined ? product.discountAt1000 : "",
             triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
             stock_quantity: product.stock_quantity !== undefined ? product.stock_quantity : 0,
             images: Array.isArray(product.images) ? product.images.join(", ") : (product.img || ""),
@@ -431,8 +486,8 @@ export default function VendorProductsDashboard() {
             unit: product.dimensions?.unit || "inch",
             pacdoraId: product.pacdoraId || "",
             isActive: product.isActive !== false,
-            pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
-            priceSlabs: product.priceSlabs || []
+            pricingMode: 'tiered',
+            priceSlabs: []
         });
         setIsModalOpen(true);
     };
@@ -836,192 +891,101 @@ export default function VendorProductsDashboard() {
                                                  </div>
                                              </div>
 
-                                             {/* Pricing Mode Selector Toggle Checkbox */}
-                                              <div className="space-y-4 border-t border-gray-150 pt-6 mt-6">
-                                                  <div className="flex items-center justify-between">
-                                                      <div>
-                                                          <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">Custom Slab Pricing</h4>
-                                                          <p className="text-[9px] text-gray-400 font-medium normal-case">Enable to define custom quantity-based price ranges instead of standard tiers</p>
-                                                      </div>
-                                                      <label className="relative inline-flex items-center cursor-pointer">
-                                                          <input 
-                                                              type="checkbox" 
-                                                              checked={formData.pricingMode === 'slabs'} 
-                                                              onChange={e => {
-                                                                  const isSlabs = e.target.checked;
-                                                                  setFormData({ 
-                                                                      ...formData, 
-                                                                      pricingMode: isSlabs ? 'slabs' : 'tiered',
-                                                                      priceSlabs: isSlabs ? (formData.priceSlabs && formData.priceSlabs.length > 0 ? formData.priceSlabs : [{ minQty: 1, maxQty: 10, price: 0 }]) : [],
-                                                                      priceAt1: isSlabs ? '' : formData.priceAt1,
-                                                                      priceAt10: isSlabs ? '' : formData.priceAt10,
-                                                                      priceAt50: isSlabs ? '' : formData.priceAt50,
-                                                                      priceAt100: isSlabs ? '' : formData.priceAt100,
-                                                                      priceAt500: isSlabs ? '' : formData.priceAt500,
-                                                                      priceAt1000: isSlabs ? '' : formData.priceAt1000
-                                                                  });
-                                                              }}
-                                                              className="sr-only peer"
-                                                          />
-                                                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                                                      </label>
-                                                  </div>
-                                              </div>
+                                             {/* Tiered Pricing (₹ per Unit / % Discount) */}
+                                             <div className="space-y-4 border-t border-gray-150 pt-6 mt-6">
+                                                 <h4 className="text-[10px] font-black text-emerald-600 block uppercase tracking-widest">Tiered Discounts & Slabs</h4>
+                                                 
+                                                 {/* Base Price Row */}
+                                                 <div className="grid grid-cols-12 gap-4 items-center mb-4">
+                                                     <div className="col-span-4 text-xs font-black text-gray-700">Base Price (Qty 1)</div>
+                                                     <div className="col-span-8 relative">
+                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+                                                         <input 
+                                                             type="number"
+                                                             step="0.01"
+                                                             value={formData.priceAt1}
+                                                             onChange={e => {
+                                                                 const basePrice = parseFloat(e.target.value) || 0;
+                                                                 const updated = { ...formData, priceAt1: e.target.value };
+                                                                 const tiers = [10, 50, 100, 500, 1000];
+                                                                 tiers.forEach(qty => {
+                                                                     const discountVal = parseFloat(formData[`discountAt${qty}`]);
+                                                                     if (discountVal > 0 && basePrice > 0) {
+                                                                         updated[`priceAt${qty}`] = (basePrice * (1 - discountVal / 100)).toFixed(2);
+                                                                     }
+                                                                 });
+                                                                 setFormData(updated);
+                                                             }}
+                                                             placeholder="Base Price"
+                                                             className="w-full p-3 pl-7 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold"
+                                                         />
+                                                     </div>
+                                                 </div>
 
-                                              {formData.pricingMode === 'slabs' ? (
-                                                  /* Custom Slab Pricing */
-                                                  <div className="border-t border-gray-150 pt-6 mt-6 space-y-4">
-                                                      <div className="flex items-center justify-between">
-                                                          <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">Custom Price Slabs</h4>
-                                                          <button
-                                                              type="button"
-                                                              onClick={() => {
-                                                                  const slabs = formData.priceSlabs || [];
-                                                                  setFormData({
-                                                                      ...formData,
-                                                                      priceSlabs: [...slabs, { minQty: 1, maxQty: 10, price: 0 }]
-                                                                  });
-                                                              }}
-                                                              className="px-3 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all"
-                                                          >
-                                                              + Add Slab
-                                                          </button>
-                                                      </div>
-                                                      
-                                                      <div className="space-y-3">
-                                                          {(formData.priceSlabs || []).map((slab, index) => (
-                                                              <div key={index} className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-250">
-                                                                  <div className="flex-1">
-                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Min Qty</label>
-                                                                      <input
-                                                                          type="number"
-                                                                          value={slab.minQty}
-                                                                          onChange={e => {
-                                                                              const newSlabs = [...formData.priceSlabs];
-                                                                              newSlabs[index].minQty = parseInt(e.target.value) || 0;
-                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
-                                                                          }}
-                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
-                                                                      />
-                                                                  </div>
-                                                                  <div className="flex-1">
-                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Max Qty</label>
-                                                                      <input
-                                                                          type="number"
-                                                                          value={slab.maxQty}
-                                                                          onChange={e => {
-                                                                              const newSlabs = [...formData.priceSlabs];
-                                                                              newSlabs[index].maxQty = parseInt(e.target.value) || 0;
-                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
-                                                                          }}
-                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
-                                                                      />
-                                                                  </div>
-                                                                  <div className="flex-1">
-                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Price / Unit (₹)</label>
-                                                                      <input
-                                                                          type="number"
-                                                                          step="0.01"
-                                                                          value={slab.price}
-                                                                          onChange={e => {
-                                                                              const newSlabs = [...formData.priceSlabs];
-                                                                              newSlabs[index].price = parseFloat(e.target.value) || 0;
-                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
-                                                                          }}
-                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
-                                                                      />
-                                                                  </div>
-                                                                  <button
-                                                                      type="button"
-                                                                      onClick={() => {
-                                                                          const newSlabs = formData.priceSlabs.filter((_, i) => i !== index);
-                                                                          setFormData({ ...formData, priceSlabs: newSlabs });
-                                                                      }}
-                                                                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-3 transition-colors"
-                                                                  >
-                                                                      <Trash2 size={14} />
-                                                                  </button>
-                                                              </div>
-                                                          ))}
-                                                          {(formData.priceSlabs || []).length === 0 && (
-                                                              <p className="text-[9px] font-bold text-gray-400 italic text-center py-2">No custom slabs defined. Add a slab to configure pricing.</p>
-                                                          )}
-                                                      </div>
-                                                  </div>
-                                              ) : (
-                                                  /* Tiered Pricing Tiers */
-                                                  <div className="border-t border-gray-150 pt-6 mt-6 space-y-4">
-                                                      <h4 className="text-[10px] font-black text-emerald-600 block">Tiered Pricing (₹ per Unit)</h4>
-                                                      <div className="grid grid-cols-3 gap-3">
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt1}
-                                                                  onChange={e => setFormData({ ...formData, priceAt1: e.target.value })}
-                                                                  placeholder="Base"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 10</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt10}
-                                                                  onChange={e => setFormData({ ...formData, priceAt10: e.target.value })}
-                                                                  placeholder="Tier 10"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 50</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt50}
-                                                                  onChange={e => setFormData({ ...formData, priceAt50: e.target.value })}
-                                                                  placeholder="Tier 50"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 100</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt100}
-                                                                  onChange={e => setFormData({ ...formData, priceAt100: e.target.value })}
-                                                                  placeholder="Tier 100"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 500</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt500}
-                                                                  onChange={e => setFormData({ ...formData, priceAt500: e.target.value })}
-                                                                  placeholder="Tier 500"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                          <div>
-                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1000</label>
-                                                              <input 
-                                                                  type="number"
-                                                                  step="0.01"
-                                                                  value={formData.priceAt1000}
-                                                                  onChange={e => setFormData({ ...formData, priceAt1000: e.target.value })}
-                                                                  placeholder="Tier 1000"
-                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                              />
-                                                          </div>
-                                                      </div>
-                                                  </div>
-                                              )}
+                                                 {/* Header */}
+                                                 <div className="grid grid-cols-12 gap-4 text-[9px] font-black text-gray-400 pb-2 border-b border-gray-100 uppercase tracking-widest">
+                                                     <div className="col-span-4">QUANTITY SLAB</div>
+                                                     <div className="col-span-4">PRICE (₹)</div>
+                                                     <div className="col-span-4">DISCOUNT (%)</div>
+                                                 </div>
+
+                                                 {/* Slab rows */}
+                                                 {[10, 50, 100, 500, 1000].map(qty => (
+                                                     <div key={qty} className="grid grid-cols-12 gap-4 items-center py-2 border-b border-gray-50">
+                                                         <div className="col-span-4 text-xs font-black text-gray-600">Qty {qty}+</div>
+                                                         <div className="col-span-4 relative">
+                                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+                                                             <input 
+                                                                 type="number"
+                                                                 step="0.01"
+                                                                 value={formData[`priceAt${qty}`]}
+                                                                 onChange={e => {
+                                                                     const priceVal = e.target.value;
+                                                                     const numericPrice = parseFloat(priceVal);
+                                                                     const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                     
+                                                                     let computedDiscount = "";
+                                                                     if (priceVal !== "" && !isNaN(numericPrice) && basePrice > 0) {
+                                                                         computedDiscount = (((basePrice - numericPrice) / basePrice) * 100).toFixed(1);
+                                                                     }
+                                                                     setFormData({
+                                                                         ...formData,
+                                                                         [`priceAt${qty}`]: priceVal,
+                                                                         [`discountAt${qty}`]: computedDiscount
+                                                                     });
+                                                                 }}
+                                                                 placeholder="0.00"
+                                                                 className="w-full p-3 pl-7 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold text-center"
+                                                             />
+                                                         </div>
+                                                         <div className="col-span-4 relative">
+                                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                                             <input 
+                                                                 type="number"
+                                                                 step="0.1"
+                                                                 value={formData[`discountAt${qty}`]}
+                                                                 onChange={e => {
+                                                                     const discountVal = e.target.value;
+                                                                     const numericDiscount = parseFloat(discountVal);
+                                                                     const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                     
+                                                                     let computedPrice = "";
+                                                                     if (discountVal !== "" && !isNaN(numericDiscount) && basePrice > 0) {
+                                                                         computedPrice = (basePrice * (1 - numericDiscount / 100)).toFixed(2);
+                                                                     }
+                                                                     setFormData({
+                                                                         ...formData,
+                                                                         [`discountAt${qty}`]: discountVal,
+                                                                         [`priceAt${qty}`]: computedPrice
+                                                                     });
+                                                                 }}
+                                                                 placeholder="0.0%"
+                                                                 className="w-full p-3 pl-7 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-xs font-bold text-center"
+                                                             />
+                                                         </div>
+                                                     </div>
+                                                 ))}
+                                             </div>
 
                                              {/* Stock Levels & Large Order Trigger */}
                                              <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-6 mt-6">

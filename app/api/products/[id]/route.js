@@ -60,7 +60,13 @@ export async function GET(req, { params }) {
         let p500 = Number(product.priceAt500) || null;
         let p1000 = Number(product.priceAt1000) || null;
 
-        if (p1 > 0) {
+        const d10 = product.discountAt10 !== undefined && product.discountAt10 !== null ? Number(product.discountAt10) : null;
+        const d50 = product.discountAt50 !== undefined && product.discountAt50 !== null ? Number(product.discountAt50) : null;
+        const d100 = product.discountAt100 !== undefined && product.discountAt100 !== null ? Number(product.discountAt100) : null;
+        const d500 = product.discountAt500 !== undefined && product.discountAt500 !== null ? Number(product.discountAt500) : null;
+        const d1000 = product.discountAt1000 !== undefined && product.discountAt1000 !== null ? Number(product.discountAt1000) : null;
+
+        if (p1 > 0 && d10 === null && d50 === null && d100 === null && d500 === null && d1000 === null) {
             if (p10 && p10 > p1 * 1.5) p10 = p10 / 10;
             if (p50 && p50 > p1 * 1.5) p50 = p50 / 50;
             if (p100 && p100 > p1 * 1.5) p100 = p100 / 100;
@@ -88,6 +94,11 @@ export async function GET(req, { params }) {
             priceAt100: p100,
             priceAt500: p500,
             priceAt1000: p1000,
+            discountAt10: d10,
+            discountAt50: d50,
+            discountAt100: d100,
+            discountAt500: d500,
+            discountAt1000: d1000,
             triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
             stock_quantity: product.stock_quantity,
             badge: product.badge,

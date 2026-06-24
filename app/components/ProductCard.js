@@ -261,7 +261,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             <span className={`font-black text-gray-950 tracking-tighter leading-none ${isSmall ? 'text-xs sm:text-base' : 'text-sm sm:text-xl'}`}>
               {(() => {
                 // Try tiered pricing first (New Logic: 1, 10, 50, 100, 500, 1000)
-                if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000) {
+                if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000 || product.discountAt10 || product.discountAt50 || product.discountAt100 || product.discountAt500 || product.discountAt1000) {
                   const qty = product.minOrderQuantity || 10;
                   const computed = calculateDynamicPrice(
                     qty,
@@ -270,7 +270,12 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
                     product.priceAt50,
                     product.priceAt100,
                     product.priceAt500,
-                    product.priceAt1000
+                    product.priceAt1000,
+                    product.discountAt10,
+                    product.discountAt50,
+                    product.discountAt100,
+                    product.discountAt500,
+                    product.discountAt1000
                   );
                   if (computed && computed > 0) return `₹${Math.round(computed).toLocaleString('en-IN')}`;
                 }

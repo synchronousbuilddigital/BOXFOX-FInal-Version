@@ -55,7 +55,13 @@ function toStoreProduct(product, source = 'core') {
   let p500 = product.priceAt500 || null;
   let p1000 = product.priceAt1000 || null;
 
-  if (p1 > 0) {
+  const d10 = product.discountAt10 !== undefined && product.discountAt10 !== null ? Number(product.discountAt10) : null;
+  const d50 = product.discountAt50 !== undefined && product.discountAt50 !== null ? Number(product.discountAt50) : null;
+  const d100 = product.discountAt100 !== undefined && product.discountAt100 !== null ? Number(product.discountAt100) : null;
+  const d500 = product.discountAt500 !== undefined && product.discountAt500 !== null ? Number(product.discountAt500) : null;
+  const d1000 = product.discountAt1000 !== undefined && product.discountAt1000 !== null ? Number(product.discountAt1000) : null;
+
+  if (p1 > 0 && d10 === null && d50 === null && d100 === null && d500 === null && d1000 === null) {
     if (p10 && p10 > p1 * 1.5) p10 = p10 / 10;
     if (p50 && p50 > p1 * 1.5) p50 = p50 / 50;
     if (p100 && p100 > p1 * 1.5) p100 = p100 / 100;
@@ -86,6 +92,11 @@ function toStoreProduct(product, source = 'core') {
     priceAt100: p100,
     priceAt500: p500,
     priceAt1000: p1000,
+    discountAt10: d10,
+    discountAt50: d50,
+    discountAt100: d100,
+    discountAt500: d500,
+    discountAt1000: d1000,
     triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
     stock_quantity: product.stock_quantity,
     originalPrice: product.regular_price || null,
@@ -173,7 +184,9 @@ export async function GET(req) {
         ? {} // Return ALL fields for complete product data on shop page
         : (isAdmin ? {} : {
           _id: 1, wpId: 1, name: 1, sku: 1, price: 1, minPrice: 1, maxPrice: 1,
-          priceAt1: 1, priceAt10: 1, priceAt50: 1, priceAt100: 1, priceAt500: 1, priceAt1000: 1, triggerValue: 1, regular_price: 1, sale_price: 1,
+          priceAt1: 1, priceAt10: 1, priceAt50: 1, priceAt100: 1, priceAt500: 1, priceAt1000: 1,
+          discountAt10: 1, discountAt50: 1, discountAt100: 1, discountAt500: 1, discountAt1000: 1,
+          triggerValue: 1, regular_price: 1, sale_price: 1,
           images: 1, img: 1, type: 1, stock_status: 1, stock_quantity: 1,
           dimensions: 1, pacdoraId: 1, badge: 1, isFeatured: 1, categories: 1, category: 1,
           minOrderQuantity: 1, brand: 1, description: 1, short_description: 1,

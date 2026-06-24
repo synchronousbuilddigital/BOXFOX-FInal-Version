@@ -43,39 +43,23 @@ export function CartProvider({ children }) {
             };
         }
 
-        // 2. Slab Pricing
-        const isSlabPricing = product.pricingMode === 'slabs' || 
-            (!product.pricingMode && product.priceSlabs && product.priceSlabs.length > 0);
-            
-        if (isSlabPricing && product.priceSlabs && product.priceSlabs.length > 0) {
-            const slabs = [...product.priceSlabs].sort((a, b) => a.minQty - b.minQty);
-            let unitPrice = 0;
-            const match = slabs.find(s => quantity >= s.minQty && quantity <= s.maxQty);
-            if (match) {
-                unitPrice = match.price;
-            } else {
-                if (quantity < slabs[0].minQty) {
-                    unitPrice = slabs[0].price;
-                } else {
-                    unitPrice = slabs[slabs.length - 1].price;
-                }
-            }
-            return {
-                unitPrice: unitPrice,
-                oneTimeCharge: 0,
-                breakdown: { finalPerUnit: unitPrice, finalTotal: unitPrice * quantity, mode: 'slabs' }
-            };
-        }
-
-        // 3. Explicit Tiered Pricing (For standard Shop products)
-        if (product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000) {
+        // 2. Explicit Tiered Pricing (For standard Shop products)
+        if (
+            product.priceAt1 || product.priceAt10 || product.priceAt50 || product.priceAt100 || product.priceAt500 || product.priceAt1000 ||
+            product.discountAt10 || product.discountAt50 || product.discountAt100 || product.discountAt500 || product.discountAt1000
+        ) {
             const unitPrice = unitPriceFromSixPoints({
                 priceAt1: product.priceAt1,
                 priceAt10: product.priceAt10,
                 priceAt50: product.priceAt50,
                 priceAt100: product.priceAt100,
                 priceAt500: product.priceAt500,
-                priceAt1000: product.priceAt1000
+                priceAt1000: product.priceAt1000,
+                discountAt10: product.discountAt10,
+                discountAt50: product.discountAt50,
+                discountAt100: product.discountAt100,
+                discountAt500: product.discountAt500,
+                discountAt1000: product.discountAt1000
             }, quantity);
             
             return {
