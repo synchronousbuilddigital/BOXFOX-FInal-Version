@@ -48,6 +48,7 @@ export default function ProductPage() {
     const [labConfigs, setLabConfigs] = useState(null);
     const [selectedColor, setSelectedColor] = useState('');
     const [isDescExpanded, setIsDescExpanded] = useState(false);
+    const [showSlabTable, setShowSlabTable] = useState(false);
 
     // B2B Inquiry form modal state
     const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
@@ -222,8 +223,30 @@ export default function ProductPage() {
         }
     }
 
-    const hasExplicitTiers = p1 || p10 || p50 || p100 || p500 || p1000;
-    const tierUnitPrice = hasExplicitTiers
+    const isSlabs = product.pricingMode === 'slabs' || 
+        (!product.pricingMode && product.priceSlabs && product.priceSlabs.length > 0);
+
+    let slabUnitPrice = null;
+    if (isSlabs && product.priceSlabs && product.priceSlabs.length > 0) {
+        const sortedSlabs = [...product.priceSlabs].sort((a, b) => a.minQty - b.minQty);
+        const qtyVal = parseInt(quantity) || 10;
+        const match = sortedSlabs.find(s => qtyVal >= s.minQty && qtyVal <= s.maxQty);
+        if (match) {
+            slabUnitPrice = match.price;
+        } else {
+            if (qtyVal < sortedSlabs[0].minQty) {
+                slabUnitPrice = sortedSlabs[0].price;
+            } else {
+                slabUnitPrice = sortedSlabs[sortedSlabs.length - 1].price;
+            }
+        }
+    }
+
+    const hasExplicitTiers = isSlabs 
+        ? (product.priceSlabs && product.priceSlabs.length > 0)
+        : !!(p1 || p10 || p50 || p100 || p500 || p1000);
+
+    const tierUnitPrice = (!isSlabs && hasExplicitTiers)
         ? calculateDynamicPrice(
             parseInt(quantity) || 10,
             p1,
@@ -235,49 +258,69 @@ export default function ProductPage() {
         )
         : null;
 
-    const pricingResult = tierUnitPrice
-        ? { finalPerUnit: tierUnitPrice, finalTotal: Math.ceil(tierUnitPrice * (parseInt(quantity) || 10)) }
-        : calculateBoxPrice({
-            spec: selectedSpec || { ups: 1, machine: 2029, sheetW: 20, sheetH: 29 },
-            qty: parseInt(quantity) || 10,
-            gsm: 280,
-            material: 'SBS',
-            brand: 'Normal',
-            colours: 'Four Colour',
-            lamination: 'Plain',
-            markupType: 'Retail',
-            dieCutting: true
-        }, labConfigs);
+    const pricingResult = slabUnitPrice !== null
+        ? { finalPerUnit: slabUnitPrice, finalTotal: Math.ceil(slabUnitPrice * (parseInt(quantity) || 10)), mode: 'slabs' }
+        : tierUnitPrice
+            ? { finalPerUnit: tierUnitPrice, finalTotal: Math.ceil(tierUnitPrice * (parseInt(quantity) || 10)) }
+            : calculateBoxPrice({
+                spec: selectedSpec || { ups: 1, machine: 2029, sheetW: 20, sheetH: 29 },
+                qty: parseInt(quantity) || 10,
+                gsm: 280,
+                material: 'SBS',
+                brand: 'Normal',
+                colours: 'Four Colour',
+                lamination: 'Plain',
+                markupType: 'Retail',
+                dieCutting: true
+            }, labConfigs);
 
     const triggerValue = product.triggerValue !== undefined ? product.triggerValue : 500;
     const isLargeOrder = quantity >= triggerValue;
     const unitPrice = isLargeOrder ? "Contact Us" : pricingResult.finalPerUnit.toFixed(2);
 
     // ─── TIER CALCULATION FOR REDESIGNED UI ────────────────────────────────────
-    const activeTiers = [
-        { qty: 1, val: p1 },
-        { qty: 10, val: p10 },
-        { qty: 50, val: p50 },
-        { qty: 100, val: p100 },
-        { qty: 500, val: p500 },
-        { qty: 1000, val: p1000 }
-    ].filter(t => t.val > 0);
+    const activeTiers = isSlabs
+        ? []
+        : [
+            { qty: 1, val: p1 },
+            { qty: 10, val: p10 },
+            { qty: 50, val: p50 },
+            { qty: 100, val: p100 },
+            { qty: 500, val: p500 },
+            { qty: 1000, val: p1000 }
+        ].filter(t => t.val > 0);
 
     const p1Val = p1 || 0;
     const getTierUnitVal = (tier) => {
         return (p1Val > 0 && tier.val > p1Val * 1.5) ? tier.val / tier.qty : tier.val;
     };
-    const basePrice = activeTiers.length > 0 ? getTierUnitVal(activeTiers[0]) : (pricingResult ? pricingResult.finalPerUnit : 0);
+    
+    const sortedSlabs = isSlabs ? [...(product.priceSlabs || [])].sort((a, b) => a.minQty - b.minQty) : [];
+    const basePrice = isSlabs
+        ? (sortedSlabs.length > 0 ? sortedSlabs[0].price : 0)
+        : (activeTiers.length > 0 ? getTierUnitVal(activeTiers[0]) : (pricingResult ? pricingResult.finalPerUnit : 0));
 
-    const tiersWithSavings = activeTiers.map(t => {
-        const uVal = getTierUnitVal(t);
-        const discountPercent = basePrice > 0 ? Math.round(((basePrice - uVal) / basePrice) * 100) : 0;
-        return {
-            ...t,
-            unitVal: uVal,
-            discountPercent
-        };
-    });
+    const tiersWithSavings = isSlabs
+        ? sortedSlabs.map(s => {
+            const discountPercent = basePrice > 0 ? Math.round(((basePrice - s.price) / basePrice) * 100) : 0;
+            return {
+                qty: s.minQty,
+                minQty: s.minQty,
+                maxQty: s.maxQty,
+                val: s.price,
+                unitVal: s.price,
+                discountPercent
+            };
+        })
+        : activeTiers.map(t => {
+            const uVal = getTierUnitVal(t);
+            const discountPercent = basePrice > 0 ? Math.round(((basePrice - uVal) / basePrice) * 100) : 0;
+            return {
+                ...t,
+                unitVal: uVal,
+                discountPercent
+            };
+        });
 
     const currentQtyVal = parseInt(quantity) || 10;
     let activeTierIndex = -1;
@@ -574,9 +617,56 @@ export default function ProductPage() {
 
                                 {/* Volume Savings Tiers Grid */}
                                 {hasExplicitTiers && (
-                                    <div className="space-y-3">
+                                    <div className="space-y-4">
+                                        {isSlabs && (
+                                            <div className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-2xl">
+                                                <label className="relative inline-flex items-center cursor-pointer select-none">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        id="toggle-bulk-slabs"
+                                                        checked={showSlabTable} 
+                                                        onChange={e => setShowSlabTable(e.target.checked)}
+                                                        className="sr-only peer"
+                                                    />
+                                                    <div className="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                                                    <span className="ml-3 text-[10px] font-black text-gray-700 uppercase tracking-widest">View Bulk Slabs</span>
+                                                </label>
+                                            </div>
+                                        )}
+
+                                        {isSlabs && showSlabTable && (
+                                            <div className="overflow-hidden border border-emerald-100 rounded-2xl shadow-sm bg-emerald-50/10 transition-all duration-300">
+                                                <table className="w-full text-left border-collapse">
+                                                    <thead>
+                                                        <tr className="bg-emerald-50/50 border-b border-emerald-100">
+                                                            <th className="p-3 text-[9px] font-black uppercase tracking-widest text-emerald-800">Quantity Range</th>
+                                                            <th className="p-3 text-[9px] font-black uppercase tracking-widest text-emerald-800 text-right">Price per Unit</th>
+                                                            <th className="p-3 text-[9px] font-black uppercase tracking-widest text-emerald-800 text-right">Discount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-emerald-100/50 text-gray-700">
+                                                        {tiersWithSavings.map((tier, idx) => {
+                                                            const isCurrent = idx === activeTierIndex;
+                                                            return (
+                                                                <tr key={idx} className={`transition-colors ${isCurrent ? 'bg-emerald-500/10 font-bold' : 'hover:bg-gray-50/50'}`}>
+                                                                    <td className="p-3 text-xs text-gray-900 font-bold">
+                                                                        {tier.minQty} - {tier.maxQty} Units
+                                                                        {isCurrent && <span className="ml-2 text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Active</span>}
+                                                                    </td>
+                                                                    <td className="p-3 text-xs text-gray-900 text-right font-black">₹{Number(tier.unitVal).toFixed(2)}</td>
+                                                                    <td className="p-3 text-xs text-emerald-600 text-right font-bold">{tier.discountPercent > 0 ? `${tier.discountPercent}% Off` : 'Base Price'}</td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
+
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Volume Pricing Tiers</p>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                {isSlabs ? "Volume Slab Options" : "Volume Pricing Tiers"}
+                                            </p>
                                             <span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest w-fit">
                                                 Bulk discount auto-applied
                                             </span>
@@ -593,20 +683,20 @@ export default function ProductPage() {
                                                             setQuantity(tier.qty);
                                                         }}
                                                         className={`text-left p-3.5 rounded-2xl border transition-all duration-300 group relative flex flex-col justify-between h-[82px] ${isActive
-                                                                ? "bg-gradient-to-br from-emerald-600 to-teal-700 border-emerald-700 text-white shadow-lg shadow-emerald-600/15 scale-[1.02]"
-                                                                : "bg-white border-gray-200 hover:border-emerald-300 hover:shadow-sm hover:scale-[1.01]"
+                                                            ? "bg-gradient-to-br from-emerald-600 to-teal-700 border-emerald-700 text-white shadow-lg shadow-emerald-600/15 scale-[1.02]"
+                                                            : "bg-white border-gray-200 hover:border-emerald-300 hover:shadow-sm hover:scale-[1.01]"
                                                             }`}
                                                     >
                                                         {/* Tier Quantity & Discount Badge */}
                                                         <div className="flex items-center justify-between w-full">
                                                             <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-emerald-100" : "text-gray-400 group-hover:text-emerald-600"}`}>
-                                                                {tier.qty === 1 ? "1 Unit" : `${tier.qty} Units`}
+                                                                {isSlabs ? `${tier.minQty}-${tier.maxQty} Units` : (tier.qty === 1 ? "1 Unit" : `${tier.qty} Units`)}
                                                             </span>
 
                                                             {tier.discountPercent > 0 && (
                                                                 <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider ${isActive
-                                                                        ? "bg-white text-emerald-700"
-                                                                        : "bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-100"
+                                                                    ? "bg-white text-emerald-700"
+                                                                    : "bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-100"
                                                                     }`}>
                                                                     {tier.discountPercent}% Off
                                                                 </span>

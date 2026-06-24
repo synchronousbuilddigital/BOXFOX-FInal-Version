@@ -55,7 +55,9 @@ export default function VendorProductsDashboard() {
         height: "",
         unit: "inch",
         pacdoraId: "",
-        isActive: true
+        isActive: true,
+        pricingMode: "tiered",
+        priceSlabs: []
     });
 
     const loadProducts = async (preserveState = false) => {
@@ -382,7 +384,9 @@ export default function VendorProductsDashboard() {
                         height: "",
                         unit: "inch",
                         pacdoraId: "",
-                        isActive: true
+                        isActive: true,
+                        pricingMode: "tiered",
+                        priceSlabs: []
                     });
                 }, 1500);
             } else {
@@ -426,7 +430,9 @@ export default function VendorProductsDashboard() {
             height: product.dimensions?.height || "",
             unit: product.dimensions?.unit || "inch",
             pacdoraId: product.pacdoraId || "",
-            isActive: product.isActive !== false
+            isActive: product.isActive !== false,
+            pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
+            priceSlabs: product.priceSlabs || []
         });
         setIsModalOpen(true);
     };
@@ -830,78 +836,192 @@ export default function VendorProductsDashboard() {
                                                  </div>
                                              </div>
 
-                                             {/* Tiered Pricing Tiers */}
-                                             <div className="border-t border-gray-150 pt-6 mt-6 space-y-4">
-                                                 <h4 className="text-[10px] font-black text-emerald-600 block">Tiered Pricing (₹ per Unit)</h4>
-                                                 <div className="grid grid-cols-3 gap-3">
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt1}
-                                                             onChange={e => setFormData({ ...formData, priceAt1: e.target.value })}
-                                                             placeholder="Base"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 10</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt10}
-                                                             onChange={e => setFormData({ ...formData, priceAt10: e.target.value })}
-                                                             placeholder="Tier 10"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 50</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt50}
-                                                             onChange={e => setFormData({ ...formData, priceAt50: e.target.value })}
-                                                             placeholder="Tier 50"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 100</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt100}
-                                                             onChange={e => setFormData({ ...formData, priceAt100: e.target.value })}
-                                                             placeholder="Tier 100"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 500</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt500}
-                                                             onChange={e => setFormData({ ...formData, priceAt500: e.target.value })}
-                                                             placeholder="Tier 500"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                     <div>
-                                                         <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1000</label>
-                                                         <input 
-                                                             type="number"
-                                                             step="0.01"
-                                                             value={formData.priceAt1000}
-                                                             onChange={e => setFormData({ ...formData, priceAt1000: e.target.value })}
-                                                             placeholder="Tier 1000"
-                                                             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
-                                                         />
-                                                     </div>
-                                                 </div>
-                                             </div>
+                                             {/* Pricing Mode Selector Toggle Checkbox */}
+                                              <div className="space-y-4 border-t border-gray-150 pt-6 mt-6">
+                                                  <div className="flex items-center justify-between">
+                                                      <div>
+                                                          <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">Custom Slab Pricing</h4>
+                                                          <p className="text-[9px] text-gray-400 font-medium normal-case">Enable to define custom quantity-based price ranges instead of standard tiers</p>
+                                                      </div>
+                                                      <label className="relative inline-flex items-center cursor-pointer">
+                                                          <input 
+                                                              type="checkbox" 
+                                                              checked={formData.pricingMode === 'slabs'} 
+                                                              onChange={e => {
+                                                                  const isSlabs = e.target.checked;
+                                                                  setFormData({ 
+                                                                      ...formData, 
+                                                                      pricingMode: isSlabs ? 'slabs' : 'tiered',
+                                                                      priceSlabs: isSlabs ? (formData.priceSlabs && formData.priceSlabs.length > 0 ? formData.priceSlabs : [{ minQty: 1, maxQty: 10, price: 0 }]) : [],
+                                                                      priceAt1: isSlabs ? '' : formData.priceAt1,
+                                                                      priceAt10: isSlabs ? '' : formData.priceAt10,
+                                                                      priceAt50: isSlabs ? '' : formData.priceAt50,
+                                                                      priceAt100: isSlabs ? '' : formData.priceAt100,
+                                                                      priceAt500: isSlabs ? '' : formData.priceAt500,
+                                                                      priceAt1000: isSlabs ? '' : formData.priceAt1000
+                                                                  });
+                                                              }}
+                                                              className="sr-only peer"
+                                                          />
+                                                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                                      </label>
+                                                  </div>
+                                              </div>
+
+                                              {formData.pricingMode === 'slabs' ? (
+                                                  /* Custom Slab Pricing */
+                                                  <div className="border-t border-gray-150 pt-6 mt-6 space-y-4">
+                                                      <div className="flex items-center justify-between">
+                                                          <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">Custom Price Slabs</h4>
+                                                          <button
+                                                              type="button"
+                                                              onClick={() => {
+                                                                  const slabs = formData.priceSlabs || [];
+                                                                  setFormData({
+                                                                      ...formData,
+                                                                      priceSlabs: [...slabs, { minQty: 1, maxQty: 10, price: 0 }]
+                                                                  });
+                                                              }}
+                                                              className="px-3 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all"
+                                                          >
+                                                              + Add Slab
+                                                          </button>
+                                                      </div>
+                                                      
+                                                      <div className="space-y-3">
+                                                          {(formData.priceSlabs || []).map((slab, index) => (
+                                                              <div key={index} className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-250">
+                                                                  <div className="flex-1">
+                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Min Qty</label>
+                                                                      <input
+                                                                          type="number"
+                                                                          value={slab.minQty}
+                                                                          onChange={e => {
+                                                                              const newSlabs = [...formData.priceSlabs];
+                                                                              newSlabs[index].minQty = parseInt(e.target.value) || 0;
+                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
+                                                                          }}
+                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
+                                                                      />
+                                                                  </div>
+                                                                  <div className="flex-1">
+                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Max Qty</label>
+                                                                      <input
+                                                                          type="number"
+                                                                          value={slab.maxQty}
+                                                                          onChange={e => {
+                                                                              const newSlabs = [...formData.priceSlabs];
+                                                                              newSlabs[index].maxQty = parseInt(e.target.value) || 0;
+                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
+                                                                          }}
+                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
+                                                                      />
+                                                                  </div>
+                                                                  <div className="flex-1">
+                                                                      <label className="text-[8px] font-black text-gray-400 block mb-1">Price / Unit (₹)</label>
+                                                                      <input
+                                                                          type="number"
+                                                                          step="0.01"
+                                                                          value={slab.price}
+                                                                          onChange={e => {
+                                                                              const newSlabs = [...formData.priceSlabs];
+                                                                              newSlabs[index].price = parseFloat(e.target.value) || 0;
+                                                                              setFormData({ ...formData, priceSlabs: newSlabs });
+                                                                          }}
+                                                                          className="w-full p-2.5 bg-white border border-gray-200 rounded-lg outline-none text-xs font-bold text-gray-950 text-center"
+                                                                      />
+                                                                  </div>
+                                                                  <button
+                                                                      type="button"
+                                                                      onClick={() => {
+                                                                          const newSlabs = formData.priceSlabs.filter((_, i) => i !== index);
+                                                                          setFormData({ ...formData, priceSlabs: newSlabs });
+                                                                      }}
+                                                                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-3 transition-colors"
+                                                                  >
+                                                                      <Trash2 size={14} />
+                                                                  </button>
+                                                              </div>
+                                                          ))}
+                                                          {(formData.priceSlabs || []).length === 0 && (
+                                                              <p className="text-[9px] font-bold text-gray-400 italic text-center py-2">No custom slabs defined. Add a slab to configure pricing.</p>
+                                                          )}
+                                                      </div>
+                                                  </div>
+                                              ) : (
+                                                  /* Tiered Pricing Tiers */
+                                                  <div className="border-t border-gray-150 pt-6 mt-6 space-y-4">
+                                                      <h4 className="text-[10px] font-black text-emerald-600 block">Tiered Pricing (₹ per Unit)</h4>
+                                                      <div className="grid grid-cols-3 gap-3">
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt1}
+                                                                  onChange={e => setFormData({ ...formData, priceAt1: e.target.value })}
+                                                                  placeholder="Base"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 10</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt10}
+                                                                  onChange={e => setFormData({ ...formData, priceAt10: e.target.value })}
+                                                                  placeholder="Tier 10"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 50</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt50}
+                                                                  onChange={e => setFormData({ ...formData, priceAt50: e.target.value })}
+                                                                  placeholder="Tier 50"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 100</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt100}
+                                                                  onChange={e => setFormData({ ...formData, priceAt100: e.target.value })}
+                                                                  placeholder="Tier 100"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 500</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt500}
+                                                                  onChange={e => setFormData({ ...formData, priceAt500: e.target.value })}
+                                                                  placeholder="Tier 500"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                          <div>
+                                                              <label className="text-[8px] font-black text-gray-400 block mb-1">Qty 1000</label>
+                                                              <input 
+                                                                  type="number"
+                                                                  step="0.01"
+                                                                  value={formData.priceAt1000}
+                                                                  onChange={e => setFormData({ ...formData, priceAt1000: e.target.value })}
+                                                                  placeholder="Tier 1000"
+                                                                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-emerald-500 text-gray-955 text-center text-xs"
+                                                              />
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              )}
 
                                              {/* Stock Levels & Large Order Trigger */}
                                              <div className="grid grid-cols-2 gap-4 border-t border-gray-150 pt-6 mt-6">

@@ -74,7 +74,6 @@ export default function AdminLayout({ children }) {
         { label: 'Products', icon: <Box size={20} />, href: '/admin/products', roles: ['admin'] },
         { label: 'B2B Ops', icon: <Settings size={20} />, href: '/admin/b2b', roles: ['admin', 'staff_fulfillment'] },
         { label: 'B2B Leads', icon: <ClipboardList size={20} />, href: '/admin/b2b/inquiries', roles: ['admin'] },
-        { label: 'Gifting Quotes', icon: <File size={20} />, href: '/admin/quotes', roles: ['admin', 'staff_fulfillment'] },
         { label: 'General Queries', icon: <MessageSquare size={20} />, href: '/admin/queries', roles: ['admin', 'staff_fulfillment'] },
         { label: 'Promo Vault', icon: <Ticket size={20} />, href: '/admin/coupons', roles: ['admin'] },
         { label: 'Best Sellers', icon: <TrendingUp size={20} />, href: '/admin/best-sellers', roles: ['admin', 'staff_fulfillment'] },

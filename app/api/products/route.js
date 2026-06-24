@@ -112,6 +112,8 @@ function toStoreProduct(product, source = 'core') {
     isActive: product.isActive !== false,
     pageVisibility: product.pageVisibility || 'shop',
     allowWishlist: true,
+    priceSlabs: product.priceSlabs || [],
+    pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
   };
 }
 
@@ -345,7 +347,9 @@ export async function POST(req) {
         short_description: data.short_description,
         pacdoraId: data.pacdoraId,
         isActive: data.isActive !== undefined ? data.isActive : true,
-        pageVisibility: data.pageVisibility || 'shop'
+        pageVisibility: data.pageVisibility || 'shop',
+        pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
+        priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : []
       }, { new: true });
       await invalidateProductCache();
 
@@ -384,7 +388,9 @@ export async function POST(req) {
       short_description: data.short_description,
       pacdoraId: data.pacdoraId,
       isActive: data.isActive !== undefined ? data.isActive : true,
-      pageVisibility: data.pageVisibility || 'shop'
+      pageVisibility: data.pageVisibility || 'shop',
+      pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
+      priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : []
     });
     await invalidateProductCache();
 

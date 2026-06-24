@@ -32,6 +32,8 @@ const OrderSchema = new mongoose.Schema({
         }
     ],
     total: Number,
+    subtotal: { type: Number, default: 0 },
+    gstAmount: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
     couponCode: { type: String },
     status: {

@@ -185,7 +185,11 @@ export default function CheckoutPage() {
         }
     };
 
-    const finalTotal = cartTotal - (appliedCoupon?.discount || 0);
+    const subtotal = cartTotal;
+    const discount = appliedCoupon?.discount || 0;
+    const taxableAmount = Math.max(0, subtotal - discount);
+    const gstAmount = Math.round(taxableAmount * 0.18 * 100) / 100;
+    const finalTotal = Math.round((taxableAmount + gstAmount) * 100) / 100;
 
 
 
@@ -251,6 +255,8 @@ export default function CheckoutPage() {
                         customDesign: item.customDesign
                     })),
                     total: finalTotal,
+                    subtotal: subtotal,
+                    gstAmount: gstAmount,
                     discount: appliedCoupon?.discount || 0,
                     couponCode: appliedCoupon?.code || null,
                     status: 'Pending',
@@ -489,6 +495,10 @@ export default function CheckoutPage() {
                                                 <span className="font-black">- ₹{appliedCoupon.discount.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-900 uppercase tracking-widest">
+                                            <span className="text-gray-500">GST (18%)</span>
+                                            <span className="font-black">₹{gstAmount.toLocaleString('en-IN')}</span>
+                                        </div>
                                         <div className="flex items-center justify-between text-[9px] font-black text-gray-900 uppercase tracking-widest">
                                             <span className="text-gray-500">Shipping</span>
                                             <span className="text-emerald-600 font-black italic">Free</span>
@@ -946,6 +956,10 @@ export default function CheckoutPage() {
                                                 <span className="font-black">- ₹{appliedCoupon.discount.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
+                                        <div className="flex items-center justify-between text-[9px] font-black text-gray-955 uppercase tracking-[0.3em]">
+                                            <span className="text-gray-500">GST (18%)</span>
+                                            <span className="font-black">₹{gstAmount.toLocaleString('en-IN')}</span>
+                                        </div>
                                         <div className="flex items-center justify-between text-[9px] font-black text-gray-955 uppercase tracking-[0.3em]">
                                             <span className="text-gray-500">Shipping Fee</span>
                                             <span className="text-emerald-600 font-black italic">Free</span>

@@ -595,7 +595,6 @@ function AccountManagementContent() {
                             {[
                                 { id: "dashboard", label: "Overview", icon: Settings },
                                 { id: "orders", label: "Manifests", icon: Package },
-                                { id: "quotes", label: "Gifting Quotes", icon: FileText, badge: quotes.length },
                                 { id: "addresses", label: "Logistics", icon: MapPin },
                                 { id: "details", label: "Identity", icon: UserIcon },
                                 { id: "wishlist", label: "Wishlist", icon: Heart },
@@ -1093,103 +1092,7 @@ function AccountManagementContent() {
                                 </motion.div>
                             )}
 
-                            {activeTab === 'quotes' && (
-                                <motion.div
-                                    key="quotes"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-sm border border-gray-100 min-h-[400px]"
-                                >
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                                        <h2 className="text-3xl font-black uppercase tracking-tighter text-gray-950">
-                                            Gifting Quotations
-                                        </h2>
-                                        <div className="relative flex-1 max-w-sm">
-                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                            <input 
-                                                type="text" 
-                                                placeholder="Search quotations..." 
-                                                value={quoteSearch}
-                                                onChange={(e) => setQuoteSearch(e.target.value)}
-                                                className="w-full pl-12 pr-6 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-medium outline-none transition-all"
-                                            />
-                                        </div>
-                                    </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-                                            {QUOTE_PHASES.map((phase) => {
-                                                const count = quotes.filter((quote) => getClientQuoteStatus(quote.status, quote.assignedVendor) === phase).length;
-                                                return (
-                                                    <div key={phase} className={`rounded-2xl border px-4 py-3 ${getQuoteBadgeClasses(phase)} bg-opacity-60`}>
-                                                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">{phase}</p>
-                                                        <p className="text-lg font-black tracking-tight mt-1">{count}</p>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
 
-                                    {quotes.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-20 text-center">
-                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-4">
-                                                <FileText size={32} />
-                                            </div>
-                                            <p className="text-xs font-black text-gray-400 uppercase tracking-widest">No quotations requested yet.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {visibleQuotes.length === 0 ? (
-                                                <div className="py-20 text-center italic text-gray-400 text-sm">No matches found for "{quoteSearch}"</div>
-                                            ) : visibleQuotes.map(quote => {
-                                                const clientStatus = getClientQuoteStatus(quote.status, quote.assignedVendor);
-                                                const statusLabel = clientStatus.charAt(0).toUpperCase() + clientStatus.slice(1);
-                                                return (
-                                                <div
-                                                    key={quote._id}
-                                                    className="p-6 sm:p-8 rounded-[2rem] border border-gray-100 bg-gradient-to-br from-white via-gray-50/60 to-emerald-50/30 hover:bg-white transition-all relative overflow-hidden"
-                                                >
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8 relative z-10">
-                                                        <div className="flex items-center gap-6">
-                                                            <div className="w-16 h-16 rounded-[1.25rem] bg-white border border-gray-100 p-2 shrink-0 flex items-center justify-center shadow-sm text-emerald-500">
-                                                                <FileText size={24} />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Quote Reference</p>
-                                                                <h4 className="text-lg font-black text-gray-950 uppercase">#{quote._id.slice(-6).toUpperCase()}</h4>
-                                                                <div className="flex items-center gap-2 mt-2">
-                                                                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] ${getQuoteBadgeClasses(clientStatus)}`}>
-                                                                        {statusLabel}
-                                                                    </span>
-                                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{quote.assignedVendor ? 'Partner assigned' : 'Awaiting assignment'}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="grid grid-cols-2 gap-4 min-w-[260px]">
-                                                            <div className="text-right bg-white rounded-2xl border border-gray-100 p-4">
-                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Client Amount</p>
-                                                                <p className="text-xl font-black text-gray-950">₹{quote.totalAmount || 'TBD'}</p>
-                                                            </div>
-                                                            <div className="text-right bg-emerald-50 rounded-2xl border border-emerald-100 p-4">
-                                                                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Vendor Payout</p>
-                                                                <p className="text-xl font-black text-emerald-700">₹{quote.vendorAmount || 'TBD'}</p>
-                                                            </div>
-                                                            <button 
-                                                                className="col-span-2 px-6 py-3 bg-gray-950 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-all flex items-center justify-center gap-2"
-                                                                onClick={() => { setSelectedQuote(quote); setChatOpen(true); }}
-                                                            >
-                                                                <Mail size={14} /> Discuss with Admin
-                                                                {quote.messages?.filter(m => m.sender === 'admin').length > 0 && (
-                                                                    <span className="w-4 h-4 bg-emerald-500 rounded-full text-[8px] flex items-center justify-center">{quote.messages.filter(m => m.sender === 'admin').length}</span>
-                                                                )}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );})}
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
 
                             {activeTab === 'designs' && (
                                 <motion.div

@@ -295,12 +295,27 @@ export default function OrderDetails() {
                         </div>
                         {/* Order Total */}
                         <div className="p-10 bg-gray-50/50 space-y-4">
-                            <div className="flex justify-between items-center text-sm font-bold text-gray-500"><span>Subtotal</span><span>₹{order.total?.toLocaleString("en-IN")}</span></div>
-                            <div className="flex justify-between items-center text-sm font-bold text-gray-500"><span>Shipping (Flat Rate)</span><span>₹0.00</span></div>
-                            <div className="flex justify-between items-center text-sm font-bold text-gray-500"><span>GST (18%)</span><span>Included</span></div>
+                            <div className="flex justify-between items-center text-sm font-bold text-gray-500">
+                                <span>Subtotal</span>
+                                <span>₹{(order.subtotal || order.total || 0).toLocaleString("en-IN")}</span>
+                            </div>
+                            {order.discount > 0 && (
+                                <div className="flex justify-between items-center text-sm font-bold text-emerald-600">
+                                    <span>Coupon Discount</span>
+                                    <span>- ₹{order.discount.toLocaleString("en-IN")}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center text-sm font-bold text-gray-500">
+                                <span>GST (18%)</span>
+                                <span>₹{(order.gstAmount || 0).toLocaleString("en-IN")}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm font-bold text-gray-500">
+                                <span>Shipping (Flat Rate)</span>
+                                <span>₹0.00</span>
+                            </div>
                             <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-                                <span className="text-lg font-black text-gray-950 uppercase tracking-tighter">Grand Total</span>
-                                <span className="text-2xl font-black text-emerald-500">₹{order.total?.toLocaleString("en-IN")}</span>
+                                <span className="text-lg font-black text-gray-955 uppercase tracking-tighter">Grand Total</span>
+                                <span className="text-2xl font-black text-emerald-500">₹{(order.total || 0).toLocaleString("en-IN")}</span>
                             </div>
                         </div>
                     </div>

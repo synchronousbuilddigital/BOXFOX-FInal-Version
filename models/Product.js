@@ -43,6 +43,11 @@ const productSchema = new mongoose.Schema({
     priceAt500: { type: Number },
     priceAt1000: { type: Number },
     triggerValue: { type: Number, default: 500 },
+    priceSlabs: [{
+        minQty: { type: Number, required: true },
+        maxQty: { type: Number, required: true },
+        price: { type: Number, required: true }
+    }],
     attributes: [{
         name: String,
         options: [String]
@@ -65,6 +70,7 @@ const productSchema = new mongoose.Schema({
 
     isActive: { type: Boolean, default: true },
     pageVisibility: { type: String, enum: ['shop', 'gift', 'both'], default: 'shop' },
+    pricingMode: { type: String, enum: ['tiered', 'slabs'], default: 'tiered' },
     colors: [String],
     lastSynced: { type: Date, default: Date.now }
 }, {

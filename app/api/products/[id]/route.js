@@ -115,7 +115,9 @@ export async function GET(req, { params }) {
             patternImg: product.patternImg,
             patternFormat: product.patternFormat,
             dielineImg: product.dielineImg,
-            dielineFormat: product.dielineFormat
+            dielineFormat: product.dielineFormat,
+            priceSlabs: product.priceSlabs || [],
+            pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered')
         };
 
         return NextResponse.json(result);
