@@ -51,7 +51,8 @@ const productSchema = new mongoose.Schema({
     priceSlabs: [{
         minQty: { type: Number, required: true },
         maxQty: { type: Number, required: true },
-        price: { type: Number, required: true }
+        price: { type: Number, required: true },
+        discount: { type: Number }
     }],
     attributes: [{
         name: String,

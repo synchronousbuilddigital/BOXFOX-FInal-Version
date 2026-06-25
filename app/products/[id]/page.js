@@ -27,7 +27,7 @@ import { useToast } from '@/app/context/ToastContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { calculateBoxPrice, MARKUP_TYPES } from '@/lib/boxfoxPricing';
+import { calculateBoxPrice, MARKUP_TYPES, unitPriceFromSixPoints } from '@/lib/boxfoxPricing';
 import { calculateDynamicPrice } from '@/lib/boxEngine';
 import { BOX_SPECIFICATIONS } from '@/lib/box-specifications';
 
@@ -229,26 +229,28 @@ export default function ProductPage() {
         }
     }
 
-    const isSlabs = false;
+    const isSlabs = product.pricingMode === 'slabs' && Array.isArray(product.priceSlabs) && product.priceSlabs.length > 0;
 
     const hasExplicitTiers = !!(p1 || p10 || p50 || p100 || p500 || p1000 || discountAt10 !== null || discountAt50 !== null || discountAt100 !== null || discountAt500 !== null || discountAt1000 !== null);
 
-    const tierUnitPrice = hasExplicitTiers
-        ? calculateDynamicPrice(
-            parseInt(quantity) || 10,
-            p1,
-            p10,
-            p50,
-            p100,
-            p500,
-            p1000,
-            discountAt10,
-            discountAt50,
-            discountAt100,
-            discountAt500,
-            discountAt1000
-        )
-        : null;
+    const tierUnitPrice = isSlabs
+        ? unitPriceFromSixPoints(product, quantity)
+        : hasExplicitTiers
+            ? calculateDynamicPrice(
+                parseInt(quantity) || 10,
+                p1,
+                p10,
+                p50,
+                p100,
+                p500,
+                p1000,
+                discountAt10,
+                discountAt50,
+                discountAt100,
+                discountAt500,
+                discountAt1000
+            )
+            : null;
 
     const pricingResult = tierUnitPrice
         ? { finalPerUnit: tierUnitPrice, finalTotal: Math.ceil(tierUnitPrice * (parseInt(quantity) || 10)) }
@@ -283,22 +285,39 @@ export default function ProductPage() {
         return num;
     };
 
-    const d10 = getDiscount(p10, discountAt10);
-    const d50 = getDiscount(p50, discountAt50);
-    const d100 = getDiscount(p100, discountAt100);
-    const d500 = getDiscount(p500, discountAt500);
-    const d1000 = getDiscount(p1000, discountAt1000);
+    let activeTiers = [];
+    if (isSlabs) {
+        activeTiers.push({ qty: 1, discount: 0 });
+        product.priceSlabs.forEach(slab => {
+            let disc = 0;
+            if (slab.discount !== undefined && slab.discount !== null && slab.discount !== 0) {
+                disc = Number(slab.discount);
+            } else if (slab.price !== undefined && slab.price !== null && p1 > 0) {
+                disc = Math.max(0, Math.round(((p1 - slab.price) / p1) * 100 * 10) / 10);
+            }
+            activeTiers.push({
+                qty: slab.minQty,
+                discount: disc
+            });
+        });
+    } else {
+        const d10 = getDiscount(p10, discountAt10);
+        const d50 = getDiscount(p50, discountAt50);
+        const d100 = getDiscount(p100, discountAt100);
+        const d500 = getDiscount(p500, discountAt500);
+        const d1000 = getDiscount(p1000, discountAt1000);
 
-    const rawTiers = [
-        { qty: 1, discount: 0 },
-        { qty: 10, discount: d10 },
-        { qty: 50, discount: d50 },
-        { qty: 100, discount: d100 },
-        { qty: 500, discount: d500 },
-        { qty: 1000, discount: d1000 }
-    ];
+        const rawTiers = [
+            { qty: 1, discount: 0 },
+            { qty: 10, discount: d10 },
+            { qty: 50, discount: d50 },
+            { qty: 100, discount: d100 },
+            { qty: 500, discount: d500 },
+            { qty: 1000, discount: d1000 }
+        ];
 
-    const activeTiers = rawTiers.filter(t => t.qty === 1 || t.discount > 0);
+        activeTiers = rawTiers.filter(t => t.qty === 1 || t.discount > 0);
+    }
     activeTiers.sort((a, b) => a.qty - b.qty);
 
     const tiersWithSavings = activeTiers.map((t, idx) => {
@@ -360,6 +379,126 @@ export default function ProductPage() {
         }
     }
 
+    const isLongName = product.name?.length > 30;
+    const titleSizeClass = isLongName 
+        ? "text-base sm:text-lg md:text-xl lg:text-3xl" 
+        : "text-lg sm:text-xl md:text-2xl lg:text-3xl";
+
+    const renderProductNameAndCategory = () => (
+        <div className="space-y-3">
+            {/* Category path */}
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50/20 px-3.5 py-1 rounded-full w-fit">
+                <span>Premium Series</span>
+                <span>•</span>
+                <span>{product.category || "Packaging"}</span>
+                {product.inStock && (
+                    <>
+                        <span>•</span>
+                        <span className="text-emerald-500 uppercase flex items-center gap-0.5"><CheckCircle2 size={10} /> In Stock</span>
+                    </>
+                )}
+            </div>
+            <h1 className={`${titleSizeClass} font-black text-gray-900 tracking-tight uppercase leading-snug break-words`}>
+                {product.name}
+            </h1>
+        </div>
+    );
+
+    const renderQuantityAndCart = () => (
+        <div className="bg-white border border-gray-200 rounded-[2rem] p-4 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex gap-3 items-end">
+                <div className="w-20 sm:w-28 shrink-0">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 px-1">Units</p>
+                    <div className="relative">
+                        <input
+                            type="number"
+                            value={quantity}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === "") {
+                                    setQuantity("");
+                                } else {
+                                    setQuantity(parseInt(val) || "");
+                                }
+                            }}
+                            onBlur={() => {
+                                const minQ = Math.max(10, product.minOrderQuantity || 10);
+                                if (!quantity || quantity < minQ) setQuantity(minQ);
+                            }}
+                            className="w-full py-3.5 px-2.5 sm:px-4 rounded-xl bg-gray-50 border border-gray-200 font-black text-sm text-gray-900 focus:border-emerald-500 focus:bg-white outline-none transition-all"
+                            min={10}
+                        />
+                    </div>
+                </div>
+
+                <div className="flex-1">
+                    {isLargeOrder ? (
+                        <button
+                            onClick={() => setIsInquiryModalOpen(true)}
+                            className="w-full py-3.5 bg-[#fb641b] text-white rounded-xl font-black uppercase text-xs tracking-wider hover:bg-[#e15610] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md shadow-orange-500/10 group"
+                        >
+                            <Sparkles size={16} className="group-hover:scale-110 transition-transform shrink-0" />
+                            <span className="truncate">Request Custom Quote</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => addToCart({ ...product, selectedColor }, quantity)}
+                            className="w-full py-3.5 bg-[#ff9f00] text-white rounded-xl font-black uppercase text-xs tracking-wider hover:bg-[#e58f00] transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/10 group"
+                        >
+                            <ShoppingCart size={16} className="group-hover:scale-110 transition-transform shrink-0" />
+                            <span className="truncate">Add to Basket</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Color Selectors */}
+            {product.colors && product.colors.length > 0 && (
+                <div className="space-y-1.5 pt-2.5 border-t border-gray-100">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Select Color Variant</p>
+                    <div className="flex flex-wrap gap-1.5 px-1">
+                        {product.colors.map((colorHex) => {
+                            const isSelected = selectedColor === colorHex;
+                            return (
+                                <button
+                                    key={colorHex}
+                                    type="button"
+                                    onClick={() => setSelectedColor(colorHex)}
+                                    title={colorHex.toUpperCase()}
+                                    className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'border-gray-950 scale-110 shadow' : 'border-gray-200 hover:scale-105'}`}
+                                    style={{ backgroundColor: colorHex }}
+                                >
+                                    {isSelected && (
+                                        <CheckCircle2 size={12} className={colorHex === "#ffffff" || colorHex === "#fef08a" ? "text-gray-900" : "text-white"} />
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
+    const renderTrustBadges = () => (
+        <div className="grid grid-cols-2 gap-4 p-4 border border-gray-200 rounded-2xl bg-gray-50/50">
+            <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0"><Truck size={16} className="text-emerald-600" /></div>
+                <div>
+                    <p className="text-[9px] font-black uppercase tracking-wider text-gray-900 leading-tight">Express Shipping</p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-none">Pan India Delivery</p>
+                </div>
+            </div>
+            <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0"><ShieldCheck size={16} className="text-emerald-600" /></div>
+                <div>
+                    <p className="text-[9px] font-black uppercase tracking-wider text-gray-900 leading-tight">Secure Payment</p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-none">100% Secured</p>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-white">
             <main className="pt-20 lg:pt-24 pb-16 w-full px-4 md:px-8 lg:px-12">
@@ -368,6 +507,11 @@ export default function ProductPage() {
 
                         <div className="lg:col-span-5">
                             <div className="lg:sticky lg:top-28 space-y-6">
+                                {/* Mobile Product Name (Top of mobile view, above image) */}
+                                <div className="block lg:hidden mb-2">
+                                    {renderProductNameAndCategory()}
+                                </div>
+
                                 <div className="relative">
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95 }}
@@ -435,119 +579,23 @@ export default function ProductPage() {
                                     ))}
                                 </div>
 
-                                {/* Flipkart-style Quantity & Action buttons directly under the image */}
-                                <div className="bg-white border border-gray-200 rounded-[2rem] p-4 sm:p-6 space-y-4 shadow-sm">
-                                    <div className="flex gap-3 items-end">
-                                        <div className="w-20 sm:w-28 shrink-0">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 px-1">Units</p>
-                                            <div className="relative">
-                                                <input
-                                                    type="number"
-                                                    value={quantity}
-                                                    onChange={(e) => {
-                                                        const val = e.target.value;
-                                                        if (val === "") {
-                                                            setQuantity("");
-                                                        } else {
-                                                            setQuantity(parseInt(val) || "");
-                                                        }
-                                                    }}
-                                                    onBlur={() => {
-                                                        const minQ = Math.max(10, product.minOrderQuantity || 10);
-                                                        if (!quantity || quantity < minQ) setQuantity(minQ);
-                                                    }}
-                                                    className="w-full py-3.5 px-2.5 sm:px-4 rounded-xl bg-gray-50 border border-gray-200 font-black text-sm text-gray-900 focus:border-emerald-500 focus:bg-white outline-none transition-all"
-                                                    min={10}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="flex-1">
-                                            {isLargeOrder ? (
-                                                <button
-                                                    onClick={() => setIsInquiryModalOpen(true)}
-                                                    className="w-full py-3.5 bg-[#fb641b] text-white rounded-xl font-black uppercase text-xs tracking-wider hover:bg-[#e15610] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md shadow-orange-500/10 group"
-                                                >
-                                                    <Sparkles size={16} className="group-hover:scale-110 transition-transform shrink-0" />
-                                                    <span className="truncate">Request Custom Quote</span>
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => addToCart({ ...product, selectedColor }, quantity)}
-                                                    className="w-full py-3.5 bg-[#ff9f00] text-white rounded-xl font-black uppercase text-xs tracking-wider hover:bg-[#e58f00] transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/10 group"
-                                                >
-                                                    <ShoppingCart size={16} className="group-hover:scale-110 transition-transform shrink-0" />
-                                                    <span className="truncate">Add to Basket</span>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Color Selectors */}
-                                    {product.colors && product.colors.length > 0 && (
-                                        <div className="space-y-1.5 pt-2.5 border-t border-gray-100">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Select Color Variant</p>
-                                            <div className="flex flex-wrap gap-1.5 px-1">
-                                                {product.colors.map((colorHex) => {
-                                                    const isSelected = selectedColor === colorHex;
-                                                    return (
-                                                        <button
-                                                            key={colorHex}
-                                                            type="button"
-                                                            onClick={() => setSelectedColor(colorHex)}
-                                                            title={colorHex.toUpperCase()}
-                                                            className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'border-gray-950 scale-110 shadow' : 'border-gray-200 hover:scale-105'}`}
-                                                            style={{ backgroundColor: colorHex }}
-                                                        >
-                                                            {isSelected && (
-                                                                <CheckCircle2 size={12} className={colorHex === "#ffffff" || colorHex === "#fef08a" ? "text-gray-900" : "text-white"} />
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
+                                {/* Desktop Quantity & Action buttons */}
+                                <div className="hidden lg:block">
+                                    {renderQuantityAndCart()}
                                 </div>
 
-                                {/* Trust badges */}
-                                <div className="grid grid-cols-2 gap-4 p-4 border border-gray-200 rounded-2xl bg-gray-50/50">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0"><Truck size={16} className="text-emerald-600" /></div>
-                                        <div>
-                                            <p className="text-[9px] font-black uppercase tracking-wider text-gray-900 leading-tight">Express Shipping</p>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-none">Pan India Delivery</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0"><ShieldCheck size={16} className="text-emerald-600" /></div>
-                                        <div>
-                                            <p className="text-[9px] font-black uppercase tracking-wider text-gray-900 leading-tight">Secure Payment</p>
-                                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-none">100% Secured</p>
-                                        </div>
-                                    </div>
+                                {/* Desktop Trust badges */}
+                                <div className="hidden lg:block">
+                                    {renderTrustBadges()}
                                 </div>
                             </div>
                         </div>
 
                         {/* Right Column: Scrollable Product details */}
                         <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-4">
-                            <div className="space-y-3">
-                                {/* Category path */}
-                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50/20 px-3.5 py-1 rounded-full w-fit">
-                                    <span>Premium Series</span>
-                                    <span>•</span>
-                                    <span>{product.category || "Packaging"}</span>
-                                    {product.inStock && (
-                                        <>
-                                            <span>•</span>
-                                            <span className="text-emerald-500 uppercase flex items-center gap-0.5"><CheckCircle2 size={10} /> In Stock</span>
-                                        </>
-                                    )}
-                                </div>
-                                <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 tracking-tight uppercase leading-snug">
-                                    {product.name}
-                                </h1>
+                            {/* Desktop Product Name */}
+                            <div className="hidden lg:block">
+                                {renderProductNameAndCategory()}
                             </div>
 
                             {/* Price Card */}
@@ -564,23 +612,23 @@ export default function ProductPage() {
                                         </div>
                                     </div>
 
-                                    {!isLargeOrder && pricingResult && (
-                                        <div className="space-y-1 sm:text-right">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Estimated Total</span>
-                                            <span className="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight">
-                                                ₹{pricingResult.finalTotal.toLocaleString('en-IN')}
+                                    {/* Inquiry Quote Request Button */}
+                                    <div className="flex flex-col gap-2 min-w-[200px]">
+                                        <div className="flex items-baseline justify-between gap-2 border-b border-gray-100 pb-2">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Est. Subtotal</span>
+                                            <span className="text-xl font-black text-gray-950">
+                                                {isLargeOrder ? "Contact For Quote" : `₹${pricingResult.finalTotal.toLocaleString('en-IN')}`}
                                             </span>
                                         </div>
-                                    )}
+                                        <div className="flex justify-between items-center text-[9px] font-semibold text-gray-400 uppercase tracking-wider">
+                                            <span>Min. Order Qty:</span>
+                                            <span>{product.minOrderQuantity || 10} Units</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Order & Savings Info Bar */}
                                 <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                                    <div className="flex items-center gap-1.5 bg-gray-100 px-3.5 py-1.5 rounded-full border border-gray-200">
-                                        <span>Min Order:</span>
-                                        <span className="text-gray-900">{Math.max(10, product.minOrderQuantity || 10)} Units</span>
-                                    </div>
-
                                     {currentActiveTier && currentActiveTier.discountPercent > 0 && (
                                         <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full border border-emerald-100 animate-pulse">
                                             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
@@ -649,7 +697,7 @@ export default function ProductPage() {
                                                     >
                                                         {/* Tier Quantity & Discount Badge */}
                                                         <div className="flex items-center justify-between w-full">
-                                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-emerald-100" : "text-gray-400 group-hover:text-emerald-600"}`}>
+                                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isActive ? "text-emerald-100" : "text-gray-400"}`}>
                                                                 {tier.rangeText}
                                                             </span>
 
@@ -683,6 +731,11 @@ export default function ProductPage() {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Mobile Quantity selector (above highlights / details) */}
+                            <div className="block lg:hidden mt-6">
+                                {renderQuantityAndCart()}
                             </div>
 
                             {/* Highlights */}
@@ -774,6 +827,11 @@ export default function ProductPage() {
                                 <div className="text-xs md:text-sm text-gray-600 leading-relaxed font-medium whitespace-pre-line prose max-w-none">
                                     {product.description || "No detailed description available for this product."}
                                 </div>
+                            </div>
+
+                            {/* Mobile Trust Badges (Placed at the very bottom of the page) */}
+                            <div className="block lg:hidden pt-8 border-t border-gray-100 mt-6">
+                                {renderTrustBadges()}
                             </div>
                         </div>
 

@@ -969,8 +969,8 @@ export default function ProductsManager() {
             discountAt500: product.discountAt500 || '',
             discountAt1000: product.discountAt1000 || '',
             triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
-            pricingMode: 'tiered',
-            priceSlabs: []
+            pricingMode: product.pricingMode || 'tiered',
+            priceSlabs: Array.isArray(product.priceSlabs) ? product.priceSlabs : []
         });
         setIsModalOpen(true);
     };
@@ -1033,8 +1033,8 @@ export default function ProductsManager() {
             discountAt500: product.discountAt500 || '',
             discountAt1000: product.discountAt1000 || '',
             triggerValue: product.triggerValue !== undefined ? product.triggerValue : 500,
-            pricingMode: 'tiered',
-            priceSlabs: []
+            pricingMode: product.pricingMode || 'tiered',
+            priceSlabs: Array.isArray(product.priceSlabs) ? product.priceSlabs : []
         });
         setIsModalOpen(true);
     };
@@ -1995,7 +1995,33 @@ export default function ProductsManager() {
                                             </div>
                                             {/* Tiered Pricing (₹ per Unit / % Discount) */}
                                             <div className="space-y-4 border-t border-gray-100 pt-6 mt-6">
-                                                <h4 className="text-[10px] font-black text-emerald-600 block uppercase tracking-widest">Tiered Discounts & Slabs</h4>
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                    <h4 className="text-[10px] font-black text-emerald-600 block uppercase tracking-widest">Tiered Discounts & Slabs</h4>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, pricingMode: 'tiered' })}
+                                                            className={`py-1.5 px-3 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                                                formData.pricingMode !== 'slabs'
+                                                                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
+                                                                    : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                                                            }`}
+                                                        >
+                                                            Standard Tiers
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setFormData({ ...formData, pricingMode: 'slabs' })}
+                                                            className={`py-1.5 px-3 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                                                formData.pricingMode === 'slabs'
+                                                                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
+                                                                    : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                                                            }`}
+                                                        >
+                                                            Custom Slabs
+                                                        </button>
+                                                    </div>
+                                                </div>
                                                 
                                                 {/* Base Price Row */}
                                                 <div className="grid grid-cols-12 gap-4 items-center mb-4">
@@ -2009,13 +2035,26 @@ export default function ProductsManager() {
                                                             onChange={e => {
                                                                 const basePrice = parseFloat(e.target.value) || 0;
                                                                 const updated = { ...formData, priceAt1: e.target.value };
-                                                                const tiers = [10, 50, 100, 500, 1000];
-                                                                tiers.forEach(qty => {
-                                                                    const discountVal = parseFloat(formData[`discountAt${qty}`]);
-                                                                    if (discountVal > 0 && basePrice > 0) {
-                                                                        updated[`priceAt${qty}`] = (basePrice * (1 - discountVal / 100)).toFixed(2);
-                                                                    }
-                                                                });
+                                                                if (formData.pricingMode === 'slabs' && Array.isArray(formData.priceSlabs)) {
+                                                                    updated.priceSlabs = formData.priceSlabs.map(slab => {
+                                                                        const disc = parseFloat(slab.discount) || 0;
+                                                                        if (disc > 0 && basePrice > 0) {
+                                                                            return {
+                                                                                ...slab,
+                                                                                price: parseFloat((basePrice * (1 - disc / 100)).toFixed(2))
+                                                                            };
+                                                                        }
+                                                                        return slab;
+                                                                    });
+                                                                } else {
+                                                                    const tiers = [10, 50, 100, 500, 1000];
+                                                                    tiers.forEach(qty => {
+                                                                        const discountVal = parseFloat(formData[`discountAt${qty}`]);
+                                                                        if (discountVal > 0 && basePrice > 0) {
+                                                                            updated[`priceAt${qty}`] = (basePrice * (1 - discountVal / 100)).toFixed(2);
+                                                                        }
+                                                                    });
+                                                                }
                                                                 setFormData(updated);
                                                             }}
                                                             placeholder="Base Price"
@@ -2024,69 +2063,217 @@ export default function ProductsManager() {
                                                     </div>
                                                 </div>
 
-                                                {/* Header */}
-                                                <div className="grid grid-cols-12 gap-4 text-[9px] font-black text-gray-400 pb-2 border-b border-gray-100 uppercase tracking-widest">
-                                                    <div className="col-span-4">QUANTITY SLAB</div>
-                                                    <div className="col-span-4">PRICE (₹)</div>
-                                                    <div className="col-span-4">DISCOUNT (%)</div>
-                                                </div>
+                                                {formData.pricingMode !== 'slabs' ? (
+                                                    <>
+                                                        {/* Header */}
+                                                        <div className="grid grid-cols-12 gap-4 text-[9px] font-black text-gray-400 pb-2 border-b border-gray-100 uppercase tracking-widest">
+                                                            <div className="col-span-4">QUANTITY SLAB</div>
+                                                            <div className="col-span-4">PRICE (₹)</div>
+                                                            <div className="col-span-4">DISCOUNT (%)</div>
+                                                        </div>
 
-                                                {/* Slab rows */}
-                                                {[10, 50, 100, 500, 1000].map(qty => (
-                                                    <div key={qty} className="grid grid-cols-12 gap-4 items-center py-2 border-b border-gray-50">
-                                                        <div className="col-span-4 text-xs font-black text-gray-600">Qty {qty}+</div>
-                                                        <div className="col-span-4 relative">
-                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
-                                                            <input 
-                                                                type="number"
-                                                                step="0.01"
-                                                                value={formData[`priceAt${qty}`]}
-                                                                onChange={e => {
-                                                                    const priceVal = e.target.value;
-                                                                    const numericPrice = parseFloat(priceVal);
-                                                                    const basePrice = parseFloat(formData.priceAt1) || 0;
-                                                                    
-                                                                    let computedDiscount = "";
-                                                                    if (priceVal !== "" && !isNaN(numericPrice) && basePrice > 0) {
-                                                                        computedDiscount = (((basePrice - numericPrice) / basePrice) * 100).toFixed(1);
+                                                        {/* Slab rows */}
+                                                        {[10, 50, 100, 500, 1000].map(qty => (
+                                                            <div key={qty} className="grid grid-cols-12 gap-4 items-center py-2 border-b border-gray-50">
+                                                                <div className="col-span-4 text-xs font-black text-gray-600">Qty {qty}+</div>
+                                                                <div className="col-span-4 relative">
+                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+                                                                    <input 
+                                                                        type="number"
+                                                                        step="0.01"
+                                                                        value={formData[`priceAt${qty}`]}
+                                                                        onChange={e => {
+                                                                            const priceVal = e.target.value;
+                                                                            const numericPrice = parseFloat(priceVal);
+                                                                            const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                            
+                                                                            let computedDiscount = "";
+                                                                            if (priceVal !== "" && !isNaN(numericPrice) && basePrice > 0) {
+                                                                                computedDiscount = (((basePrice - numericPrice) / basePrice) * 100).toFixed(1);
+                                                                            }
+                                                                            setFormData({
+                                                                                ...formData,
+                                                                                [`priceAt${qty}`]: priceVal,
+                                                                                [`discountAt${qty}`]: computedDiscount
+                                                                            });
+                                                                        }}
+                                                                        placeholder="0.00"
+                                                                        className="w-full bg-white border border-gray-200 rounded-xl md:rounded-2xl pl-8 pr-4 py-3 text-sm font-bold text-gray-955 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/20 outline-none transition-all shadow-sm text-center"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-4 relative">
+                                                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                                                                    <input 
+                                                                        type="number"
+                                                                        step="0.1"
+                                                                        value={formData[`discountAt${qty}`]}
+                                                                        onChange={e => {
+                                                                            const discountVal = e.target.value;
+                                                                            const numericDiscount = parseFloat(discountVal);
+                                                                            const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                            
+                                                                            let computedPrice = "";
+                                                                            if (discountVal !== "" && !isNaN(numericDiscount) && basePrice > 0) {
+                                                                                computedPrice = (basePrice * (1 - numericDiscount / 100)).toFixed(2);
+                                                                            }
+                                                                            setFormData({
+                                                                                ...formData,
+                                                                                [`discountAt${qty}`]: discountVal,
+                                                                                [`priceAt${qty}`]: computedPrice
+                                                                            });
+                                                                        }}
+                                                                        placeholder="0.0%"
+                                                                        className="w-full bg-white border border-gray-200 rounded-xl md:rounded-2xl pl-8 pr-4 py-3 text-sm font-bold text-gray-955 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/20 outline-none transition-all shadow-sm text-center"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                ) : (
+                                                    <div className="space-y-4 pt-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Custom Slabs List</h5>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const currentSlabs = Array.isArray(formData.priceSlabs) ? formData.priceSlabs : [];
+                                                                    const lastMinQty = currentSlabs.length > 0 
+                                                                        ? Math.max(...currentSlabs.map(s => s.minQty)) 
+                                                                        : 0;
+                                                                    const newSlab = {
+                                                                        minQty: lastMinQty + 10,
+                                                                        maxQty: 999999,
+                                                                        price: 0,
+                                                                        discount: 0
+                                                                    };
+                                                                    const updatedSlabs = [...currentSlabs, newSlab].sort((a, b) => a.minQty - b.minQty);
+                                                                    for (let i = 0; i < updatedSlabs.length; i++) {
+                                                                        updatedSlabs[i].maxQty = i < updatedSlabs.length - 1 ? updatedSlabs[i+1].minQty - 1 : 999999;
                                                                     }
                                                                     setFormData({
                                                                         ...formData,
-                                                                        [`priceAt${qty}`]: priceVal,
-                                                                        [`discountAt${qty}`]: computedDiscount
+                                                                        priceSlabs: updatedSlabs
                                                                     });
                                                                 }}
-                                                                placeholder="0.00"
-                                                                className="w-full bg-white border border-gray-200 rounded-xl md:rounded-2xl pl-8 pr-4 py-3 text-sm font-bold text-gray-955 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/20 outline-none transition-all shadow-sm text-center"
-                                                            />
+                                                                className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-emerald-100 transition-all"
+                                                            >
+                                                                + Add Slab
+                                                            </button>
                                                         </div>
-                                                        <div className="col-span-4 relative">
-                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                                                            <input 
-                                                                type="number"
-                                                                step="0.1"
-                                                                value={formData[`discountAt${qty}`]}
-                                                                onChange={e => {
-                                                                    const discountVal = e.target.value;
-                                                                    const numericDiscount = parseFloat(discountVal);
-                                                                    const basePrice = parseFloat(formData.priceAt1) || 0;
-                                                                    
-                                                                    let computedPrice = "";
-                                                                    if (discountVal !== "" && !isNaN(numericDiscount) && basePrice > 0) {
-                                                                        computedPrice = (basePrice * (1 - numericDiscount / 100)).toFixed(2);
-                                                                    }
-                                                                    setFormData({
-                                                                        ...formData,
-                                                                        [`discountAt${qty}`]: discountVal,
-                                                                        [`priceAt${qty}`]: computedPrice
-                                                                    });
-                                                                 }}
-                                                                placeholder="0.0%"
-                                                                className="w-full bg-white border border-gray-200 rounded-xl md:rounded-2xl pl-8 pr-4 py-3 text-sm font-bold text-gray-955 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/20 outline-none transition-all shadow-sm text-center"
-                                                            />
+
+                                                        {/* Table header */}
+                                                        <div className="grid grid-cols-12 gap-2 text-[9px] font-black text-gray-400 pb-2 border-b border-gray-100 uppercase tracking-widest">
+                                                            <div className="col-span-3">QTY SLAB</div>
+                                                            <div className="col-span-3 text-center">PRICE (₹)</div>
+                                                            <div className="col-span-3 text-center">DISCOUNT (%)</div>
+                                                            <div className="col-span-3 text-right">ACTION</div>
                                                         </div>
+
+                                                        {/* Slab Rows */}
+                                                        {((Array.isArray(formData.priceSlabs) ? formData.priceSlabs : [])).map((slab, index) => {
+                                                            const slabs = Array.isArray(formData.priceSlabs) ? formData.priceSlabs : [];
+                                                            return (
+                                                                <div key={index} className="grid grid-cols-12 gap-2 items-center py-2 border-b border-gray-50">
+                                                                    <div className="col-span-3 relative flex items-center gap-1">
+                                                                        <span className="text-xs font-bold text-gray-400">Qty</span>
+                                                                        <input
+                                                                            type="number"
+                                                                            min="1"
+                                                                            value={slab.minQty}
+                                                                            onChange={e => {
+                                                                                const newMinQty = parseInt(e.target.value) || 0;
+                                                                                const updatedSlabs = [...slabs];
+                                                                                updatedSlabs[index] = { ...slab, minQty: newMinQty };
+                                                                                const sorted = updatedSlabs.sort((a, b) => a.minQty - b.minQty);
+                                                                                for (let i = 0; i < sorted.length; i++) {
+                                                                                    sorted[i].maxQty = i < sorted.length - 1 ? sorted[i+1].minQty - 1 : 999999;
+                                                                                }
+                                                                                setFormData({ ...formData, priceSlabs: sorted });
+                                                                            }}
+                                                                            className="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-955 text-center"
+                                                                        />
+                                                                        <span className="text-xs font-bold text-gray-400">+</span>
+                                                                    </div>
+
+                                                                    <div className="col-span-3 relative">
+                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">₹</span>
+                                                                        <input
+                                                                            type="number"
+                                                                            step="0.01"
+                                                                            value={slab.price}
+                                                                            onChange={e => {
+                                                                                const priceVal = e.target.value;
+                                                                                const numericPrice = parseFloat(priceVal) || 0;
+                                                                                const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                                let computedDiscount = 0;
+                                                                                if (numericPrice > 0 && basePrice > 0) {
+                                                                                    computedDiscount = parseFloat((((basePrice - numericPrice) / basePrice) * 100).toFixed(1));
+                                                                                }
+                                                                                const updatedSlabs = [...slabs];
+                                                                                updatedSlabs[index] = {
+                                                                                    ...slab,
+                                                                                    price: priceVal === "" ? "" : numericPrice,
+                                                                                    discount: computedDiscount
+                                                                                };
+                                                                                setFormData({ ...formData, priceSlabs: updatedSlabs });
+                                                                            }}
+                                                                            placeholder="0.00"
+                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1.5 text-xs font-bold text-gray-955 text-center"
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="col-span-3 relative">
+                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">%</span>
+                                                                        <input
+                                                                            type="number"
+                                                                            step="0.1"
+                                                                            value={slab.discount}
+                                                                            onChange={e => {
+                                                                                const discountVal = e.target.value;
+                                                                                const numericDiscount = parseFloat(discountVal) || 0;
+                                                                                const basePrice = parseFloat(formData.priceAt1) || 0;
+                                                                                let computedPrice = 0;
+                                                                                if (numericDiscount > 0 && basePrice > 0) {
+                                                                                    computedPrice = parseFloat((basePrice * (1 - numericDiscount / 100)).toFixed(2));
+                                                                                }
+                                                                                const updatedSlabs = [...slabs];
+                                                                                updatedSlabs[index] = {
+                                                                                    ...slab,
+                                                                                    discount: discountVal === "" ? "" : numericDiscount,
+                                                                                    price: computedPrice
+                                                                                };
+                                                                                setFormData({ ...formData, priceSlabs: updatedSlabs });
+                                                                            }}
+                                                                            placeholder="0.0"
+                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1.5 text-xs font-bold text-gray-955 text-center"
+                                                                        />
+                                                                    </div>
+
+                                                                    <div className="col-span-3 text-right">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const updatedSlabs = slabs.filter((_, idx) => idx !== index);
+                                                                                for (let i = 0; i < updatedSlabs.length; i++) {
+                                                                                    updatedSlabs[i].maxQty = i < updatedSlabs.length - 1 ? updatedSlabs[i+1].minQty - 1 : 999999;
+                                                                                }
+                                                                                setFormData({ ...formData, priceSlabs: updatedSlabs });
+                                                                            }}
+                                                                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                                            title="Delete Slab"
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+
+                                                        {(!formData.priceSlabs || formData.priceSlabs.length === 0) && (
+                                                            <p className="text-[10px] text-gray-400 italic text-center py-4">No slabs defined. Click + Add Slab to begin.</p>
+                                                        )}
                                                     </div>
-                                                ))}
+                                                )}
                                             </div>
                                             <div className="space-y-2 mt-6">
                                                 <label className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">B2B Quote Trigger Qty *</label>
