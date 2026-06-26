@@ -168,6 +168,7 @@ export async function POST(req) {
           isActive: data.isActive !== undefined ? data.isActive : true,
           pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
           priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : [],
+          extraDiscountAbove500: data.extraDiscountAbove500 !== undefined ? !!data.extraDiscountAbove500 : false,
           // Re-evaluate approval when edited
           isApproved: false,
           approvalStatus: 'pending'
@@ -228,7 +229,8 @@ export async function POST(req) {
       pacdoraId: data.pacdoraId,
       isActive: data.isActive !== undefined ? data.isActive : true,
       pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
-      priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : []
+      priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : [],
+      extraDiscountAbove500: data.extraDiscountAbove500 !== undefined ? !!data.extraDiscountAbove500 : false
     });
 
     await invalidateProductCache();

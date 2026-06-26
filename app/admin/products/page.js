@@ -240,7 +240,8 @@ export default function ProductsManager() {
         isFeatured: false,
         pageVisibility: 'shop',
         colors: [],
-        priceSlabs: []
+        priceSlabs: [],
+        extraDiscountAbove500: false
     });
 
     const fetchProducts = (preservePage = false) => {
@@ -724,7 +725,8 @@ export default function ProductsManager() {
                         isActive: true,
                         pageVisibility: 'shop',
                         colors: [],
-                        priceSlabs: []
+                        priceSlabs: [],
+                        extraDiscountAbove500: false
                     });
                 }, 1500);
             }
@@ -957,6 +959,7 @@ export default function ProductsManager() {
             isFeatured: product.isFeatured || false,
             pageVisibility: product.pageVisibility || 'shop',
             colors: product.colors || [],
+            extraDiscountAbove500: product.extraDiscountAbove500 || false,
             priceAt1: product.priceAt1 || '',
             priceAt10: product.priceAt10 || '',
             priceAt50: product.priceAt50 || '',
@@ -1021,6 +1024,7 @@ export default function ProductsManager() {
             isFeatured: false,
             pageVisibility: product.pageVisibility || 'shop',
             colors: product.colors || [],
+            extraDiscountAbove500: product.extraDiscountAbove500 || false,
             priceAt1: product.priceAt1 || '',
             priceAt10: product.priceAt10 || '',
             priceAt50: product.priceAt50 || '',
@@ -1674,7 +1678,7 @@ export default function ProductsManager() {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
                                                 <div className="flex items-center justify-between sm:flex-col sm:items-start sm:justify-start sm:gap-3">
                                                     <div>
                                                         <p className="text-sm font-black text-gray-950 uppercase tracking-tighter">Active Status</p>
@@ -1702,12 +1706,25 @@ export default function ProductsManager() {
                                                     </button>
                                                 </div>
                                                 <div className="flex items-center justify-between sm:flex-col sm:items-start sm:justify-start sm:gap-3">
+                                                    <div>
+                                                        <p className="text-sm font-black text-gray-955 uppercase tracking-tighter">Compound Discount (500+)</p>
+                                                        <p className="text-[10px] font-medium text-gray-400 font-bold">Apply 20%+20% style compounding</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, extraDiscountAbove500: !formData.extraDiscountAbove500 })}
+                                                        className={`w-12 h-6 rounded-full transition-all duration-300 relative shrink-0 ${formData.extraDiscountAbove500 ? 'bg-indigo-500 shadow-lg shadow-indigo-500/20' : 'bg-gray-200'}`}
+                                                    >
+                                                        <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-sm ${formData.extraDiscountAbove500 ? 'right-0.5' : 'left-0.5'}`} />
+                                                    </button>
+                                                </div>
+                                                <div className="flex items-center justify-between sm:flex-col sm:items-start sm:justify-start sm:gap-3">
                                                     <div className="w-full">
-                                                        <p className="text-sm font-black text-gray-950 uppercase tracking-tighter mb-1">Page Visibility</p>
+                                                        <p className="text-sm font-black text-gray-955 uppercase tracking-tighter mb-1">Page Visibility</p>
                                                         <select
                                                             value={formData.pageVisibility}
                                                             onChange={e => setFormData({ ...formData, pageVisibility: e.target.value })}
-                                                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-950 outline-none"
+                                                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-955 outline-none"
                                                         >
                                                             <option value="shop">Shop Page</option>
                                                             <option value="gift">Gift Page</option>
@@ -2147,9 +2164,6 @@ export default function ProductsManager() {
                                                                         discount: 0
                                                                     };
                                                                     const updatedSlabs = [...currentSlabs, newSlab].sort((a, b) => a.minQty - b.minQty);
-                                                                    for (let i = 0; i < updatedSlabs.length; i++) {
-                                                                        updatedSlabs[i].maxQty = i < updatedSlabs.length - 1 ? updatedSlabs[i+1].minQty - 1 : 999999;
-                                                                    }
                                                                     setFormData({
                                                                         ...formData,
                                                                         priceSlabs: updatedSlabs
@@ -2163,36 +2177,80 @@ export default function ProductsManager() {
 
                                                         {/* Table header */}
                                                         <div className="grid grid-cols-12 gap-2 text-[9px] font-black text-gray-400 pb-2 border-b border-gray-100 uppercase tracking-widest">
-                                                            <div className="col-span-3">QTY SLAB</div>
+                                                            <div className="col-span-4">QTY SLAB</div>
                                                             <div className="col-span-3 text-center">PRICE (₹)</div>
                                                             <div className="col-span-3 text-center">DISCOUNT (%)</div>
-                                                            <div className="col-span-3 text-right">ACTION</div>
+                                                            <div className="col-span-2 text-right">ACTION</div>
                                                         </div>
 
                                                         {/* Slab Rows */}
                                                         {((Array.isArray(formData.priceSlabs) ? formData.priceSlabs : [])).map((slab, index) => {
                                                             const slabs = Array.isArray(formData.priceSlabs) ? formData.priceSlabs : [];
                                                             return (
-                                                                <div key={index} className="grid grid-cols-12 gap-2 items-center py-2 border-b border-gray-50">
-                                                                    <div className="col-span-3 relative flex items-center gap-1">
-                                                                        <span className="text-xs font-bold text-gray-400">Qty</span>
-                                                                        <input
-                                                                            type="number"
-                                                                            min="1"
-                                                                            value={slab.minQty}
-                                                                            onChange={e => {
-                                                                                const newMinQty = parseInt(e.target.value) || 0;
-                                                                                const updatedSlabs = [...slabs];
-                                                                                updatedSlabs[index] = { ...slab, minQty: newMinQty };
-                                                                                const sorted = updatedSlabs.sort((a, b) => a.minQty - b.minQty);
-                                                                                for (let i = 0; i < sorted.length; i++) {
-                                                                                    sorted[i].maxQty = i < sorted.length - 1 ? sorted[i+1].minQty - 1 : 999999;
-                                                                                }
-                                                                                setFormData({ ...formData, priceSlabs: sorted });
-                                                                            }}
-                                                                            className="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-955 text-center"
-                                                                        />
-                                                                        <span className="text-xs font-bold text-gray-400">+</span>
+                                                                <div key={index} className="grid grid-cols-12 gap-2 items-start py-2 border-b border-gray-50">
+                                                                    <div className="col-span-4 flex flex-col gap-1">
+                                                                        <div className="relative flex items-center gap-1.5">
+                                                                            <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 shrink-0">From</span>
+                                                                            <input
+                                                                                type="number"
+                                                                                min="0"
+                                                                                value={slab.minQty}
+                                                                                onChange={e => {
+                                                                                    const val = e.target.value;
+                                                                                    const newMinQty = val === "" ? "" : (parseInt(val) || 0);
+                                                                                    const updatedSlabs = [...slabs];
+                                                                                    updatedSlabs[index] = { ...slab, minQty: newMinQty };
+                                                                                    setFormData({ ...formData, priceSlabs: updatedSlabs });
+                                                                                }}
+                                                                                onBlur={() => {
+                                                                                    const updatedSlabs = [...slabs];
+                                                                                    const normalized = updatedSlabs.map(s => ({
+                                                                                        ...s,
+                                                                                        minQty: s.minQty === "" ? 0 : s.minQty
+                                                                                    }));
+                                                                                    const sorted = normalized.sort((a, b) => a.minQty - b.minQty);
+                                                                                    setFormData({ ...formData, priceSlabs: sorted });
+                                                                                }}
+                                                                                className={`w-14 bg-white border rounded-lg px-1.5 py-1 text-xs font-bold text-gray-955 text-center outline-none transition-all ${
+                                                                                    slab.maxQty !== 999999 && slab.minQty !== "" && slab.maxQty !== "" && Number(slab.minQty) > Number(slab.maxQty)
+                                                                                        ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/10'
+                                                                                        : 'border-gray-200 focus:border-emerald-500'
+                                                                                }`}
+                                                                            />
+                                                                            <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 shrink-0">To</span>
+                                                                            <input
+                                                                                type="number"
+                                                                                min="0"
+                                                                                value={slab.maxQty === 999999 ? "" : slab.maxQty}
+                                                                                onChange={e => {
+                                                                                    const val = e.target.value;
+                                                                                    const newMaxQty = val === "" ? 999999 : (parseInt(val) || 0);
+                                                                                    const updatedSlabs = [...slabs];
+                                                                                    updatedSlabs[index] = { ...slab, maxQty: newMaxQty };
+                                                                                    setFormData({ ...formData, priceSlabs: updatedSlabs });
+                                                                                }}
+                                                                                onBlur={() => {
+                                                                                    const updatedSlabs = [...slabs];
+                                                                                    const normalized = updatedSlabs.map(s => ({
+                                                                                        ...s,
+                                                                                        minQty: s.minQty === "" ? 0 : s.minQty
+                                                                                    }));
+                                                                                    const sorted = normalized.sort((a, b) => a.minQty - b.minQty);
+                                                                                    setFormData({ ...formData, priceSlabs: sorted });
+                                                                                }}
+                                                                                placeholder="+"
+                                                                                className={`w-14 bg-white border rounded-lg px-1.5 py-1 text-xs font-bold text-gray-955 text-center outline-none transition-all ${
+                                                                                    slab.maxQty !== 999999 && slab.minQty !== "" && slab.maxQty !== "" && Number(slab.minQty) > Number(slab.maxQty)
+                                                                                        ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/10'
+                                                                                        : 'border-gray-200 focus:border-emerald-500'
+                                                                                }`}
+                                                                            />
+                                                                        </div>
+                                                                        {slab.maxQty !== 999999 && slab.minQty !== "" && slab.maxQty !== "" && Number(slab.minQty) > Number(slab.maxQty) && (
+                                                                            <span className="text-[8px] font-black text-red-500 uppercase tracking-tighter block leading-none mt-0.5">
+                                                                                From &gt; To Error
+                                                                            </span>
+                                                                        )}
                                                                     </div>
 
                                                                     <div className="col-span-3 relative">
@@ -2218,7 +2276,7 @@ export default function ProductsManager() {
                                                                                 setFormData({ ...formData, priceSlabs: updatedSlabs });
                                                                             }}
                                                                             placeholder="0.00"
-                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1.5 text-xs font-bold text-gray-955 text-center"
+                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1 text-xs font-bold text-gray-955 text-center outline-none focus:border-emerald-500 transition-all"
                                                                         />
                                                                     </div>
 
@@ -2245,18 +2303,15 @@ export default function ProductsManager() {
                                                                                 setFormData({ ...formData, priceSlabs: updatedSlabs });
                                                                             }}
                                                                             placeholder="0.0"
-                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1.5 text-xs font-bold text-gray-955 text-center"
+                                                                            className="w-full bg-white border border-gray-200 rounded-lg pl-4 pr-1 py-1 text-xs font-bold text-gray-955 text-center outline-none focus:border-emerald-500 transition-all"
                                                                         />
                                                                     </div>
 
-                                                                    <div className="col-span-3 text-right">
+                                                                    <div className="col-span-2 text-right">
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => {
                                                                                 const updatedSlabs = slabs.filter((_, idx) => idx !== index);
-                                                                                for (let i = 0; i < updatedSlabs.length; i++) {
-                                                                                    updatedSlabs[i].maxQty = i < updatedSlabs.length - 1 ? updatedSlabs[i+1].minQty - 1 : 999999;
-                                                                                }
                                                                                 setFormData({ ...formData, priceSlabs: updatedSlabs });
                                                                             }}
                                                                             className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"

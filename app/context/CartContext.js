@@ -59,7 +59,8 @@ export function CartProvider({ children }) {
                 discountAt50: product.discountAt50,
                 discountAt100: product.discountAt100,
                 discountAt500: product.discountAt500,
-                discountAt1000: product.discountAt1000
+                discountAt1000: product.discountAt1000,
+                extraDiscountAbove500: product.extraDiscountAbove500
             }, quantity);
             
             return {

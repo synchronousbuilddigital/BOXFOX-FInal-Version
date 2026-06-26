@@ -279,7 +279,8 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
                         product.discountAt50,
                         product.discountAt100,
                         product.discountAt500,
-                        product.discountAt1000
+                        product.discountAt1000,
+                        product.extraDiscountAbove500
                       );
                   if (computed && computed > 0) return `₹${Math.round(computed).toLocaleString('en-IN')}`;
                 }

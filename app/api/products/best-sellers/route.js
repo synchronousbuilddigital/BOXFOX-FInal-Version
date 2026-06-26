@@ -83,7 +83,8 @@ export async function GET() {
                 outOfStock: p.stock_status === "outofstock",
                 dimensions: p.dimensions || { length: 8.5, width: 6.5, height: 2, unit: 'inch' },
                 pacdoraId: p.pacdoraId,
-                minOrderQuantity: p.minOrderQuantity || 10
+                minOrderQuantity: p.minOrderQuantity || 10,
+                extraDiscountAbove500: !!p.extraDiscountAbove500
             };
         });
 

@@ -125,6 +125,7 @@ function toStoreProduct(product, source = 'core') {
     allowWishlist: true,
     priceSlabs: product.priceSlabs || [],
     pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
+    extraDiscountAbove500: !!product.extraDiscountAbove500,
   };
 }
 
@@ -362,7 +363,8 @@ export async function POST(req) {
         isActive: data.isActive !== undefined ? data.isActive : true,
         pageVisibility: data.pageVisibility || 'shop',
         pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
-        priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : []
+        priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : [],
+        extraDiscountAbove500: data.extraDiscountAbove500 !== undefined ? !!data.extraDiscountAbove500 : false
       }, { new: true });
       await invalidateProductCache();
 
@@ -403,7 +405,8 @@ export async function POST(req) {
       isActive: data.isActive !== undefined ? data.isActive : true,
       pageVisibility: data.pageVisibility || 'shop',
       pricingMode: data.pricingMode || (data.priceSlabs && data.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
-      priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : []
+      priceSlabs: Array.isArray(data.priceSlabs) ? data.priceSlabs : [],
+      extraDiscountAbove500: data.extraDiscountAbove500 !== undefined ? !!data.extraDiscountAbove500 : false
     });
     await invalidateProductCache();
 

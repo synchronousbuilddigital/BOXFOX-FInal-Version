@@ -48,6 +48,7 @@ const productSchema = new mongoose.Schema({
     discountAt500: { type: Number },
     discountAt1000: { type: Number },
     triggerValue: { type: Number, default: 500 },
+    extraDiscountAbove500: { type: Boolean, default: false },
     priceSlabs: [{
         minQty: { type: Number, required: true },
         maxQty: { type: Number, required: true },

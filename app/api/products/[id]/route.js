@@ -128,7 +128,8 @@ export async function GET(req, { params }) {
             dielineImg: product.dielineImg,
             dielineFormat: product.dielineFormat,
             priceSlabs: product.priceSlabs || [],
-            pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered')
+            pricingMode: product.pricingMode || (product.priceSlabs && product.priceSlabs.length > 0 ? 'slabs' : 'tiered'),
+            extraDiscountAbove500: !!product.extraDiscountAbove500
         };
 
         return NextResponse.json(result);

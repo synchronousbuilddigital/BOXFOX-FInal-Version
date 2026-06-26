@@ -248,7 +248,8 @@ export default function ProductPage() {
                 discountAt50,
                 discountAt100,
                 discountAt500,
-                discountAt1000
+                discountAt1000,
+                product.extraDiscountAbove500
             )
             : null;
 
@@ -295,17 +296,25 @@ export default function ProductPage() {
             } else if (slab.price !== undefined && slab.price !== null && p1 > 0) {
                 disc = Math.max(0, Math.round(((p1 - slab.price) / p1) * 100 * 10) / 10);
             }
+            if (product.extraDiscountAbove500 && slab.minQty >= 500 && disc > 0) {
+                disc = disc + (disc * disc / 100);
+            }
             activeTiers.push({
                 qty: slab.minQty,
-                discount: disc
+                discount: Math.round(disc * 10) / 10
             });
         });
     } else {
-        const d10 = getDiscount(p10, discountAt10);
-        const d50 = getDiscount(p50, discountAt50);
-        const d100 = getDiscount(p100, discountAt100);
-        const d500 = getDiscount(p500, discountAt500);
-        const d1000 = getDiscount(p1000, discountAt1000);
+        let d10 = getDiscount(p10, discountAt10);
+        let d50 = getDiscount(p50, discountAt50);
+        let d100 = getDiscount(p100, discountAt100);
+        let d500 = getDiscount(p500, discountAt500);
+        let d1000 = getDiscount(p1000, discountAt1000);
+
+        if (product.extraDiscountAbove500) {
+            if (d500 > 0) d500 = d500 + (d500 * d500 / 100);
+            if (d1000 > 0) d1000 = d1000 + (d1000 * d1000 / 100);
+        }
 
         const rawTiers = [
             { qty: 1, discount: 0 },
