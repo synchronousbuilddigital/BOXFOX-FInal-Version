@@ -620,7 +620,7 @@ export default function Navbar() {
           className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/gifts") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <Gift size={18} />
-          <span className="text-[9px] uppercase tracking-wider font-bold">Gifts</span>
+          <span className="text-[9px] uppercase tracking-wider font-bold">Corporate Gifts</span>
         </Link>
 
         {/* Menu */}
