@@ -713,7 +713,6 @@ export default function AdminVendorsPage() {
                                                         Save Configuration
                                                     </button>
                                                 </div>
-                                                </div>
                                                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex flex-col justify-between">
                                                     <p className="text-[10px] text-emerald-800 font-black uppercase tracking-widest mb-2">Live Rate Info</p>
                                                     <p className="text-[9px] text-gray-500 normal-case leading-relaxed">
