@@ -206,13 +206,13 @@ function ShopPageInner() {
                             </p>
                         </div>
 
-                        <div className="w-full lg:w-auto">
+                        <div className="w-full lg:w-auto flex items-center gap-2.5">
                             <motion.div
                                 whileHover={{ scale: 1.01 }}
-                                className="relative group w-full lg:w-[420px]"
+                                className="relative group flex-grow lg:w-[420px]"
                             >
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl opacity-15 group-hover:opacity-30 group-focus-within:opacity-30 blur transition duration-300"></div>
-                                <div className="relative flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3 w-full shadow-sm hover:border-gray-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
+                                <div className="relative flex items-center gap-2.5 sm:gap-3 bg-white border border-gray-200 rounded-2xl px-4 sm:px-5 py-3 w-full shadow-sm hover:border-gray-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
                                     <Search size={18} className="text-gray-400 shrink-0" />
                                     <input
                                         type="text"
@@ -228,6 +228,17 @@ function ShopPageInner() {
                                     )}
                                 </div>
                             </motion.div>
+
+                            <button
+                                onClick={() => setShowFilterDrawer(true)}
+                                className="lg:hidden shrink-0 flex items-center justify-center gap-1.5 px-3.5 py-3 bg-white border border-gray-200 rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-800 shadow-sm hover:border-gray-300 transition-all hover:bg-gray-50 active:scale-95"
+                            >
+                                <Filter size={14} className="text-emerald-500" />
+                                <span>Filter & Sort</span>
+                                {activeFiltersCount > 0 && (
+                                    <span className="w-4.5 h-4.5 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center ml-0.5">{activeFiltersCount}</span>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </header>
@@ -367,24 +378,10 @@ function ShopPageInner() {
                             {/* Toolbar: Mobile Filters trigger and active filters tags */}
                             <div className="flex flex-col gap-4 mb-6">
                                 <div className="flex items-center justify-between">
-                                    <div className="hidden lg:block">
+                                    <div>
                                         <p className="text-[11px] font-extrabold uppercase tracking-widest text-gray-400">
                                             Showing <span className="text-gray-800 font-black">{filteredProductsCount}</span> products
                                         </p>
-                                    </div>
-                                    
-                                    {/* Mobile Triggers */}
-                                    <div className="lg:hidden flex gap-2 w-full">
-                                        <button
-                                            onClick={() => setShowFilterDrawer(true)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-white border border-gray-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-800 shadow-sm"
-                                        >
-                                            <Filter size={14} className="text-emerald-500" />
-                                            Filters & Sort
-                                            {activeFiltersCount > 0 && (
-                                                <span className="w-4.5 h-4.5 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center ml-1">{activeFiltersCount}</span>
-                                            )}
-                                        </button>
                                     </div>
                                 </div>
 
