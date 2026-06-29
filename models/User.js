@@ -68,6 +68,16 @@ const UserSchema = new mongoose.Schema({
     totalEarned: { type: Number, default: 0 },
     totalWithdrawn: { type: Number, default: 0 },
     commissionRate: { type: Number, default: 0 }, // BoxFox percentage cut (e.g., 10 for 10%)
+    commissionSetByAdmin: { type: Boolean, default: false }, // Whether admin has explicitly set commission
+    commissionSetAt: { type: Date }, // When admin set/last-updated the commission
+
+    // E-Signature & T&C Agreement
+    vendorEsignAgreed: { type: Boolean, default: false }, // Whether vendor signed the agreement
+    vendorEsignName: { type: String }, // Full name typed at signing
+    vendorEsignDesignation: { type: String }, // Designation at time of signing
+    vendorEsignTimestamp: { type: Date }, // Exact datetime of signature
+    vendorEsignIp: { type: String }, // IP address at time of signing
+    vendorTacVersion: { type: String, default: 'v1.0' }, // T&C version they signed
 
     shippingAddress: {
         street: String,

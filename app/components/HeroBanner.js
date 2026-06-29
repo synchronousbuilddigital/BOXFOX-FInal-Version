@@ -105,7 +105,7 @@ export default function HeroBanner() {
 
       {/* ── Slider fills the half-hero area ── */}
       <div
-        className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] group"
+        className="relative w-full h-[280px] sm:h-[500px] md:h-[600px] lg:h-[700px] group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -148,8 +148,8 @@ export default function HeroBanner() {
                   src={currentBanner.image}
                   alt={currentBanner.alt}
                   fill
-                  className="relative z-10"
-                  style={{ objectFit: "contain", objectPosition: "center" }}
+                  className="absolute z-10 object-cover sm:object-contain"
+                  style={{ objectPosition: "center" }}
                   priority={currentIndex === 0}
                   sizes="100vw"
                   quality={95}
@@ -180,8 +180,8 @@ export default function HeroBanner() {
                   muted
                   playsInline
                   onEnded={() => paginate(1)}
-                  className="relative z-10 w-full h-full pointer-events-none"
-                  style={{ objectFit: "contain", objectPosition: "center" }}
+                  className="relative z-10 w-full h-full pointer-events-none object-cover sm:object-contain"
+                  style={{ objectPosition: "center" }}
                 />
               </>
             ) : null}
@@ -200,7 +200,7 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-[#D4AF37] mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+              className="hidden sm:block text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-[#D4AF37] mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
             >
               Premium Custom Packaging
             </motion.p>
@@ -210,7 +210,7 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.55 }}
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-black text-white leading-[1.08] tracking-tight mb-5 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              className="hidden sm:block text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-black text-white leading-[1.08] tracking-tight mb-5 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
             >
               Design. Print.<br />
               <span className="bg-gradient-to-r from-[#D4AF37] via-[#F9F295] via-[#E6B830] via-[#F9F295] to-[#B8860B] bg-clip-text text-transparent">Deliver.</span>
@@ -221,7 +221,7 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.5 }}
-              className="text-sm sm:text-base text-white font-medium mb-7 max-w-xs sm:max-w-sm leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+              className="hidden sm:block text-sm sm:text-base text-white font-medium mb-7 max-w-xs sm:max-w-sm leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
             >
               India&apos;s most trusted packaging partner — duplex, rigid & corrugated boxes with AI-powered custom prints.
             </motion.p>
@@ -233,18 +233,18 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.5 }}
-              className="flex flex-wrap items-center gap-3"
+              className="flex items-center gap-2 sm:gap-3"
             >
               <a
                 href="/customize"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] hover:brightness-110 text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.55)] transition-all duration-300 hover:scale-[1.03] active:scale-95"
+                className="inline-flex items-center gap-1 px-3.5 py-1.5 sm:gap-2.5 sm:px-6 sm:py-3.5 bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] hover:brightness-110 text-white text-[9px] sm:text-[11px] font-black uppercase tracking-[0.12em] sm:tracking-[0.15em] rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.3)] sm:shadow-[0_8px_30px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.55)] transition-all duration-300 hover:scale-[1.03] active:scale-95"
               >
                 Start Designing
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </a>
               <a
                 href="/shop"
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-black/20 hover:bg-black/40 border border-white/40 hover:border-[#D4AF37] text-white text-[11px] font-black uppercase tracking-[0.15em] rounded-full backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-95"
+                className="inline-flex items-center gap-1 px-3.5 py-1.5 sm:gap-2 sm:px-6 sm:py-3.5 bg-black/20 hover:bg-black/40 border border-white/40 hover:border-[#D4AF37] text-white text-[9px] sm:text-[11px] font-black uppercase tracking-[0.12em] sm:tracking-[0.15em] rounded-full backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-95"
               >
                 Browse Collection
               </a>

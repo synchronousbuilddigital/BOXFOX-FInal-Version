@@ -4,7 +4,8 @@ import {
     RefreshCw, CheckCircle2, XCircle, User as UserIcon, Mail, Phone, 
     Briefcase, X, ExternalLink, FileText, Landmark, MapPin, Receipt, 
     ShieldCheck, Building, Database, Filter, Search, ChevronRight, Check,
-    Package, Layers, DollarSign, Clock, AlertCircle
+    Package, Layers, DollarSign, Clock, AlertCircle, Pen, BadgeCheck, Download,
+    CalendarCheck, Globe, Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -533,7 +534,8 @@ export default function AdminVendorsPage() {
                                     { key: "profile", label: "Business Details", icon: <Building size={14} /> },
                                     { key: "documents", label: "Compliance Files", icon: <FileText size={14} /> },
                                     { key: "specialties", label: "Specialties", icon: <Briefcase size={14} /> },
-                                    { key: "products", label: "Vendor Products", icon: <Package size={14} /> }
+                                    { key: "products", label: "Vendor Products", icon: <Package size={14} /> },
+                                    { key: "esign", label: "E-Sign Record", icon: <Pen size={14} /> }
                                 ].map(tab => (
                                     <button
                                         key={tab.key}
@@ -711,6 +713,7 @@ export default function AdminVendorsPage() {
                                                         Save Configuration
                                                     </button>
                                                 </div>
+                                                </div>
                                                 <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex flex-col justify-between">
                                                     <p className="text-[10px] text-emerald-800 font-black uppercase tracking-widest mb-2">Live Rate Info</p>
                                                     <p className="text-[9px] text-gray-500 normal-case leading-relaxed">
@@ -720,6 +723,18 @@ export default function AdminVendorsPage() {
                                                         <span>Active Commission:</span>
                                                         <span>{selectedVendor.commissionRate || 0}%</span>
                                                     </div>
+                                                    {selectedVendor.commissionSetByAdmin && selectedVendor.commissionSetAt && (
+                                                        <div className="mt-2 pt-2 border-t border-emerald-100 text-[9px] text-emerald-600 font-bold normal-case">
+                                                            <CalendarCheck size={10} className="inline mr-1" />
+                                                            Last set on {new Date(selectedVendor.commissionSetAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                        </div>
+                                                    )}
+                                                    {!selectedVendor.commissionSetByAdmin && (
+                                                        <div className="mt-2 pt-2 border-t border-amber-100 text-[9px] text-amber-600 font-bold normal-case">
+                                                            <AlertCircle size={10} className="inline mr-1" />
+                                                            Commission not yet explicitly set by admin
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -954,6 +969,185 @@ export default function AdminVendorsPage() {
                                                 </div>
                                             )}
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* TAB 5: E-SIGN RECORD */}
+                                {drawerTab === "esign" && (
+                                    <div className="space-y-6">
+                                        {/* Status Banner */}
+                                        {selectedVendor.vendorEsignAgreed ? (
+                                            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-start gap-4">
+                                                <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shrink-0">
+                                                    <BadgeCheck size={20} className="text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-black text-emerald-900 text-sm">Agreement Electronically Signed</p>
+                                                    <p className="text-emerald-700 text-xs mt-1">
+                                                        This vendor has read and accepted the BoxFox Vendor Partnership Agreement. The e-signature is legally binding under the Information Technology Act, 2000 (India).
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4">
+                                                <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shrink-0">
+                                                    <AlertCircle size={20} className="text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-black text-amber-900 text-sm">Agreement Not Yet Signed</p>
+                                                    <p className="text-amber-700 text-xs mt-1">
+                                                        This vendor has not yet signed the Vendor Partnership Agreement. They will be redirected to sign upon their next login.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Signature Details */}
+                                        {selectedVendor.vendorEsignAgreed && (
+                                            <>
+                                                {/* Signature Preview */}
+                                                <div className="bg-white border-2 border-dashed border-emerald-300 rounded-2xl p-6 text-center">
+                                                    <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-3">Recorded Electronic Signature</p>
+                                                    <p style={{ fontFamily: "'Georgia', serif", fontSize: "2rem" }} className="text-gray-800 italic leading-tight">
+                                                        {selectedVendor.vendorEsignName || "—"}
+                                                    </p>
+                                                    {selectedVendor.vendorEsignDesignation && (
+                                                        <p className="text-xs text-emerald-700 font-bold mt-1">{selectedVendor.vendorEsignDesignation}</p>
+                                                    )}
+                                                </div>
+
+                                                {/* Audit Trail Grid */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-xl border border-gray-200 text-xs">
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Signatory Full Name</p>
+                                                            <p className="font-black text-gray-900 text-sm">{selectedVendor.vendorEsignName || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Designation at Signing</p>
+                                                            <p className="font-bold text-gray-700">{selectedVendor.vendorEsignDesignation || "N/A"}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Agreement Version Signed</p>
+                                                            <p className="font-black text-emerald-600">{selectedVendor.vendorTacVersion || "v1.0"}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Date & Time of Signature</p>
+                                                            <p className="font-black text-gray-900">
+                                                                {selectedVendor.vendorEsignTimestamp
+                                                                    ? new Date(selectedVendor.vendorEsignTimestamp).toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'medium' })
+                                                                    : 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">IP Address at Signing</p>
+                                                            <p className="font-black text-gray-700 font-mono tracking-wide">{selectedVendor.vendorEsignIp || 'N/A'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-wider mb-1">Legal Framework</p>
+                                                            <p className="font-bold text-gray-600 text-[10px] leading-relaxed normal-case">IT Act, 2000 (India) · Section 2(1)(ta) — Valid Electronic Signature</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Download Certificate Button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        try {
+                                                            const { jsPDF } = await import('jspdf');
+                                                            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                                                            
+                                                            // Header
+                                                            doc.setFillColor(16, 185, 129);
+                                                            doc.rect(0, 0, 210, 35, 'F');
+                                                            doc.setTextColor(255, 255, 255);
+                                                            doc.setFont('Helvetica', 'bold');
+                                                            doc.setFontSize(20);
+                                                            doc.text('BOXFOX VENDOR NETWORK', 105, 15, { align: 'center' });
+                                                            doc.setFontSize(11);
+                                                            doc.text('Certificate of Electronic Signature', 105, 26, { align: 'center' });
+                                                            
+                                                            // Title
+                                                            doc.setTextColor(20, 20, 20);
+                                                            doc.setFontSize(16);
+                                                            doc.setFont('Helvetica', 'bold');
+                                                            doc.text('VENDOR PARTNERSHIP AGREEMENT', 105, 55, { align: 'center' });
+                                                            doc.setFontSize(10);
+                                                            doc.setFont('Helvetica', 'normal');
+                                                            doc.setTextColor(80, 80, 80);
+                                                            doc.text('This certifies that the following vendor has electronically signed and accepted', 105, 64, { align: 'center' });
+                                                            doc.text('the BoxFox Vendor Partnership Agreement under the IT Act, 2000 (India).', 105, 70, { align: 'center' });
+                                                            
+                                                            // Border box
+                                                            doc.setDrawColor(16, 185, 129);
+                                                            doc.setLineWidth(1);
+                                                            doc.roundedRect(20, 80, 170, 120, 4, 4);
+                                                            
+                                                            // Details
+                                                            const details = [
+                                                                ['Business Entity:', selectedVendor.businessName || 'N/A'],
+                                                                ['Signatory Name:', selectedVendor.vendorEsignName || 'N/A'],
+                                                                ['Designation:', selectedVendor.vendorEsignDesignation || 'N/A'],
+                                                                ['Email Address:', selectedVendor.email || 'N/A'],
+                                                                ['PAN Number:', selectedVendor.vendorPan || 'N/A'],
+                                                                ['Commission Rate:', `${selectedVendor.commissionRate || 0}%`],
+                                                                ['Agreement Version:', selectedVendor.vendorTacVersion || 'v1.0'],
+                                                                ['Date & Time:', selectedVendor.vendorEsignTimestamp ? new Date(selectedVendor.vendorEsignTimestamp).toLocaleString('en-IN') : 'N/A'],
+                                                                ['IP Address:', selectedVendor.vendorEsignIp || 'N/A'],
+                                                            ];
+                                                            let y = 95;
+                                                            details.forEach(([label, value]) => {
+                                                                doc.setFont('Helvetica', 'bold');
+                                                                doc.setFontSize(9);
+                                                                doc.setTextColor(80, 80, 80);
+                                                                doc.text(label, 28, y);
+                                                                doc.setFont('Helvetica', 'normal');
+                                                                doc.setTextColor(20, 20, 20);
+                                                                doc.text(String(value), 80, y);
+                                                                y += 11;
+                                                            });
+                                                            
+                                                            // Signature preview
+                                                            doc.setDrawColor(200, 200, 200);
+                                                            doc.setLineWidth(0.5);
+                                                            doc.rect(20, 215, 170, 35);
+                                                            doc.setFontSize(8);
+                                                            doc.setTextColor(120, 120, 120);
+                                                            doc.text('Electronic Signature (Typed):', 28, 223);
+                                                            doc.setFont('Times', 'bolditalic');
+                                                            doc.setFontSize(22);
+                                                            doc.setTextColor(20, 20, 20);
+                                                            doc.text(selectedVendor.vendorEsignName || '', 105, 240, { align: 'center' });
+                                                            
+                                                            // Footer
+                                                            doc.setFillColor(245, 245, 245);
+                                                            doc.rect(0, 262, 210, 35, 'F');
+                                                            doc.setFont('Helvetica', 'normal');
+                                                            doc.setFontSize(8);
+                                                            doc.setTextColor(120, 120, 120);
+                                                            doc.text('BoxFox Technologies Private Limited | vendors@boxfox.in | www.boxfox.in', 105, 272, { align: 'center' });
+                                                            doc.text('This document is computer-generated and does not require a physical signature.', 105, 279, { align: 'center' });
+                                                            doc.text('Valid under Section 2(1)(ta) of the Information Technology Act, 2000.', 105, 286, { align: 'center' });
+                                                            
+                                                            doc.save(`BoxFox_Esign_Certificate_${(selectedVendor.businessName || 'vendor').replace(/\s+/g, '_')}.pdf`);
+                                                        } catch (err) {
+                                                            console.error('PDF generation error:', err);
+                                                            alert('Failed to generate PDF certificate.');
+                                                        }
+                                                    }}
+                                                    className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-3 text-sm shadow-lg shadow-emerald-200"
+                                                >
+                                                    <Download size={16} /> Download E-Sign Certificate (PDF)
+                                                </button>
+
+                                                <p className="text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                                    Certificate is digitally generated · Not a forged or altered document
+                                                </p>
+                                            </>
+                                        )}
                                     </div>
                                 )}
 

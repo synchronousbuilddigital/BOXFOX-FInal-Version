@@ -1,9 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { 
     RefreshCw, Package, DollarSign, Mail, Phone, Briefcase, Calendar, 
-    Info, ShieldCheck, X, ArrowUpRight, Truck, Copy, Check, ExternalLink, Globe 
+    Info, ShieldCheck, X, ArrowUpRight, Truck, Copy, Check, ExternalLink, Globe,
+    Clock, XCircle, FileText, ArrowRight, Pen, AlertCircle
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import PortalAIAssistant from "../components/PortalAIAssistant";
@@ -25,6 +27,7 @@ function statusClass(status) {
 
 export default function VendorDashboard() {
     const { user } = useAuth();
+    const router = useRouter();
     const [quotes, setQuotes] = useState([]);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -391,7 +394,135 @@ export default function VendorDashboard() {
 
     if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400 font-black uppercase tracking-widest italic">Loading Dashboard...</div>;
 
-    // Metrics Calculations
+    // ─── GATE CHECKS ─────────────────────────────────────────────────────────────
+
+    // Gate 1: Pending Approval
+    if (user?.vendorStatus === 'pending') {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <div className="max-w-2xl mx-auto px-6 py-40 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        <div className="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+                            <Clock size={40} className="text-amber-600" />
+                        </div>
+                        <div>
+                            <p className="text-amber-600 text-[10px] font-black uppercase tracking-[0.4em] mb-3">Application Under Review</p>
+                            <h1 className="text-4xl font-black text-gray-950 tracking-tighter uppercase italic mb-4">Pending Approval</h1>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+                                Your vendor application has been submitted successfully. The BoxFox admin team is currently reviewing your profile, documents, and compliance information.
+                            </p>
+                        </div>
+                        <div className="bg-white border border-amber-200 rounded-2xl p-6 text-left space-y-3">
+                            <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">What happens next?</p>
+                            {[
+                                "Our team reviews your submitted documents and business details",
+                                "We verify your GST, PAN, and banking information",
+                                "Once approved, you'll receive an email notification",
+                                "You'll then sign our Vendor Agreement to activate your account"
+                            ].map((step, i) => (
+                                <div key={i} className="flex items-start gap-3">
+                                    <span className="w-5 h-5 rounded-full bg-amber-500 text-white font-black text-[9px] flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                                    <p className="text-sm text-gray-600 font-medium">{step}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <a href="mailto:vendors@boxfox.in" className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                                <Mail size={14} /> Email Support
+                            </a>
+                            <a href="/" className="px-6 py-3 bg-gray-950 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
+                                Return to Store <ArrowRight size={14} />
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    // Gate 2: Rejected Application
+    if (user?.vendorStatus === 'rejected') {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <div className="max-w-2xl mx-auto px-6 py-40 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        <div className="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto">
+                            <XCircle size={40} className="text-rose-600" />
+                        </div>
+                        <div>
+                            <p className="text-rose-600 text-[10px] font-black uppercase tracking-[0.4em] mb-3">Application Unsuccessful</p>
+                            <h1 className="text-4xl font-black text-gray-950 tracking-tighter uppercase italic mb-4">Not Approved</h1>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+                                Unfortunately, your vendor application was not approved at this time. This may be due to incomplete documentation, compliance issues, or capacity constraints.
+                            </p>
+                        </div>
+                        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-left">
+                            <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-3">What you can do</p>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                                Please contact our vendor support team at <strong>vendors@boxfox.in</strong> to understand the reasons for rejection and explore the possibility of re-application after addressing any identified concerns.
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <a href="mailto:vendors@boxfox.in" className="px-6 py-3 bg-rose-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-700 transition-all flex items-center justify-center gap-2">
+                                <Mail size={14} /> Contact Vendor Support
+                            </a>
+                            <a href="/" className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                                Return to Store
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    // Gate 3: Approved but NOT signed T&C
+    if (user?.vendorStatus === 'approved' && !user?.vendorEsignAgreed) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <Navbar />
+                <div className="max-w-2xl mx-auto px-6 py-40 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+                            <FileText size={40} className="text-emerald-600" />
+                        </div>
+                        <div>
+                            <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.4em] mb-3">One Last Step</p>
+                            <h1 className="text-4xl font-black text-gray-950 tracking-tighter uppercase italic mb-4">Sign Your Agreement</h1>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-md mx-auto">
+                                Congratulations — your application has been <strong className="text-emerald-600">approved</strong>! Before you can access your vendor dashboard, you must read and sign the BoxFox Vendor Partnership Agreement.
+                            </p>
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-left space-y-3">
+                            <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">The agreement covers:</p>
+                            {["Commission rate & revenue sharing", "Payment terms & wallet withdrawals", "Quality standards & compliance", "Confidentiality & IP rights", "Dispute resolution & governing law"].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                    <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
+                                    <p className="text-sm text-gray-700 font-medium">{item}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => router.push('/vendor/terms')}
+                            className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-3 text-sm shadow-xl shadow-emerald-200"
+                        >
+                            <Pen size={18} /> Read & Sign Vendor Agreement <ArrowRight size={18} />
+                        </motion.button>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                            🔒 Secure digital signature · Legally binding under IT Act 2000
+                        </p>
+                    </motion.div>
+                </div>
+            </div>
+        );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+
     const completedQuotes = quotes.filter(q => getVendorQuoteStatus(q.status) === 'completed');
     const quotePayout = completedQuotes.reduce((sum, q) => sum + (q.vendorAmount || 0), 0);
     const orderPayout = orders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + getOrderPayout(o), 0);

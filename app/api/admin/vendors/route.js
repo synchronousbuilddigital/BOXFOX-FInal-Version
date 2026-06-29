@@ -44,7 +44,11 @@ export async function PATCH(req) {
 
         if (vendorStatus) vendor.vendorStatus = vendorStatus;
         if (vendorCategory !== undefined) vendor.vendorCategory = vendorCategory;
-        if (commissionRate !== undefined) vendor.commissionRate = Number(commissionRate) || 0;
+        if (commissionRate !== undefined) {
+            vendor.commissionRate = Number(commissionRate) || 0;
+            vendor.commissionSetByAdmin = true;
+            vendor.commissionSetAt = new Date();
+        }
         if (vendorPaymentTerms !== undefined) vendor.vendorPaymentTerms = vendorPaymentTerms;
         
         if (vendorSpecialties !== undefined) {
