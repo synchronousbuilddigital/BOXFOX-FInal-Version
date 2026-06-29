@@ -16,6 +16,7 @@ import {
   Sparkles,
   Briefcase,
   Home,
+  Gift,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -613,21 +614,14 @@ export default function Navbar() {
           <span className="text-[9px] uppercase tracking-wider font-bold">Design</span>
         </Link>
 
-        {/* Basket */}
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className={`flex flex-col items-center gap-1 py-1 px-3 relative transition-colors ${isCartOpen ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        {/* Gifts */}
+        <Link
+          href="/gifts"
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/gifts") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
-          <div className="relative">
-            <ShoppingCart size={18} />
-            {cart.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[7px] font-black rounded-full h-3.5 w-3.5 flex items-center justify-center ring-1 ring-white">
-                {cart.length}
-              </span>
-            )}
-          </div>
-          <span className="text-[9px] uppercase tracking-wider font-bold">Basket</span>
-        </button>
+          <Gift size={18} />
+          <span className="text-[9px] uppercase tracking-wider font-bold">Gifts</span>
+        </Link>
 
         {/* Menu */}
         <button
