@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import { Download, Share, PlusSquare, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function InstallPWA() {
+  const pathname = usePathname();
   const [supportsPWA, setSupportsPWA] = useState(false);
   const [promptInstall, setPromptInstall] = useState(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -50,13 +52,15 @@ export default function InstallPWA() {
     setShowIOSPrompt(true);
   };
 
-  if (isStandalone || dismissed) return null;
+  const isHiddenRoute = pathname.startsWith("/admin") || pathname.startsWith("/vendor");
+
+  if (isStandalone || dismissed || isHiddenRoute) return null;
 
   if (!supportsPWA && !isIOS) return null;
 
   return (
     <>
-      <div className="fixed bottom-6 left-6 z-50">
+      <div className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] left-4 lg:left-6 lg:bottom-6 z-50">
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

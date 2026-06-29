@@ -1,10 +1,15 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const WhatsAppButton = () => {
   const phoneNumber = "919953302917";
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const pathname = usePathname();
+  const isHiddenRoute = pathname.startsWith("/admin") || pathname.startsWith("/vendor");
+
+  if (isHiddenRoute) return null;
 
   return (
     <motion.a
@@ -15,7 +20,7 @@ const WhatsAppButton = () => {
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl hover:bg-[#20ba5a] transition-colors"
+      className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl hover:bg-[#20ba5a] transition-colors"
       style={{ boxShadow: "0 4px 15px rgba(37, 211, 102, 0.4)" }}
       aria-label="Contact us on WhatsApp"
     >

@@ -15,6 +15,7 @@ import {
   Plus,
   Sparkles,
   Briefcase,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -353,21 +354,24 @@ export default function Navbar() {
               className="fixed inset-0 bg-gray-950/20 backdrop-blur-sm z-[150] lg:hidden"
             />
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 w-[280px] sm:w-[340px] md:w-[400px] h-full bg-white z-[160] lg:hidden p-6 sm:p-10 md:p-12 shadow-2xl flex flex-col justify-between pt-24 sm:pt-32"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 w-full max-h-[85vh] bg-white z-[160] lg:hidden p-6 sm:p-10 shadow-[0_-20px_50px_rgba(0,0,0,0.15)] rounded-t-[2.5rem] flex flex-col pt-10 pb-8 overflow-y-auto custom-scrollbar"
             >
+              {/* Bottom Sheet Drag Handle */}
+              <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-gray-200 rounded-full" />
+
               <button
                 onClick={() => setMenuOpen(false)}
-                className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                className="absolute top-3.5 right-6 p-2 rounded-full hover:bg-gray-50 transition-colors"
                 aria-label="Close Menu"
               >
-                <X size={24} className="text-gray-950" />
+                <X size={20} className="text-gray-950" />
               </button>
 
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col mt-6">
                 {/* Account Section at Top */}
                 <div className="pb-8 mb-4 border-b border-gray-50">
                   {user ? (
@@ -400,7 +404,7 @@ export default function Navbar() {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-3 sm:gap-4 flex-1">
+                <div className="flex flex-col gap-3 sm:gap-4 mb-4">
                   {navLinks.map((link, idx) => (
                     <motion.div
                       key={link.label}
@@ -573,6 +577,67 @@ export default function Navbar() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* ── Sticky Bottom Navigation Bar (Mobile only) ── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 py-2 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.05)] flex items-center justify-around">
+        {/* Home */}
+        <Link
+          href="/"
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname === "/" ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        >
+          <Home size={18} />
+          <span className="text-[9px] uppercase tracking-wider font-bold">Home</span>
+        </Link>
+
+        {/* Shop */}
+        <Link
+          href="/shop"
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/shop") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        >
+          <Box size={18} />
+          <span className="text-[9px] uppercase tracking-wider font-bold">Shop</span>
+        </Link>
+
+        {/* Customize / Design */}
+        <Link
+          href="/customize"
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/customize") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        >
+          <div className="relative">
+            <Sparkles size={18} className={pathname.startsWith("/customize") ? "text-emerald-500" : ""} />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+          </div>
+          <span className="text-[9px] uppercase tracking-wider font-bold">Design</span>
+        </Link>
+
+        {/* Basket */}
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className={`flex flex-col items-center gap-1 py-1 px-3 relative transition-colors ${isCartOpen ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        >
+          <div className="relative">
+            <ShoppingCart size={18} />
+            {cart.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[7px] font-black rounded-full h-3.5 w-3.5 flex items-center justify-center ring-1 ring-white">
+                {cart.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[9px] uppercase tracking-wider font-bold">Basket</span>
+        </button>
+
+        {/* Menu */}
+        <button
+          onClick={() => setMenuOpen(true)}
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${menuOpen ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+        >
+          <Menu size={18} />
+          <span className="text-[9px] uppercase tracking-wider font-bold">Menu</span>
+        </button>
+      </div>
     </>
   );
 }

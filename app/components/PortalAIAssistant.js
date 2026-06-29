@@ -126,7 +126,7 @@ export default function PortalAIAssistant() {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         onClick={() => setIsOpen(true)}
-                        className="fixed bottom-6 right-6 z-[999] w-14 h-14 bg-emerald-500 text-white rounded-2xl shadow-2xl shadow-emerald-500/30 flex items-center justify-center hover:bg-emerald-600 transition-colors group"
+                        className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6 right-6 z-[999] w-14 h-14 bg-emerald-500 text-white rounded-2xl shadow-2xl shadow-emerald-500/30 flex items-center justify-center hover:bg-emerald-600 transition-colors group"
                         title="Open Portal AI"
                     >
                         <Bot size={24} className="group-hover:scale-110 transition-transform" />
@@ -143,7 +143,7 @@ export default function PortalAIAssistant() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className={`fixed bottom-6 right-6 z-[999] ${panelWidth} ${panelHeight} bg-[#0c121d] border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/50`}
+                        className={`fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6 right-6 z-[999] ${panelWidth} ${panelHeight} bg-[#0c121d] border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-2xl shadow-black/50`}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-black/20">

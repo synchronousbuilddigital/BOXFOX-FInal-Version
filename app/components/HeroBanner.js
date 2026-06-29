@@ -148,8 +148,8 @@ export default function HeroBanner() {
                   src={currentBanner.image}
                   alt={currentBanner.alt}
                   fill
-                  className="absolute z-10 object-cover sm:object-contain"
-                  style={{ objectPosition: "center" }}
+                  className="absolute z-10"
+                  style={{ objectFit: "cover", objectPosition: "center" }}
                   priority={currentIndex === 0}
                   sizes="100vw"
                   quality={95}
@@ -180,8 +180,8 @@ export default function HeroBanner() {
                   muted
                   playsInline
                   onEnded={() => paginate(1)}
-                  className="relative z-10 w-full h-full pointer-events-none object-cover sm:object-contain"
-                  style={{ objectPosition: "center" }}
+                  className="relative z-10 w-full h-full pointer-events-none"
+                  style={{ objectFit: "cover", objectPosition: "center" }}
                 />
               </>
             ) : null}
