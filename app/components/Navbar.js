@@ -580,29 +580,29 @@ export default function Navbar() {
       </AnimatePresence>
 
       {/* ── Sticky Bottom Navigation Bar (Mobile only) ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 py-2 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.05)] flex items-center justify-around">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[140] bg-white/95 backdrop-blur-md border-t border-gray-100 px-2 py-2 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.05)] grid grid-cols-5 items-start justify-items-center">
         {/* Home */}
         <Link
           href="/"
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname === "/" ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+          className={`flex flex-col items-center justify-center w-full py-1 transition-colors ${pathname === "/" ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <Home size={18} />
-          <span className="text-[9px] uppercase tracking-wider font-bold">Home</span>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mt-1 text-center">Home</span>
         </Link>
 
         {/* Shop */}
         <Link
           href="/shop"
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/shop") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+          className={`flex flex-col items-center justify-center w-full py-1 transition-colors ${pathname.startsWith("/shop") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <Box size={18} />
-          <span className="text-[9px] uppercase tracking-wider font-bold">Shop</span>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mt-1 text-center">Shop</span>
         </Link>
 
         {/* Customize / Design */}
         <Link
           href="/customize"
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/customize") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+          className={`flex flex-col items-center justify-center w-full py-1 transition-colors ${pathname.startsWith("/customize") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <div className="relative">
             <Sparkles size={18} className={pathname.startsWith("/customize") ? "text-emerald-500" : ""} />
@@ -611,25 +611,27 @@ export default function Navbar() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
           </div>
-          <span className="text-[9px] uppercase tracking-wider font-bold">Design</span>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mt-1 text-center">Design</span>
         </Link>
 
         {/* Gifts */}
         <Link
           href="/gifts"
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${pathname.startsWith("/gifts") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+          className={`flex flex-col items-center justify-center w-full py-1 transition-colors ${pathname.startsWith("/gifts") ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <Gift size={18} />
-          <span className="text-[9px] uppercase tracking-wider font-bold">Corporate Gifts</span>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-normal sm:tracking-wider font-bold mt-0.5 leading-tight text-center max-w-full">
+            Corporate<br />Gifts
+          </span>
         </Link>
 
         {/* Menu */}
         <button
           onClick={() => setMenuOpen(true)}
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${menuOpen ? "text-emerald-600 font-bold" : "text-gray-400"}`}
+          className={`flex flex-col items-center justify-center w-full py-1 transition-colors ${menuOpen ? "text-emerald-600 font-bold" : "text-gray-400"}`}
         >
           <Menu size={18} />
-          <span className="text-[9px] uppercase tracking-wider font-bold">Menu</span>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold mt-1 text-center">Menu</span>
         </button>
       </div>
     </>
