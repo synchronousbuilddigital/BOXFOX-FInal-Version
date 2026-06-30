@@ -309,7 +309,7 @@ export default function Navbar() {
                                 <img src={item.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={item.name} />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h4 className="text-[11px] font-black text-gray-950 uppercase tracking-tight truncate">{(item.name || '').replace(/\s+[A-Z][A-Z\s]*BOX\s*$/i, '').replace(/_[A-Z][A-Z\s]*BOX\s*$/i, '') || item.name}</h4>
+                                <div className="text-[11px] font-black text-gray-950 uppercase tracking-tight truncate">{(item.name || '').replace(/\s+[A-Z][A-Z\s]*BOX\s*$/i, '').replace(/_[A-Z][A-Z\s]*BOX\s*$/i, '') || item.name}</div>
                                 <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">{item.price}</p>
                               </div>
                               <ArrowRight size={14} className="text-gray-200 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
@@ -515,7 +515,7 @@ export default function Navbar() {
                         <img src={item.img} className="w-full h-full object-cover" alt={item.name} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-[11px] font-black text-gray-950 uppercase tracking-tight line-clamp-1">{item.name}</h4>
+                        <div className="text-[11px] font-black text-gray-950 uppercase tracking-tight line-clamp-1">{item.name}</div>
                         <div className="flex items-center gap-2 mt-1">
                           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">QTY: {item.quantity}</p>
                           {item.selectedColor && (

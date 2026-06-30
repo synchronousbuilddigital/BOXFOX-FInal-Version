@@ -5,6 +5,7 @@ import ProductSection from "./components/ProductSection";
 import FeaturesStrip from "./components/FeaturesStrip";
 import TopSellingStrip from "./components/TopSellingStrip";
 import PackagingGallery from "./components/PackagingGallery";
+import AboutSection from "./components/AboutSection";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <TopSellingStrip />
         <CategorySection />
         <FeaturesStrip />
+        <AboutSection />
       </main>
     </div>
   );

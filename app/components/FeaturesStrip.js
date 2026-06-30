@@ -66,9 +66,9 @@ export default function FeaturesStrip() {
                   </span>
                 </div>
                 <div>
-                  <h4 className="text-lg sm:text-2xl font-black text-gray-950 mb-2 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
+                  <h3 className="text-lg sm:text-2xl font-black text-gray-950 mb-2 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
                     {title}
-                  </h4>
+                  </h3>
                   <p className="text-xs sm:text-sm font-medium text-gray-500 max-w-[250px] mx-auto leading-relaxed">
                     {desc}
                   </p>

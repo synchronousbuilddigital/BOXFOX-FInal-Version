@@ -8,8 +8,10 @@ const DEFAULT_ANNOUNCEMENT = {
 
 export default function AnnouncementBar() {
   const [announcement, setAnnouncement] = useState(DEFAULT_ANNOUNCEMENT);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     let isMounted = true;
 
     const fetchAnnouncement = async () => {
@@ -45,19 +47,24 @@ export default function AnnouncementBar() {
 
       <div className="py-2.5 flex whitespace-nowrap animate-marquee">
         <div className="flex shrink-0 items-center">
-          {[...Array(6)].map((_, i) => (
-            <span key={i} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
+          <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
+            {announcement.text}
+          </span>
+          {mounted && [...Array(5)].map((_, i) => (
+            <span key={i} aria-hidden="true" className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
               {announcement.text}
             </span>
           ))}
         </div>
-        <div className="flex shrink-0 items-center">
-          {[...Array(6)].map((_, i) => (
-            <span key={`copy-${i}`} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
-              {announcement.text}
-            </span>
-          ))}
-        </div>
+        {mounted && (
+          <div className="flex shrink-0 items-center" aria-hidden="true">
+            {[...Array(6)].map((_, i) => (
+              <span key={`copy-${i}`} className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] leading-none text-white px-12 inline-block">
+                {announcement.text}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

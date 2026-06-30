@@ -9,6 +9,9 @@ export const metadata = {
     shortcut: "/BOXFOX-1.png",
     apple: "/BOXFOX-1.png",
   },
+  alternates: {
+    canonical: "https://boxfox.in",
+  },
 };
 
 import { CartProvider } from "./context/CartContext";

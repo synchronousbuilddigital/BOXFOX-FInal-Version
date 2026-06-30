@@ -190,7 +190,7 @@ export default function CategorySection() {
                 transition={{ duration: 0.4 }}
                 className="w-full"
               >
-                <Link href={`/shop?category=${encodeURIComponent(cat.name)}`} passHref className="block h-full">
+                <Link href={`/shop?category=${encodeURIComponent(cat.name)}`} rel="nofollow" className="block h-full">
                   <div
                     className="group relative w-full h-full rounded-[1.5rem] sm:rounded-[2rem] bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/5 transition-all duration-500 flex flex-col overflow-hidden cursor-pointer"
                   >

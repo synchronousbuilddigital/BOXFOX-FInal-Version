@@ -43,7 +43,7 @@ export default function Footer() {
 
           {/* Collection Links */}
           <div className="col-span-1 space-y-6 text-left">
-            <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Collection</h4>
+            <h3 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Collection</h3>
             <ul className="space-y-3">
               {[
                 { name: "Bakery Luxury", slug: "Bakery" },
@@ -61,7 +61,7 @@ export default function Footer() {
 
           {/* Protocol Links */}
           <div className="col-span-1 space-y-6 text-left">
-            <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Support</h4>
+            <h3 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Support</h3>
             <ul className="space-y-3">
               {[
                 { name: "Track Order", href: "/track-order" },
@@ -79,7 +79,7 @@ export default function Footer() {
 
           {/* Contact - Refined */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-1 space-y-6 text-center sm:text-left flex flex-col items-center sm:items-start mt-4 lg:mt-0">
-            <h4 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Connect</h4>
+            <h3 className="text-[10px] font-black text-emerald-600 tracking-[0.3em] uppercase">Connect</h3>
             <div className="space-y-4 w-full flex flex-col items-center sm:items-start">
               <div className="space-y-1">
                 <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Support</p>

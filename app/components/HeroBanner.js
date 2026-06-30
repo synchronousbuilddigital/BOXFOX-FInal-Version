@@ -105,7 +105,7 @@ export default function HeroBanner() {
 
       {/* ── Slider fills the half-hero area ── */}
       <div
-        className="relative w-full h-[280px] sm:h-[500px] md:h-[600px] lg:h-[700px] group"
+        className="relative w-full h-[380px] sm:h-[500px] md:h-[600px] lg:h-[700px] group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -200,7 +200,7 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="hidden sm:block text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-[#D4AF37] mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+              className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-[#D4AF37] mb-2 sm:mb-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
             >
               Premium Custom Packaging
             </motion.p>
@@ -210,10 +210,10 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.55 }}
-              className="hidden sm:block text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-black text-white leading-[1.08] tracking-tight mb-5 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
+              className="text-2xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-black text-white leading-[1.08] tracking-tight mb-3 sm:mb-5 drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
             >
-              Design. Print.<br />
-              <span className="bg-gradient-to-r from-[#D4AF37] via-[#F9F295] via-[#E6B830] via-[#F9F295] to-[#B8860B] bg-clip-text text-transparent">Deliver.</span>
+              BoxFox Packaging —<br className="hidden sm:inline" />
+              Design. Print. <span className="bg-gradient-to-r from-[#D4AF37] via-[#F9F295] via-[#E6B830] via-[#F9F295] to-[#B8860B] bg-clip-text text-transparent">Deliver.</span>
             </motion.h1>
 
             {/* Sub text */}
@@ -221,7 +221,7 @@ export default function HeroBanner() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.5 }}
-              className="hidden sm:block text-sm sm:text-base text-white font-medium mb-7 max-w-xs sm:max-w-sm leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+              className="text-xs sm:text-base text-white font-medium mb-5 sm:mb-7 max-w-xs sm:max-w-sm leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
             >
               India&apos;s most trusted packaging partner — duplex, rigid & corrugated boxes with AI-powered custom prints.
             </motion.p>
