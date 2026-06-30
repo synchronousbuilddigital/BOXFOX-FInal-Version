@@ -216,7 +216,7 @@ function ShopPageInner() {
                                     <Search size={18} className="text-gray-400 shrink-0" />
                                     <input
                                         type="text"
-                                        placeholder="Search products, models, materials..."
+                                        placeholder="Search products..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="bg-transparent outline-none w-full font-semibold text-xs tracking-wide text-gray-950 placeholder:text-gray-400"

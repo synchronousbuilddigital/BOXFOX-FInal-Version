@@ -6,6 +6,7 @@ import { Sparkles, Gift, ArrowRight, CheckCircle2, Star, Zap, Shield, Heart, Che
 import Link from "next/link";
 import { useRouter, useSearchParams } from 'next/navigation';
 import ProductSection from "../components/ProductSection";
+import AboutSection from "../components/AboutSection";
 
 const PRICE_RANGES = [
     { value: "all", label: "All Prices" },
@@ -189,35 +190,58 @@ function GiftsPageInner() {
 
             {/* Catalog Section */}
             <section className="pt-32 sm:pt-40 pb-24 bg-white border-b border-gray-150" id="catalog">
-                <div className="max-w-7xl mx-auto px-6 lg:px-14 text-center mb-8">
-                    <span className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block italic font-bold">Catalog</span>
-                    <h2 className="text-5xl lg:text-7xl font-black text-gray-950 uppercase tracking-tighter mb-4">Corporate Gifts</h2>
-                    <p className="max-w-2xl mx-auto text-gray-500 text-sm sm:text-base font-medium leading-relaxed">
-                        Select a custom design from our library and tailor it to your exact specifications.
-                    </p>
+                <header className="px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto mb-8 sm:mb-12">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-gray-200/80">
+                        <div className="max-w-2xl text-left">
+                            <span className="text-emerald-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block italic font-bold">Catalog</span>
+                            <motion.h1
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-4xl sm:text-6xl md:text-7xl font-black text-gray-950 tracking-tighter uppercase leading-[0.9]"
+                            >
+                                Corporate <span className="text-emerald-500">Gifts.</span>
+                            </motion.h1>
+                            <p className="text-xs sm:text-sm md:text-base text-gray-500 font-medium mt-2 leading-relaxed max-w-xl">
+                                Select a custom design from our library and tailor it to your exact specifications.
+                            </p>
+                        </div>
 
-                    {/* Search bar inside the catalog header */}
-                    <div className="max-w-md mx-auto mt-8 px-4">
-                        <div className="relative group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl opacity-15 group-hover:opacity-30 group-focus-within:opacity-30 blur transition duration-300"></div>
-                            <div className="relative flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-5 py-3.5 w-full shadow-sm hover:border-gray-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
-                                <Search size={18} className="text-gray-400 shrink-0" />
-                                <input
-                                    type="text"
-                                    placeholder="Search custom designs..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="bg-transparent outline-none w-full font-semibold text-xs tracking-wide text-gray-950 placeholder:text-gray-400"
-                                />
-                                {searchQuery && (
-                                    <button onClick={() => setSearchQuery("")} className="p-1 hover:bg-gray-150 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
-                                        <X size={14} />
-                                    </button>
+                        <div className="w-full lg:w-auto flex items-center gap-2.5">
+                            <motion.div
+                                whileHover={{ scale: 1.01 }}
+                                className="relative group flex-grow lg:w-[420px]"
+                            >
+                                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl opacity-15 group-hover:opacity-30 group-focus-within:opacity-30 blur transition duration-300"></div>
+                                <div className="relative flex items-center gap-2.5 sm:gap-3 bg-white border border-gray-200 rounded-2xl px-4 sm:px-5 py-3 w-full shadow-sm hover:border-gray-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/15 transition-all">
+                                    <Search size={18} className="text-gray-400 shrink-0" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search designs..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="bg-transparent outline-none w-full font-semibold text-xs tracking-wide text-gray-950 placeholder:text-gray-400"
+                                    />
+                                    {searchQuery && (
+                                        <button onClick={() => setSearchQuery("")} className="p-1 hover:bg-gray-150 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
+                                            <X size={14} />
+                                        </button>
+                                    )}
+                                </div>
+                            </motion.div>
+
+                            <button
+                                onClick={() => setShowFilterDrawer(true)}
+                                className="lg:hidden shrink-0 flex items-center justify-center gap-1.5 px-3.5 py-3 bg-white border border-gray-200 rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-800 shadow-sm hover:border-gray-300 transition-all hover:bg-gray-50 active:scale-95"
+                            >
+                                <Filter size={14} className="text-emerald-500" />
+                                <span>Filter & Sort</span>
+                                {activeFiltersCount > 0 && (
+                                    <span className="w-4.5 h-4.5 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center ml-0.5">{activeFiltersCount}</span>
                                 )}
-                            </div>
+                            </button>
                         </div>
                     </div>
-                </div>
+                </header>
 
                 <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 mt-12">
                     <div className="flex flex-col lg:flex-row gap-10">
@@ -346,24 +370,10 @@ function GiftsPageInner() {
                             {/* Toolbar: Mobile Filters trigger and active filters tags */}
                             <div className="flex flex-col gap-4 mb-6">
                                 <div className="flex items-center justify-between text-left">
-                                    <div className="hidden lg:block">
+                                    <div>
                                         <p className="text-[11px] font-extrabold uppercase tracking-widest text-gray-400">
                                             Showing <span className="text-gray-800 font-black">{filteredProductsCount}</span> products
                                         </p>
-                                    </div>
-
-                                    {/* Mobile Triggers */}
-                                    <div className="lg:hidden flex gap-2 w-full">
-                                        <button
-                                            onClick={() => setShowFilterDrawer(true)}
-                                            className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-white border border-gray-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-800 shadow-sm"
-                                        >
-                                            <Filter size={14} className="text-emerald-500" />
-                                            Filters & Sort
-                                            {activeFiltersCount > 0 && (
-                                                <span className="w-4.5 h-4.5 bg-emerald-500 text-white text-[8px] font-black rounded-full flex items-center justify-center ml-1">{activeFiltersCount}</span>
-                                            )}
-                                        </button>
                                     </div>
                                 </div>
 
@@ -436,6 +446,9 @@ function GiftsPageInner() {
                     </div>
                 </div>
             </section>
+
+            {/* SEO About Section */}
+            <AboutSection />
 
             {/* Mobile Filters Drawer Slideout Sheet */}
             <AnimatePresence>
