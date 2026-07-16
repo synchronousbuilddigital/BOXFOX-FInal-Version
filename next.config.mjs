@@ -11,8 +11,6 @@ const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   images: {
-    formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 31536000, // Cache on server disk for 1 year
     qualities: [75, 95],
     remotePatterns: [
       {

@@ -109,6 +109,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
           alt={name}
           width={400}
           height={500}
+          unoptimized={true}
           className={`w-full h-full object-contain transition-all duration-700 group-hover:scale-103 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
@@ -120,6 +121,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             alt={`${name} hover`}
             width={400}
             height={500}
+            unoptimized={true}
             className="w-full h-full object-contain transition-all duration-700 group-hover:scale-103 absolute inset-0 opacity-0 group-hover:opacity-100 p-4"
             priority={priority}
           />
@@ -145,6 +147,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
           alt={name || 'Product image'}
           width={500}
           height={500}
+          unoptimized={true}
           className={`w-full h-full object-contain transition-all duration-700 group-hover:scale-103 ${hoverImage ? 'group-hover:opacity-0' : ''}`}
           priority={priority}
         />
@@ -154,6 +157,7 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
             alt={`${name || 'Product'} hover`}
             width={500}
             height={500}
+            unoptimized={true}
             className="w-full h-full object-contain transition-all duration-700 group-hover:scale-103 absolute inset-0 opacity-0 group-hover:opacity-100 p-2 sm:p-5"
             priority={priority}
           />
@@ -264,20 +268,20 @@ export default function ProductCard({ product, imageOnly = false, priority = fal
                   const computed = hasSlabs
                     ? unitPriceFromSixPoints(product, qty)
                     : calculateDynamicPrice(
-                        qty,
-                        product.priceAt1,
-                        product.priceAt10,
-                        product.priceAt50,
-                        product.priceAt100,
-                        product.priceAt500,
-                        product.priceAt1000,
-                        product.discountAt10,
-                        product.discountAt50,
-                        product.discountAt100,
-                        product.discountAt500,
-                        product.discountAt1000,
-                        product.extraDiscountAbove500
-                      );
+                      qty,
+                      product.priceAt1,
+                      product.priceAt10,
+                      product.priceAt50,
+                      product.priceAt100,
+                      product.priceAt500,
+                      product.priceAt1000,
+                      product.discountAt10,
+                      product.discountAt50,
+                      product.discountAt100,
+                      product.discountAt500,
+                      product.discountAt1000,
+                      product.extraDiscountAbove500
+                    );
                   if (computed && computed > 0) return `₹${Math.round(computed).toLocaleString('en-IN')}`;
                 }
                 // Try minPrice

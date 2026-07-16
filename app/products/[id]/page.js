@@ -334,7 +334,7 @@ export default function ProductPage() {
         const next = activeTiers[idx + 1];
         const minQty = t.qty;
         const maxQty = next ? next.qty - 1 : null;
-        
+
         let rangeText = "";
         if (maxQty === null) {
             rangeText = `${minQty}+ Units`;
@@ -390,8 +390,8 @@ export default function ProductPage() {
     }
 
     const isLongName = product.name?.length > 30;
-    const titleSizeClass = isLongName 
-        ? "text-base sm:text-lg md:text-xl lg:text-3xl" 
+    const titleSizeClass = isLongName
+        ? "text-base sm:text-lg md:text-xl lg:text-3xl"
         : "text-lg sm:text-xl md:text-2xl lg:text-3xl";
 
     const renderProductNameAndCategory = () => (
@@ -528,15 +528,8 @@ export default function ProductPage() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="relative aspect-[4/3] max-h-[400px] rounded-[2rem] overflow-hidden bg-gray-50/50 border border-gray-200 shadow-sm"
                                     >
-                                        <div className="w-full h-full flex items-center justify-center p-4 md:p-6 text-center relative">
-                                            <Image
-                                                src={displayImage || "/BOXFOX-1.png"}
-                                                alt={product.name || "Product image"}
-                                                width={600}
-                                                height={450}
-                                                className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 w-auto h-auto"
-                                                priority
-                                            />
+                                        <div className="w-full h-full flex items-center justify-center p-4 md:p-6 text-center">
+                                            <img src={displayImage} className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
                                         </div>
                                     </motion.div>
 
@@ -589,14 +582,8 @@ export default function ProductPage() {
                                                 : 'opacity-45 hover:opacity-100 hover:scale-105'
                                                 }`}
                                         >
-                                            <div className="w-full h-full rounded-xl overflow-hidden bg-white border border-gray-200 p-1 relative">
-                                                <Image
-                                                    src={img || "/BOXFOX-1.png"}
-                                                    alt={`${product.name || "Product"} thumbnail`}
-                                                    fill
-                                                    sizes="64px"
-                                                    className="object-contain p-1"
-                                                />
+                                            <div className="w-full h-full rounded-xl overflow-hidden bg-white border border-gray-200 p-1">
+                                                <img src={img} className="w-full h-full object-contain" />
                                             </div>
                                         </button>
                                     ))}
