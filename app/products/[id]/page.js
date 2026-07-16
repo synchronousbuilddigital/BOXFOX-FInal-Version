@@ -27,6 +27,7 @@ import { useToast } from '@/app/context/ToastContext';
 import { useAuth } from '@/app/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { calculateBoxPrice, MARKUP_TYPES, unitPriceFromSixPoints } from '@/lib/boxfoxPricing';
 import { calculateDynamicPrice } from '@/lib/boxEngine';
 import { BOX_SPECIFICATIONS } from '@/lib/box-specifications';
@@ -527,8 +528,15 @@ export default function ProductPage() {
                                         animate={{ opacity: 1, scale: 1 }}
                                         className="relative aspect-[4/3] max-h-[400px] rounded-[2rem] overflow-hidden bg-gray-50/50 border border-gray-200 shadow-sm"
                                     >
-                                        <div className="w-full h-full flex items-center justify-center p-4 md:p-6 text-center">
-                                            <img src={displayImage} className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" />
+                                        <div className="w-full h-full flex items-center justify-center p-4 md:p-6 text-center relative">
+                                            <Image
+                                                src={displayImage || "/BOXFOX-1.png"}
+                                                alt={product.name || "Product image"}
+                                                width={600}
+                                                height={450}
+                                                className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 w-auto h-auto"
+                                                priority
+                                            />
                                         </div>
                                     </motion.div>
 
@@ -581,8 +589,14 @@ export default function ProductPage() {
                                                 : 'opacity-45 hover:opacity-100 hover:scale-105'
                                                 }`}
                                         >
-                                            <div className="w-full h-full rounded-xl overflow-hidden bg-white border border-gray-200 p-1">
-                                                <img src={img} className="w-full h-full object-contain" />
+                                            <div className="w-full h-full rounded-xl overflow-hidden bg-white border border-gray-200 p-1 relative">
+                                                <Image
+                                                    src={img || "/BOXFOX-1.png"}
+                                                    alt={`${product.name || "Product"} thumbnail`}
+                                                    fill
+                                                    sizes="64px"
+                                                    className="object-contain p-1"
+                                                />
                                             </div>
                                         </button>
                                     ))}
